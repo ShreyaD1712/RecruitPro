@@ -1,0 +1,55 @@
+.page {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  padding: 30px;
+
+  background: #f5f8ff;
+
+  min-height: 100vh;
+}
+
+.card {
+  width: 550px;
+
+  padding: 30px;
+
+  border-radius: 18px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+h2 {
+  margin-bottom: 25px;
+
+  color: #0d47a1;
+
+  font-size: 28px;
+
+  font-weight: 700;
+}
+
+mat-form-field {
+  width: 100%;
+
+  margin-bottom: 18px;
+}
+
+mat-slide-toggle {
+  margin: 10px 0 25px;
+}
+
+.buttons {
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 15px;
+}
+
+button {
+  min-width: 110px;
+}

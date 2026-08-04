@@ -1,0 +1,67 @@
+<div class="page">
+
+    <mat-card class="card">
+
+        <h2>Edit Role</h2>
+
+        <form
+            [formGroup]="roleForm"
+            (ngSubmit)="updateRole()">
+
+            <!-- Role Name -->
+
+            <mat-form-field appearance="outline">
+
+                <mat-label>Role Name</mat-label>
+
+                <input
+                    matInput
+                    formControlName="RoleName">
+
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                    <mat-label>Description</mat-label>
+                <input
+                    matInput
+                    formControlName="Description">
+            </mat-form-field>
+            <!-- Status -->
+
+            <mat-slide-toggle
+                formControlName="IsActive">
+
+                Active
+
+            </mat-slide-toggle>
+
+            <!-- Buttons -->
+
+            <div class="buttons">
+
+                <button
+                    mat-raised-button
+                    color="primary"
+                    type="submit">
+
+                    Update
+
+                </button>
+
+                <button
+                    mat-raised-button
+                    color="warn"
+                    type="button"
+                    (click)="cancel()">
+
+                    Cancel
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </mat-card>
+
+</div>

@@ -1,0 +1,77 @@
+.navbar {
+  height: 70px;
+
+  background: #2563eb;
+
+  color: white;
+
+  display: flex;
+
+  align-items: center;
+
+  padding: 0 20px;
+}
+
+.logo {
+  font-size: 28px;
+
+  font-weight: 700;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.profile-avatar {
+  width: 42px;
+
+  height: 42px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 2px solid white;
+
+  cursor: pointer;
+}
+
+.profile-header {
+  width: 250px;
+
+  padding: 20px;
+
+  text-align: center;
+}
+
+.profile-image {
+  width: 90px;
+
+  height: 90px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 3px solid #2563eb;
+
+  margin-bottom: 12px;
+}
+
+.profile-header h4 {
+  margin: 0;
+
+  font-size: 18px;
+
+  font-weight: 600;
+}
+
+.profile-header p {
+  margin-top: 5px;
+
+  margin-bottom: 15px;
+
+  color: #777;
+
+  font-size: 14px;
+}

@@ -1,0 +1,69 @@
+<div class="page-container">
+  <mat-card class="form-card">
+    <h2>Edit User</h2>
+
+    <form [formGroup]="userForm" (ngSubmit)="updateUser()">
+      <mat-form-field appearance="outline">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="FirstName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="LastName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="Email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Mobile Number</mat-label>
+        <input matInput formControlName="MobileNo" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Company</mat-label>
+
+        <mat-select
+          formControlName="CompanyId"
+          (selectionChange)="companyChanged()"
+          [disabled]="loggedInRoleId != 1"
+        >
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Department</mat-label>
+
+        <mat-select formControlName="DepartmentId">
+          <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
+            {{ department.DepartmentName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Role</mat-label>
+
+        <mat-select formControlName="RoleId">
+          <mat-option *ngFor="let role of roles" [value]="role.RoleId">
+            {{ role.RoleName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+
+      <div class="button-row">
+        <button mat-raised-button color="primary" type="submit">Update</button>
+
+        <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </mat-card>
+</div>

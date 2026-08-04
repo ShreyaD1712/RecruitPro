@@ -1,0 +1,115 @@
+<div class="company-container">
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h2>Company Management</h2>
+      <p>Manage all registered companies</p>
+    </div>
+
+    <button mat-raised-button color="primary" (click)="addCompany()">
+      <mat-icon>add</mat-icon>
+      Add Company
+    </button>
+  </div>
+
+  <!-- Search Card -->
+  <mat-card class="search-card">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search Company</mat-label>
+
+      <input matInput [(ngModel)]="search" placeholder="Search by Company Name or Code" />
+
+      <button mat-icon-button matSuffix (click)="searchCompany()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+  </mat-card>
+
+  <!-- Company Table -->
+
+  <mat-card class="table-card">
+    <table class="company-table">
+      <thead>
+        <tr>
+          <th (click)="sort('CompanyCode')">
+            Code
+            <mat-icon>swap_vert</mat-icon>
+          </th>
+
+          <th (click)="sort('CompanyName')">
+            Company Name
+            <mat-icon>swap_vert</mat-icon>
+          </th>
+
+          <th>Email</th>
+
+          <th>Phone</th>
+
+          <th>Status</th>
+
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let company of companies">
+          <td>{{ company.CompanyCode }}</td>
+
+          <td>{{ company.CompanyName }}</td>
+
+          <td>{{ company.Email }}</td>
+
+          <td>{{ company.Phone }}</td>
+
+          <td>
+            <span class="status active" *ngIf="company.IsActive"> Active </span>
+
+            <span class="status inactive" *ngIf="!company.IsActive"> Inactive </span>
+          </td>
+
+          <td>
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="editCompany(company.CompanyId)"
+              matTooltip="Edit"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="deleteCompany(company.CompanyId)"
+              matTooltip="Delete"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </tr>
+
+        <tr *ngIf="!loading && companies.length === 0">
+          <td colspan="6" class="no-data">No Companies Found</td>
+        </tr>
+      </tbody>
+    </table>
+  </mat-card>
+
+  <!-- Pagination -->
+
+  <div class="pagination">
+    <button mat-stroked-button (click)="previousPage()" [disabled]="page == 1">Previous</button>
+
+    <span>
+      Page {{ page }}
+
+      of
+
+      {{ Math.ceil(totalRecords / pageSize) }}
+    </span>
+
+    <button mat-stroked-button (click)="nextPage()" [disabled]="page * pageSize >= totalRecords">
+      Next
+    </button>
+  </div>
+</div>

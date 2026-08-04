@@ -1,0 +1,65 @@
+<div class="company-page">
+  <div class="page-header">
+    <div>
+      <h2>Edit Company</h2>
+
+      <p>Update company information</p>
+    </div>
+  </div>
+
+  <mat-card class="company-card">
+    <form [formGroup]="companyForm">
+      <div class="grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Company Code</mat-label>
+
+          <input matInput formControlName="CompanyCode" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Company Name</mat-label>
+
+          <input matInput formControlName="CompanyName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+
+          <input matInput formControlName="Email" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+
+          <input matInput formControlName="Phone" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Website</mat-label>
+
+          <input matInput formControlName="Website" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Address</mat-label>
+
+          <textarea matInput rows="4" formControlName="Address"> </textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="status">
+        <mat-slide-toggle formControlName="IsActive"> Active Company </mat-slide-toggle>
+      </div>
+
+      <div class="buttons">
+        <button mat-raised-button color="primary" type="button" (click)="updateCompany()">
+          <mat-icon>save</mat-icon>
+
+          Update
+        </button>
+
+        <button mat-stroked-button color="warn" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </mat-card>
+</div>

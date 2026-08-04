@@ -1,62 +1,106 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from datetime import datetime
+
 from app.database import get_db
 from app.models.user import User
-from app.schemas.auth_schema import RegisterRequest
-from app.auth.password import hash_password
-import traceback
+from app.schemas.auth_schema import LoginRequest
+from app.auth.jwt_handler import create_access_token
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
 
-@router.post("/register")
-def register(request: RegisterRequest, db: Session = Depends(get_db)):
 
-    existing_user = db.query(User).filter(
+# ===========================================
+# Angular Login (JSON)
+# ===========================================
+@router.post("/login")
+def login(
+    request: LoginRequest,
+    db: Session = Depends(get_db)
+):
+
+    user = db.query(User).filter(
         User.Email == request.email
     ).first()
 
-    if existing_user:
+    if not user:
         raise HTTPException(
-            status_code=400,
-            detail="Email already exists"
+            status_code=401,
+            detail="Invalid email or password"
         )
 
-    try:
-        user = User(
-            FirstName=request.first_name,
-            LastName=request.last_name,
-            Email=request.email,
-            PasswordHash=hash_password(request.password),
-            PhoneNumber=request.phone_number,
-            RoleId=request.role_id,
-            CompanyId=request.company_id,
-            DepartmentId=request.department_id,
-            IsActive=True,
-            CreatedAt=datetime.utcnow()
+    if request.password != user.Password:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password"
         )
 
-        db.add(user)
-        db.commit()
-        db.refresh(user)
+    if not user.IsActive:
+        raise HTTPException(
+            status_code=403,
+            detail="User account is inactive"
+        )
 
-        return {
-            "message": "User Registered Successfully"
+    access_token = create_access_token(
+        data={
+            "sub": user.Email,
+            "user_id": user.UserId,
+            "role_id": user.RoleId,
+            "company_id": user.CompanyId
         }
+    )
 
-    except Exception as e:
-        db.rollback()
+    return {
+        "message": "Login Successful",
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
 
-        print("\n========== ERROR ==========")
-        print(type(e))
-        print(e)
-        traceback.print_exc()
-        print("===========================\n")
 
+# ===========================================
+# Swagger OAuth Login
+# ===========================================
+@router.post("/token")
+def token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+
+    user = db.query(User).filter(
+        User.Email == form_data.username
+    ).first()
+
+    if not user:
         raise HTTPException(
-            status_code=500,
-            detail=str(e)
+            status_code=401,
+            detail="Invalid email or password"
         )
+
+    if form_data.password != user.Password:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password"
+        )
+
+    if not user.IsActive:
+        raise HTTPException(
+            status_code=403,
+            detail="User account is inactive"
+        )
+
+    access_token = create_access_token(
+        data={
+            "sub": user.Email,
+            "user_id": user.UserId,
+            "role_id": user.RoleId,
+            "company_id": user.CompanyId
+        }
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }

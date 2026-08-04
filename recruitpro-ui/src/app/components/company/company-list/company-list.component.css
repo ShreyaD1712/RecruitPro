@@ -1,0 +1,266 @@
+/* ==========================
+   PAGE
+========================== */
+
+.company-container{
+    padding:30px;
+    background:#f4f7fc;
+    min-height:100vh;
+}
+
+
+/* ==========================
+   HEADER
+========================== */
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.header h2{
+    margin:0;
+    color:#1f3fbf;
+    font-size:30px;
+    font-weight:700;
+}
+
+.header p{
+    margin-top:5px;
+    color:#777;
+}
+
+
+/* ==========================
+   SEARCH
+========================== */
+
+.search-card{
+    padding:20px;
+    margin-bottom:25px;
+    border-radius:15px;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.search-field{
+    width:100%;
+}
+
+
+/* ==========================
+   TABLE CARD
+========================== */
+
+.table-card{
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+
+/* ==========================
+   TABLE
+========================== */
+
+.company-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.company-table thead{
+    background:linear-gradient(90deg,#2563eb,#1d4ed8);
+    color:white;
+}
+
+.company-table th{
+    padding:16px;
+    cursor:pointer;
+    font-size:15px;
+    text-align:left;
+    user-select:none;
+}
+
+.company-table th mat-icon{
+    font-size:18px;
+    vertical-align:middle;
+    margin-left:5px;
+}
+
+.company-table td{
+    padding:18px 15px;
+    border-bottom:1px solid #ececec;
+}
+
+.company-table tbody tr{
+    transition:.3s;
+}
+
+.company-table tbody tr:hover{
+    background:#eef4ff;
+}
+
+
+/* ==========================
+   STATUS
+========================== */
+
+.status{
+    padding:7px 18px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.active{
+    background:#d1fae5;
+    color:#047857;
+}
+
+.inactive{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+
+/* ==========================
+   BUTTONS
+========================== */
+
+button[mat-raised-button]{
+
+    border-radius:10px;
+    padding:0 22px;
+    height:45px;
+    font-weight:600;
+
+}
+
+button[mat-icon-button]{
+
+    margin-right:5px;
+
+}
+
+
+/* ==========================
+   NO DATA
+========================== */
+
+.no-data{
+
+    text-align:center;
+    padding:30px;
+    color:gray;
+    font-size:18px;
+
+}
+
+
+/* ==========================
+   PAGINATION
+========================== */
+
+.pagination{
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:25px;
+    margin-top:25px;
+
+}
+
+.pagination span{
+
+    font-weight:600;
+    color:#1f3fbf;
+
+}
+
+.pagination button{
+
+    min-width:120px;
+
+}
+
+
+/* ==========================
+   CARD HOVER
+========================== */
+
+mat-card{
+
+    transition:.3s;
+
+}
+
+mat-card:hover{
+
+    transform:translateY(-2px);
+
+}
+
+
+/* ==========================
+   SCROLL
+========================== */
+
+.table-card{
+
+    overflow:auto;
+
+}
+
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:992px){
+
+.header{
+
+    flex-direction:column;
+    align-items:flex-start;
+    gap:20px;
+
+}
+
+.company-table{
+
+    min-width:900px;
+
+}
+
+}
+
+
+@media(max-width:768px){
+
+.company-container{
+
+    padding:15px;
+
+}
+
+.header h2{
+
+    font-size:25px;
+
+}
+
+.pagination{
+
+    flex-direction:column;
+
+}
+
+button[mat-raised-button]{
+
+    width:100%;
+
+}
+
+}

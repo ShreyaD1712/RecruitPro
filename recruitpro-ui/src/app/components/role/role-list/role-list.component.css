@@ -1,0 +1,181 @@
+.page-container {
+
+    padding: 30px;
+
+    background: #f5f8ff;
+
+    min-height: 100vh;
+
+}
+
+/* Header */
+
+.header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+
+}
+
+.header h2 {
+
+    color: #0d47a1;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    margin: 0;
+
+}
+
+.header p {
+
+    margin: 5px 0 0;
+
+    color: #666;
+
+}
+
+/* Search */
+
+.search-card {
+
+    padding: 20px;
+
+    border-radius: 18px;
+
+    margin-bottom: 25px;
+
+}
+
+.search-box {
+
+    width: 350px;
+
+}
+
+/* Table */
+
+.table-card {
+
+    padding: 0;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+
+}
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+thead {
+
+    background: #2563eb;
+
+}
+
+thead th {
+
+    color: white;
+
+    font-weight: 600;
+
+    padding: 16px;
+
+    text-align: left;
+
+}
+
+tbody td {
+
+    padding: 16px;
+
+    border-bottom: 1px solid #e5e5e5;
+
+}
+
+tbody tr:hover {
+
+    background: #f8f9ff;
+
+}
+
+/* Status */
+
+.badge {
+
+    display: inline-block;
+
+    padding: 6px 16px;
+
+    border-radius: 20px;
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+.active {
+
+    background: #43a047;
+
+}
+
+.inactive {
+
+    background: #e53935;
+
+}
+
+/* Buttons */
+
+button {
+
+    margin-right: 8px;
+
+}
+
+/* No Data */
+
+.no-data {
+
+    text-align: center;
+
+    padding: 30px;
+
+    color: #777;
+
+}
+
+/* Pagination */
+
+.pagination {
+
+    margin-top: 25px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 20px;
+
+}

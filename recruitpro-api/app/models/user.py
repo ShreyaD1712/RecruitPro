@@ -1,5 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, DateTime
+from sqlalchemy.orm import relationship
+
 from app.database import Base
+
 
 class User(Base):
     __tablename__ = "Users"
@@ -11,16 +14,40 @@ class User(Base):
 
     Email = Column(String(150), unique=True, nullable=False)
 
-    PasswordHash = Column(String(255), nullable=False)
+    Password = Column(String(255), nullable=False)
 
-    PhoneNumber = Column(String(20))
+    MobileNo = Column(String(20))
 
-    RoleId = Column(Integer, nullable=False)
-
-    CompanyId = Column(Integer)
-
-    DepartmentId = Column(Integer)
+    RoleId = Column(Integer, ForeignKey("Roles.RoleId"))
+    CompanyId = Column(Integer, ForeignKey("Companies.CompanyId"))
+    DepartmentId = Column(Integer, ForeignKey("Departments.DepartmentId"))
 
     IsActive = Column(Boolean)
 
-    CreatedAt = Column(DateTime)
+    CreatedOn = Column(DateTime)
+    CreatedBy = Column(Integer)
+
+    UpdatedOn = Column(DateTime)
+    UpdatedBy = Column(Integer)
+
+    # -------------------------
+    # Relationships
+    # -------------------------
+
+    company = relationship("Company", back_populates="users")
+
+    department = relationship("Department", back_populates="users")
+
+    role = relationship("Role", back_populates="users")
+
+    @property
+    def CompanyName(self):
+        return self.company.CompanyName if self.company else None
+
+    @property
+    def DepartmentName(self):
+        return self.department.DepartmentName if self.department else None
+
+    @property
+    def RoleName(self):
+        return self.role.RoleName if self.role else None

@@ -1,0 +1,21 @@
+:host{
+    display:block;
+    width:100%;
+    margin:0;
+    padding:0;
+}
+
+.container{
+    display:flex;
+    width:100%;
+    margin:0;
+    padding:0;
+    background:#f5f7fb;
+    min-height:calc(100vh - 70px);
+}
+
+.content{
+    flex:1;
+    margin:0;
+    padding:0;
+}
