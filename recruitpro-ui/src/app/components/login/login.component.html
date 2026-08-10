@@ -1,41 +1,26 @@
 <div class="login-container">
-
   <div class="left-panel">
-
     <div class="brand">
       <h1>RecruitPro</h1>
 
       <h3>Recruitment & Applicant Tracking System</h3>
 
-      <p>
-        Manage recruitment, candidates and interviews
-        from one powerful platform.
-      </p>
+      <p>Manage recruitment, candidates and interviews from one powerful platform.</p>
     </div>
-
   </div>
 
   <div class="right-panel">
-
     <mat-card class="login-card">
-
       <h2>Welcome Back</h2>
 
       <p>Please login to continue</p>
 
       <form [formGroup]="loginForm" (ngSubmit)="login()">
-
         <!-- Email -->
-
         <mat-form-field appearance="outline">
-
           <mat-label>Email</mat-label>
 
-          <input
-            matInput
-            type="email"
-            placeholder="Enter Email"
-            formControlName="email">
+          <input matInput type="email" placeholder="Enter Email" formControlName="email" />
 
           <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
             Email is required
@@ -44,43 +29,30 @@
           <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
             Enter a valid email
           </mat-error>
-
         </mat-form-field>
 
         <!-- Password -->
-
         <mat-form-field appearance="outline">
-
           <mat-label>Password</mat-label>
 
-          <input
-            matInput
-            type="password"
-            placeholder="Enter Password"
-            formControlName="password">
+          <input matInput type="password" placeholder="Enter Password" formControlName="password" />
 
           <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
             Password is required
           </mat-error>
-
         </mat-form-field>
 
         <!-- Login Button -->
-
         <button
           mat-raised-button
           color="primary"
           class="login-btn"
-          type="submit">
-
-          Login
-
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Logging In...' : 'Login' }}
         </button>
-
       </form>
-
     </mat-card>
-
   </div>
-
 </div>

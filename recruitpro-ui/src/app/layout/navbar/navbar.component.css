@@ -22,6 +22,14 @@
   flex: 1;
 }
 
+.user {
+  margin-right: 15px;
+
+  font-size: 15px;
+
+  font-weight: 500;
+}
+
 .profile-avatar {
   width: 42px;
 
@@ -34,44 +42,4 @@
   border: 2px solid white;
 
   cursor: pointer;
-}
-
-.profile-header {
-  width: 250px;
-
-  padding: 20px;
-
-  text-align: center;
-}
-
-.profile-image {
-  width: 90px;
-
-  height: 90px;
-
-  border-radius: 50%;
-
-  object-fit: cover;
-
-  border: 3px solid #2563eb;
-
-  margin-bottom: 12px;
-}
-
-.profile-header h4 {
-  margin: 0;
-
-  font-size: 18px;
-
-  font-weight: 600;
-}
-
-.profile-header p {
-  margin-top: 5px;
-
-  margin-bottom: 15px;
-
-  color: #777;
-
-  font-size: 14px;
 }

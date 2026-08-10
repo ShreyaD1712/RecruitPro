@@ -78,6 +78,11 @@ export class DepartmentListComponent implements OnInit {
 
   }
 
+  // Permission Check
+  hasPermission(permission: string): boolean {
+    return this.authService.hasPermission(permission);
+  }
+
   loadCompanies() {
 
     // Super Admin
@@ -94,8 +99,9 @@ export class DepartmentListComponent implements OnInit {
         next: (response: any) => {
 
           this.companies = response.data;
-      // Super Admin should see all departments initially
+
           this.selectedCompanyId = null;
+
           this.loadDepartments();
 
         },
@@ -110,7 +116,7 @@ export class DepartmentListComponent implements OnInit {
 
     }
 
-    // Company Admin / Other Users
+    // Company Admin
     else {
 
       this.companyService.getCompany(
@@ -188,17 +194,41 @@ export class DepartmentListComponent implements OnInit {
 
   addDepartment() {
 
+    if (!this.hasPermission('CREATE_DEPARTMENT')) {
+
+      alert('You do not have permission to add departments.');
+
+      return;
+
+    }
+
     this.router.navigate(['/department/add']);
 
   }
 
   editDepartment(id: number) {
 
+    if (!this.hasPermission('UPDATE_DEPARTMENT')) {
+
+      alert('You do not have permission to update departments.');
+
+      return;
+
+    }
+
     this.router.navigate(['/department/edit', id]);
 
   }
 
   deleteDepartment(id: number) {
+
+    if (!this.hasPermission('DELETE_DEPARTMENT')) {
+
+      alert('You do not have permission to delete departments.');
+
+      return;
+
+    }
 
     if (confirm('Delete this Department?')) {
 
@@ -207,6 +237,8 @@ export class DepartmentListComponent implements OnInit {
 
           next: () => {
 
+            alert('Department Deleted Successfully');
+
             this.loadDepartments();
 
           },
@@ -214,6 +246,8 @@ export class DepartmentListComponent implements OnInit {
           error: (err) => {
 
             console.log(err);
+
+            alert(err.error.detail);
 
           }
 

@@ -19,6 +19,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { DepartmentService } from '../../../services/department.service';
 import { CompanyService } from '../../../services/company.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-department-edit',
@@ -48,11 +49,19 @@ export class DepartmentEditComponent implements OnInit {
     private fb: FormBuilder,
     private departmentService: DepartmentService,
     private companyService: CompanyService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
+
+    // Permission Check
+    if (!this.hasPermission('UPDATE_DEPARTMENT')) {
+      alert('You are not authorized to access this page.');
+      this.router.navigate(['/department']);
+      return;
+    }
 
     this.departmentId = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -73,25 +82,73 @@ export class DepartmentEditComponent implements OnInit {
     this.loadCompanies();
 
     this.loadDepartment();
+
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.authService.hasPermission(permission);
   }
 
   loadCompanies() {
 
-    this.companyService.getCompanies(
-      '',
-      'CompanyName',
-      'asc',
-      1,
-      100
-    ).subscribe({
+    
+    const companyId = this.authService.getCompanyId();
 
-      next: (res) => {
+    // Super Admin
+    if (this.hasPermission('VIEW_ALL_COMPANIES')) {
 
-        this.companies = res.data;
+      this.companyService.getCompanies(
+        '',
+        'CompanyName',
+        'asc',
+        1,
+        100
+      ).subscribe({
 
-      }
+        next: (res) => {
 
-    });
+          this.companies = res.data;
+
+        },
+
+        error: (err) => {
+
+          console.log(err);
+
+        }
+
+      });
+
+    }
+
+    // Company Admin
+    else {
+
+      this.companyService.getCompany(companyId).subscribe({
+
+        next: (company) => {
+
+          this.companies = [company];
+
+          this.departmentForm.patchValue({
+
+            CompanyId: company.CompanyId
+
+          });
+
+          this.departmentForm.get('CompanyId')?.disable();
+
+        },
+
+        error: (err) => {
+
+          console.log(err);
+
+        }
+
+      });
+
+    }
 
   }
 
@@ -110,6 +167,10 @@ export class DepartmentEditComponent implements OnInit {
 
           console.log(err);
 
+          alert(err.error.detail);
+
+          this.router.navigate(['/department']);
+
         }
 
       });
@@ -117,6 +178,14 @@ export class DepartmentEditComponent implements OnInit {
   }
 
   updateDepartment() {
+
+    if (!this.hasPermission('UPDATE_DEPARTMENT')) {
+
+      alert('You do not have permission to update departments.');
+
+      return;
+
+    }
 
     if (this.departmentForm.invalid) {
 
@@ -126,6 +195,9 @@ export class DepartmentEditComponent implements OnInit {
 
     }
 
+    // Enable CompanyId before submit if disabled
+    this.departmentForm.get('CompanyId')?.enable();
+
     this.departmentService.updateDepartment(
       this.departmentId,
       this.departmentForm.value
@@ -133,7 +205,7 @@ export class DepartmentEditComponent implements OnInit {
 
       next: () => {
 
-        alert("Department Updated Successfully");
+        alert('Department Updated Successfully');
 
         this.router.navigate(['/department']);
 

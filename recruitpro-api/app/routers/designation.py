@@ -8,16 +8,12 @@ from app.schemas.designation_schema import (
     DesignationCreate,
     DesignationUpdate,
     DesignationResponse,
-    DesignationListResponse
+    DesignationListResponse,
 )
-
+from app.permission_dependency import require_permission
 from app.services.designation_service import DesignationService
 
-
-router = APIRouter(
-    prefix="/designations",
-    tags=["Designations"]
-)
+router = APIRouter(prefix="/designations", tags=["Designations"])
 
 service = DesignationService()
 
@@ -25,10 +21,7 @@ service = DesignationService()
 # -------------------------------------
 # Get All Designations
 # -------------------------------------
-@router.get(
-    "/",
-    response_model=DesignationListResponse
-)
+@router.get("/", response_model=DesignationListResponse)
 def get_designations(
     search: str = "",
     company_id: int | None = None,
@@ -37,10 +30,8 @@ def get_designations(
     order: str = "asc",
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1),
-
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
-
+    current_user=Depends(require_permission("VIEW_DESIGNATION")),
 ):
 
     return service.get_all_designations(
@@ -52,69 +43,49 @@ def get_designations(
         sort_by,
         order,
         page,
-        page_size
+        page_size,
     )
 
 
 # -------------------------------------
 # Get Designation By Id
 # -------------------------------------
-@router.get(
-    "/{designation_id}",
-    response_model=DesignationResponse
-)
+@router.get("/{designation_id}", response_model=DesignationResponse)
 def get_designation(
     designation_id: int,
     db: Session = Depends(get_db),
-
+    current_user: dict = Depends(get_current_user),
 ):
 
-    return service.get_designation_by_id(
-        db,
-        designation_id
-    )
+    return service.get_designation_by_id(db, designation_id,current_user)
 
 
 # -------------------------------------
 # Create Designation
 # -------------------------------------
-@router.post(
-    "/",
-    response_model=DesignationResponse,
-    status_code=201
-)
+@router.post("/", response_model=DesignationResponse, status_code=201)
 def create_designation(
     designation: DesignationCreate,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_permission("CREATE_DESIGNATION")),
 ):
 
-    return service.create_designation(
-        db,
-        designation,
-        current_user
-    )
+    return service.create_designation(db, designation, current_user)
+
 
 # -------------------------------------
 # Update Designation
 # -------------------------------------
-@router.put(
-    "/{designation_id}",
-    response_model=DesignationResponse
-)
+@router.put("/{designation_id}", response_model=DesignationResponse)
 def update_designation(
     designation_id: int,
     designation: DesignationUpdate,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_permission("UPDATE_DESIGNATION")),
 ):
 
-    return service.update_designation(
-        db,
-        designation_id,
-        designation,
-        current_user
-    )
+    return service.update_designation(db, designation_id, designation, current_user)
+
 
 # -------------------------------------
 # Delete Designation
@@ -123,10 +94,6 @@ def update_designation(
 def delete_designation(
     designation_id: int,
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user=Depends(require_permission("DELETE_DESIGNATION")),
 ):
-    return service.delete_designation(
-        db,
-        designation_id,
-        current_user
-    )
+    return service.delete_designation(db, designation_id, current_user)

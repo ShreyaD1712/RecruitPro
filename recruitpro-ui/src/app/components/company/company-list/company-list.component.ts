@@ -9,7 +9,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+
 import { CompanyService } from '../../../services/company.service';
+import { AuthService } from '../../../services/auth.service';   // <-- Added
+
 @Component({
   selector: 'app-company-list',
   standalone: true,
@@ -27,6 +30,7 @@ import { CompanyService } from '../../../services/company.service';
   styleUrls: ['./company-list.component.css']
 })
 export class CompanyListComponent implements OnInit {
+
   companies: any[] = [];
   search = '';
   sortBy = 'CompanyName';
@@ -35,27 +39,27 @@ export class CompanyListComponent implements OnInit {
   pageSize = 5;
   totalRecords = 0;
   Math = Math;
-  // indicate loading state for async operations
-  loading: boolean = false;
+  loading = false;
+
   constructor(
     private companyService: CompanyService,
+    private authService: AuthService,   // <-- Added
     private router: Router,
     private cdr: ChangeDetectorRef
   ) { }
+
   ngOnInit(): void {
     this.loadCompanies();
   }
+
+  // <-- Added
+  hasPermission(permission: string): boolean {
+    return this.authService.hasPermission(permission);
+  }
+
   loadCompanies() {
     this.loading = true;
-    const data: any = {
-      sortBy: this.sortBy,
-      order: this.order,
-      page: this.page,
-      pageSize: this.pageSize
-    };
-    if (this.search != '') {
-      data.search = this.search.trim();
-    }
+
     this.companyService.getCompanies(
       this.search,
       this.sortBy,
@@ -64,9 +68,9 @@ export class CompanyListComponent implements OnInit {
       this.pageSize
     ).subscribe({
       next: (response: any) => {
-        console.log(response);
         this.companies = [...response.data];
         this.totalRecords = response.total_records;
+        this.loading = false;
         this.cdr.detectChanges();
       },
       error: (error: any) => {
@@ -75,10 +79,12 @@ export class CompanyListComponent implements OnInit {
       }
     });
   }
+
   searchCompany() {
     this.page = 1;
     this.loadCompanies();
   }
+
   sort(column: string) {
     if (this.sortBy === column) {
       this.order = this.order === 'asc' ? 'desc' : 'asc';
@@ -88,16 +94,20 @@ export class CompanyListComponent implements OnInit {
     }
     this.loadCompanies();
   }
+
   addCompany() {
     this.router.navigate(['/company/add']);
   }
+
   editCompany(id: number) {
     this.router.navigate(['/company/edit', id]);
   }
+
   deleteCompany(id: number) {
     if (!confirm('Delete this company?')) {
       return;
     }
+
     this.companyService.deleteCompany(id).subscribe({
       next: () => {
         alert('Company Deleted');
@@ -108,12 +118,14 @@ export class CompanyListComponent implements OnInit {
       }
     });
   }
+
   previousPage() {
     if (this.page > 1) {
       this.page--;
       this.loadCompanies();
     }
   }
+
   nextPage() {
     if (this.page * this.pageSize < this.totalRecords) {
       this.page++;

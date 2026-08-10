@@ -6,7 +6,6 @@ import {
   Validators,
   ReactiveFormsModule
 } from '@angular/forms';
-
 import { Router } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -35,7 +34,7 @@ import { AuthService } from '../../../services/auth.service';
     MatSlideToggleModule
   ],
   templateUrl: './designation-add.component.html',
-  styleUrl: './designation-add.component.css'
+  styleUrls: ['./designation-add.component.css']
 })
 export class DesignationAddComponent implements OnInit {
 
@@ -51,9 +50,20 @@ export class DesignationAddComponent implements OnInit {
     private departmentService: DepartmentService,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
+
+    // Permission Check
+    if (!this.hasPermission('CREATE_DESIGNATION')) {
+
+      alert('You are not authorized to access this page.');
+
+      this.router.navigate(['/designation']);
+
+      return;
+
+    }
 
     this.designationForm = this.fb.group({
 
@@ -75,25 +85,37 @@ export class DesignationAddComponent implements OnInit {
 
   }
 
+  hasPermission(permission: string): boolean {
+
+    return this.authService.hasPermission(permission);
+
+  }
+
+  // ----------------------------
+  // Load Companies
+  // ----------------------------
   loadCompanies() {
 
-    const roleId = this.authService.getRoleId();
-    const companyId = this.authService.getCompanyId();
-
-    // Super Admin
-    if (roleId === 1) {
+    // User can view all companies
+    if (this.hasPermission('VIEW_ALL_COMPANIES')) {
 
       this.companyService.getCompanies(
         '',
         'CompanyName',
         'asc',
         1,
-        100
+        1000
       ).subscribe({
 
         next: (res: any) => {
 
           this.companies = res.data;
+
+        },
+
+        error: (err) => {
+
+          console.log(err);
 
         }
 
@@ -101,8 +123,10 @@ export class DesignationAddComponent implements OnInit {
 
     }
 
-    // Company Admin
+    // User belongs to single company
     else {
+
+      const companyId = this.authService.getCompanyId();
 
       this.companyService.getCompany(companyId).subscribe({
 
@@ -120,6 +144,12 @@ export class DesignationAddComponent implements OnInit {
 
           this.loadDepartments(company.CompanyId);
 
+        },
+
+        error: (err) => {
+
+          console.log(err);
+
         }
 
       });
@@ -128,6 +158,9 @@ export class DesignationAddComponent implements OnInit {
 
   }
 
+  // ----------------------------
+  // Company Changed
+  // ----------------------------
   companyChanged() {
 
     const companyId = this.designationForm.get('CompanyId')?.value;
@@ -138,10 +171,19 @@ export class DesignationAddComponent implements OnInit {
 
     });
 
-    this.loadDepartments(companyId);
+    this.departments = [];
+
+    if (companyId) {
+
+      this.loadDepartments(companyId);
+
+    }
 
   }
 
+  // ----------------------------
+  // Load Departments
+  // ----------------------------
   loadDepartments(companyId: number) {
 
     this.departmentService.getDepartments(
@@ -157,13 +199,30 @@ export class DesignationAddComponent implements OnInit {
 
         this.departments = res.data;
 
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
       }
 
     });
 
   }
 
+  // ----------------------------
+  // Save Designation
+  // ----------------------------
   saveDesignation() {
+
+    if (!this.hasPermission('CREATE_DESIGNATION')) {
+
+      alert('You do not have permission to create designations.');
+
+      return;
+
+    }
 
     if (this.designationForm.invalid) {
 
@@ -173,6 +232,7 @@ export class DesignationAddComponent implements OnInit {
 
     }
 
+    // Enable CompanyId before submit
     this.designationForm.get('CompanyId')?.enable();
 
     this.designationService.addDesignation(
@@ -199,6 +259,9 @@ export class DesignationAddComponent implements OnInit {
 
   }
 
+  // ----------------------------
+  // Cancel
+  // ----------------------------
   cancel() {
 
     this.router.navigate(['/designation']);

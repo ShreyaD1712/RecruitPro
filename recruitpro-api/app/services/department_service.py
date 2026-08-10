@@ -2,10 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
 from app.repositories.department_repository import DepartmentRepository
-from app.schemas.department_schema import (
-    DepartmentCreate,
-    DepartmentUpdate
-)
+from app.schemas.department_schema import DepartmentCreate, DepartmentUpdate
 
 
 class DepartmentService:
@@ -25,44 +22,32 @@ class DepartmentService:
         sort_by: str = "DepartmentName",
         order: str = "asc",
         page: int = 1,
-        page_size: int = 10
+        page_size: int = 10,
     ):
 
         return self.repository.get_all(
-            db,
-            current_user,
-            search,
-            company_id,
-            sort_by,
-            order,
-            page,
-            page_size
+            db, current_user, search, company_id, sort_by, order, page, page_size
         )
+
     # -------------------------
     # Get Department By Id
     # -------------------------
-    def get_department_by_id(
-        self,
-        db: Session,
-        department_id: int,
-        current_user
-    ):
+    def get_department_by_id(self, db: Session, department_id: int, current_user):
 
-        department = self.repository.get_by_id(
-            db,
-            department_id
-        )
+        department = self.repository.get_by_id(db, department_id)
 
         if not department:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Department not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="Department not found"
             )
-        #Company admin can access only their company department
-        if (current_user["role_id"] == 2 and department.CompanyId != current_user["companyid"]):
+        # Company admin can access only their company department
+        if (
+            not current_user["is_super_admin"]
+            and department.CompanyId != current_user["company_id"]
+        ):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="You are not authorized to access this department"
+                detail="You are not authorized to access this department",
             )
         return department
 
@@ -70,170 +55,101 @@ class DepartmentService:
     # Create Department
     # -------------------------
     def create_department(
-        self,
-        db: Session,
-        department: DepartmentCreate,
-        current_user
+        self, db: Session, department: DepartmentCreate, current_user
     ):
-        # Only super admin and company admin
-        if current_user["role_id"] not in [1, 2]:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You are not authorized to create departments"
-            )
-        #Company admin can create department only for their company
-        if current_user["role_id"] == 2:
+        # Company admin can create department only for their company
+        if not current_user["is_super_admin"]:
             department.CompanyId = current_user["company_id"]
-           
+
         # Check duplicate department code in same company
         existing_code = self.repository.get_by_code(
-            db,
-            department.DepartmentCode,
-            department.CompanyId
+            db, department.DepartmentCode, department.CompanyId
         )
 
         if existing_code:
             raise HTTPException(
-                status_code=400,
-                detail="Department Code already exists in this company"
+                status_code=400, detail="Department Code already exists in this company"
             )
 
         # Check duplicate department name in same company
         existing_name = self.repository.get_by_name(
-            db,
-            department.DepartmentName,
-            department.CompanyId
+            db, department.DepartmentName, department.CompanyId
         )
 
         if existing_name:
             raise HTTPException(
-                status_code=400,
-                detail="Department Name already exists in this company"
+                status_code=400, detail="Department Name already exists in this company"
             )
 
-        return self.repository.create(
-            db,
-            department
-        )
+        return self.repository.create(db, department)
 
     # -------------------------
     # Update Department
     # -------------------------
     def update_department(
-    self,
-    db: Session,
-    department_id: int,
-    department: DepartmentUpdate,
-    current_user
-):
-    # Only Super Admin and Company Admin
-        if current_user["role_id"] not in [1, 2]:
-         raise HTTPException(
-            status_code=403,
-            detail="You are not authorized to update departments."
-        )
+        self,
+        db: Session,
+        department_id: int,
+        department: DepartmentUpdate,
+        current_user,
+    ):
 
-        existing_department = self.repository.get_by_id(
-        db,
-        department_id
-    )
+        existing_department = self.repository.get_by_id(db, department_id)
 
         if not existing_department:
-         raise HTTPException(
-            status_code=404,
-            detail="Department not found"
-        )
+            raise HTTPException(status_code=404, detail="Department not found")
 
-    # Company Admin can update only own company
+        # Company Admin can update only own company
         if (
-         current_user["role_id"] == 2
-         and existing_department.CompanyId != current_user["company_id"]
-    ):
-         raise HTTPException(
-            status_code=403,
-            detail="You are not authorized to update this department."
-        )
+            not current_user["is_super_admin"]
+            and existing_department.CompanyId != current_user["company_id"]
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail="You are not authorized to update this department.",
+            )
 
-        if current_user["role_id"] == 2:
-         department.CompanyId = current_user["company_id"]
-
-    # Duplicate Department Code
+        if not current_user["is_super_admin"]:
+            department.CompanyId = current_user["company_id"]
+        # Duplicate Department Code
         duplicate_code = self.repository.get_by_code(
-        db,
-        department.DepartmentCode,
-        department.CompanyId
-    )
-
-        if (
-        duplicate_code
-        and duplicate_code.DepartmentId != department_id
-    ):
-         raise HTTPException(
-            status_code=400,
-            detail="Department Code already exists in this company"
+            db, department.DepartmentCode, department.CompanyId
         )
 
-    # Duplicate Department Name
+        if duplicate_code and duplicate_code.DepartmentId != department_id:
+            raise HTTPException(
+                status_code=400, detail="Department Code already exists in this company"
+            )
+
+        # Duplicate Department Name
         duplicate_name = self.repository.get_by_name(
-        db,
-        department.DepartmentName,
-        department.CompanyId
-    )
-
-        if (
-        duplicate_name
-        and duplicate_name.DepartmentId != department_id
-    ):
-         raise HTTPException(
-            status_code=400,
-            detail="Department Name already exists in this company"
+            db, department.DepartmentName, department.CompanyId
         )
 
-        return self.repository.update(
-        db,
-        department_id,
-        department
-    )
+        if duplicate_name and duplicate_name.DepartmentId != department_id:
+            raise HTTPException(
+                status_code=400, detail="Department Name already exists in this company"
+            )
+
+        return self.repository.update(db, department_id, department)
 
     # -------------------------
     # Delete Department
     # -------------------------
-    def delete_department(
-        self,
-        db: Session,
-        department_id: int,
-        current_user
-    ):
-        # Only Super Admin and Company Admin
-        if current_user["role_id"] not in [1, 2]:
-            raise HTTPException(
-                status_code=403,
-                detail="You are not authorized to delete departments."
-            )
-        department = self.repository.get_by_id(
-            db,
-            department_id
-        )
+    def delete_department(self, db: Session, department_id: int, current_user):
+        department = self.repository.get_by_id(db, department_id)
         if not department:
-            raise HTTPException(
-                status_code=404,
-                detail="Department not found"
-            )
+            raise HTTPException(status_code=404, detail="Department not found")
         # Company Admin can delete only own company
         if (
-            current_user["role_id"] == 2
+            not current_user["is_super_admin"]
             and department.CompanyId != current_user["company_id"]
         ):
             raise HTTPException(
                 status_code=403,
-                detail="You are not authorized to delete this department."
+                detail="You are not authorized to delete this department.",
             )
-            
-        self.repository.delete(
-            db,
-            department_id
-        )
 
-        return {
-            "message": "Department deleted successfully"
-        }
+        self.repository.delete(db, department_id)
+
+        return {"message": "Department deleted successfully"}

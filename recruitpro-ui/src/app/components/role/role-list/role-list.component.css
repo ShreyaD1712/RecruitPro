@@ -1,181 +1,419 @@
-.page-container {
+/* =========================================
+   PAGE
+========================================= */
 
-    padding: 30px;
-
-    background: #f5f8ff;
-
-    min-height: 100vh;
-
+.page {
+  background: #f5f8ff;
+  min-height: 100vh;
+  padding: 40px;
+  box-sizing: border-box;
 }
 
-/* Header */
 
-.header {
+/* =========================================
+   HEADER
+========================================= */
 
-    display: flex;
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin-bottom: 25px;
-
+  max-width: 1240px;
+  margin: 0 auto 28px auto;
 }
 
-.header h2 {
+.page-header h2 {
+  margin: 0;
 
-    color: #0d47a1;
+  color: #1565c0;
 
-    font-size: 28px;
+  font-size: 36px;
+  font-weight: 700;
 
-    font-weight: 700;
-
-    margin: 0;
-
+  line-height: 1.2;
 }
 
-.header p {
+.page-header p {
+  margin: 8px 0 0 0;
 
-    margin: 5px 0 0;
+  color: #333;
 
-    color: #666;
-
+  font-size: 18px;
 }
 
-/* Search */
 
-.search-card {
+/* =========================================
+   ADD ROLE BUTTON
+========================================= */
 
-    padding: 20px;
+.add-button {
+  min-width: 180px;
+  height: 52px;
 
-    border-radius: 18px;
+  border-radius: 28px;
 
-    margin-bottom: 25px;
-
+  font-size: 16px;
 }
+
+.add-button mat-icon {
+  margin-right: 8px;
+}
+
+
+/* =========================================
+   FILTER CARD
+========================================= */
+
+.filter-card {
+  max-width: 1240px;
+
+  margin: 0 auto 30px auto;
+
+  padding: 25px;
+
+  background: #f1f5f4;
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.10);
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 25px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   COMPANY FILTER
+========================================= */
+
+.filter-box {
+  width: 315px;
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
 
 .search-box {
-
-    width: 350px;
-
+  width: 440px;
 }
 
-/* Table */
+
+/* =========================================
+   FORM FIELD
+========================================= */
+
+.filter-card mat-form-field {
+  margin: 0;
+}
+
+
+/* =========================================
+   TABLE CARD
+========================================= */
 
 .table-card {
+  max-width: 1240px;
 
-    padding: 0;
+  margin: 0 auto;
 
-    border-radius: 18px;
+  background: #ffffff;
 
-    overflow: hidden;
+  border-radius: 22px;
 
-    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  overflow: hidden;
 
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.06);
 }
 
-table {
 
-    width: 100%;
+/* =========================================
+   TABLE
+========================================= */
 
-    border-collapse: collapse;
+.role-table {
+  width: 100%;
 
+  background: #ffffff;
+
+  border-collapse: collapse;
 }
 
-thead {
 
-    background: #2563eb;
+/* =========================================
+   TABLE HEADER
+========================================= */
 
+.role-table th {
+  background: #f4f8f7;
+
+  color: #111;
+
+  font-size: 17px;
+
+  font-weight: 600;
+
+  padding: 22px 20px;
+
+  border-bottom: 1px solid #8a8a8a;
 }
 
-thead th {
 
-    color: white;
+/* =========================================
+   TABLE DATA
+========================================= */
 
-    font-weight: 600;
+.role-table td {
+  color: #111;
 
-    padding: 16px;
+  font-size: 17px;
 
-    text-align: left;
+  padding: 22px 20px;
 
+  border-bottom: 1px solid #8a8a8a;
 }
 
-tbody td {
 
-    padding: 16px;
+/* =========================================
+   ROW HEIGHT
+========================================= */
 
-    border-bottom: 1px solid #e5e5e5;
-
+.role-table tr {
+  height: 64px;
 }
 
-tbody tr:hover {
 
-    background: #f8f9ff;
+/* =========================================
+   HOVER
+========================================= */
 
+.role-table tbody tr:hover {
+  background: #f8fbff;
 }
 
-/* Status */
+
+/* =========================================
+   COLUMN WIDTHS
+========================================= */
+
+.role-table th:nth-child(1),
+.role-table td:nth-child(1) {
+  width: 12%;
+}
+
+.role-table th:nth-child(2),
+.role-table td:nth-child(2) {
+  width: 35%;
+}
+
+.role-table th:nth-child(3),
+.role-table td:nth-child(3) {
+  width: 25%;
+}
+
+.role-table th:nth-child(4),
+.role-table td:nth-child(4) {
+  width: 28%;
+}
+
+
+/* =========================================
+   STATUS BADGE
+========================================= */
 
 .badge {
+  display: inline-flex;
 
-    display: inline-block;
+  align-items: center;
+  justify-content: center;
 
-    padding: 6px 16px;
+  min-width: 76px;
 
-    border-radius: 20px;
+  padding: 7px 14px;
 
-    color: white;
+  border-radius: 20px;
 
-    font-size: 13px;
+  font-size: 14px;
 
-    font-weight: 600;
-
+  font-weight: 600;
 }
 
-.active {
-
-    background: #43a047;
-
+.badge.active {
+  background: #e3f3e5;
+  color: #238b2d;
 }
 
-.inactive {
-
-    background: #e53935;
-
+.badge.inactive {
+  background: #fde7e7;
+  color: #c62828;
 }
 
-/* Buttons */
 
-button {
+/* =========================================
+   ACTION BUTTONS
+========================================= */
 
-    margin-right: 8px;
-
+.role-table td:last-child {
+  white-space: nowrap;
 }
 
-/* No Data */
+.role-table td:last-child button {
+  margin-right: 8px;
+}
+
+
+/* =========================================
+   NO DATA
+========================================= */
 
 .no-data {
+  text-align: center;
 
-    text-align: center;
+  padding: 35px;
 
-    padding: 30px;
+  color: #777;
 
-    color: #777;
+  font-size: 16px;
+}
+
+
+/* =========================================
+   LOADING
+========================================= */
+
+.loading {
+  text-align: center;
+
+  padding: 25px;
+
+  color: #777;
+
+  font-size: 16px;
+}
+
+
+/* =========================================
+   PAGINATION
+========================================= */
+
+.pagination {
+  max-width: 1240px;
+
+  margin: 25px auto 0 auto;
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  align-items: center;
+
+  gap: 28px;
+}
+
+.pagination span {
+  font-size: 16px;
+
+  color: #222;
+}
+
+.pagination button {
+  min-width: 130px;
+
+  height: 50px;
+
+  border-radius: 28px;
+
+  font-size: 16px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 900px) {
+
+  .page {
+    padding: 25px;
+  }
+
+  .page-header {
+    flex-direction: column;
+
+    gap: 20px;
+  }
+
+  .add-button {
+    align-self: flex-start;
+  }
+
+  .filter-card {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .filter-box,
+  .search-box {
+    width: 100%;
+  }
+
+  .table-card {
+    overflow-x: auto;
+  }
+
+  .role-table {
+    min-width: 800px;
+  }
+
+  .pagination {
+    justify-content: center;
+  }
 
 }
 
-/* Pagination */
 
-.pagination {
+/* =========================================
+   MOBILE
+========================================= */
 
-    margin-top: 25px;
+@media (max-width: 600px) {
 
-    display: flex;
+  .page {
+    padding: 15px;
+  }
 
-    justify-content: flex-end;
+  .page-header h2 {
+    font-size: 28px;
+  }
 
-    align-items: center;
+  .page-header p {
+    font-size: 16px;
+  }
 
-    gap: 20px;
+  .add-button {
+    width: 100%;
+  }
+
+  .filter-card {
+    padding: 18px;
+  }
+
+  .pagination {
+    gap: 12px;
+  }
+
+  .pagination button {
+    min-width: 100px;
+  }
 
 }

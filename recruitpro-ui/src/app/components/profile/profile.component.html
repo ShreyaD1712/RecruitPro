@@ -1,0 +1,100 @@
+<mat-card class="profile-card" *ngIf="profileForm">
+  <div class="profile-header">
+    <div class="profile-image-container">
+      <div class="profile-image">
+        <img *ngIf="profileImage" [src]="profileImage" alt="Profile" />
+
+        <mat-icon *ngIf="!profileImage" class="default-avatar"> account_circle </mat-icon>
+      </div>
+
+      <label for="profileUpload" class="camera-btn">
+        <mat-icon>photo_camera</mat-icon>
+      </label>
+
+      <input
+        id="profileUpload"
+        type="file"
+        hidden
+        accept="image/*"
+        (change)="changePicture($event)"
+      />
+    </div>
+
+    <h2>
+      {{ profileForm.get('firstName')?.value }}
+      {{ profileForm.get('lastName')?.value }}
+    </h2>
+
+    <p>{{ profileForm.get('email')?.value }}</p>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <form [formGroup]="profileForm">
+    <div class="profile-body">
+      <mat-form-field appearance="outline">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="firstName" [readonly]="!editMode" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="lastName" [readonly]="!editMode" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Mobile Number</mat-label>
+        <input matInput formControlName="mobileNo" [readonly]="!editMode" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Company</mat-label>
+        <input matInput [value]="companyName" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Role</mat-label>
+        <input matInput [value]="roleName" readonly />
+      </mat-form-field>
+    </div>
+  </form>
+
+  <mat-divider></mat-divider>
+
+  <div class="profile-actions">
+    <button mat-raised-button color="primary" *ngIf="!editMode" (click)="enableEdit()">
+      <mat-icon>edit</mat-icon>
+
+      Edit Profile
+    </button>
+
+    <button mat-raised-button color="primary" *ngIf="editMode" (click)="saveProfile()">
+      <mat-icon>save</mat-icon>
+
+      Save
+    </button>
+
+    <button mat-raised-button color="warn" *ngIf="editMode" (click)="cancelEdit()">
+      <mat-icon>close</mat-icon>
+
+      Cancel
+    </button>
+
+    <button mat-stroked-button color="warn" (click)="removePicture()">
+      <mat-icon>delete</mat-icon>
+
+      Remove Picture
+    </button>
+
+    <button mat-raised-button color="accent" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+
+      Logout
+    </button>
+  </div>
+</mat-card>

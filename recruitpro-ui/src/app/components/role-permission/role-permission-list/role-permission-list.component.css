@@ -1,0 +1,285 @@
+/* ==========================
+   PAGE
+========================== */
+
+.permission-container {
+  padding: 30px;
+  background: #f4f7fc;
+  min-height: 100vh;
+}
+
+/* ==========================
+   HEADER
+========================== */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.header h2 {
+  margin: 0;
+  color: #1f3fbf;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.header p {
+  margin-top: 5px;
+  color: #777;
+  font-size: 14px;
+}
+
+/* ==========================
+   SELECTION CARD
+========================== */
+
+.selection-card {
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+/* ==========================
+   PERMISSION CARD
+========================== */
+
+.permission-card {
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================
+   PERMISSION HEADER
+========================== */
+
+.permission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.permission-header h3 {
+  margin: 0;
+  color: #1f3fbf;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.permission-header p {
+  margin-top: 5px;
+  color: #777;
+}
+
+/* ==========================
+   PERMISSION ACTIONS
+========================== */
+
+.permission-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.permission-actions button {
+  border-radius: 8px;
+}
+
+/* ==========================
+   PERMISSION GRID
+========================== */
+
+.permission-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 15px;
+
+  margin-top: 20px;
+}
+
+/* ==========================
+   PERMISSION ITEM
+========================== */
+
+.permission-item {
+  padding: 16px;
+
+  background: #f8faff;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 10px;
+
+  transition: 0.25s;
+}
+
+.permission-item:hover {
+  background: #eef4ff;
+
+  border-color: #2563eb;
+
+  transform: translateY(-2px);
+}
+
+/* ==========================
+   CHECKBOX
+========================== */
+
+.permission-item mat-checkbox {
+  width: 100%;
+}
+
+/* ==========================
+   BUTTONS
+========================== */
+
+.buttons {
+  display: flex;
+
+  gap: 15px;
+
+  margin-top: 30px;
+
+  justify-content: flex-end;
+}
+
+.buttons button {
+  min-width: 150px;
+
+  height: 45px;
+
+  border-radius: 10px;
+
+  font-weight: 600;
+}
+
+/* ==========================
+   LOADING
+========================== */
+
+.loading {
+  text-align: center;
+
+  padding: 40px;
+
+  color: #777;
+
+  font-size: 16px;
+}
+
+/* ==========================
+   EMPTY CARD
+========================== */
+
+.empty-card {
+  padding: 50px;
+
+  text-align: center;
+
+  border-radius: 15px;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+  color: #777;
+}
+
+.empty-card mat-icon {
+  font-size: 50px;
+
+  width: 50px;
+
+  height: 50px;
+
+  color: #2563eb;
+
+  margin-bottom: 15px;
+}
+
+.empty-card h3 {
+  margin: 5px 0;
+
+  color: #1f3fbf;
+
+  font-size: 22px;
+}
+
+.empty-card p {
+  margin: 5px 0;
+}
+
+/* ==========================
+   CARD HOVER
+========================== */
+
+mat-card {
+  transition: 0.3s;
+}
+
+mat-card:hover {
+  transform: translateY(-2px);
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media (max-width: 992px) {
+  .permission-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .permission-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 20px;
+  }
+}
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media (max-width: 768px) {
+  .permission-container {
+    padding: 15px;
+  }
+
+  .header h2 {
+    font-size: 25px;
+  }
+
+  .permission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .permission-actions {
+    width: 100%;
+
+    flex-direction: column;
+  }
+
+  .permission-actions button {
+    width: 100%;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .buttons button {
+    width: 100%;
+  }
+}

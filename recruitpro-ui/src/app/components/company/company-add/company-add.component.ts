@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -7,13 +7,17 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
+
 import { CompanyService } from '../../../services/company.service';
+import { AuthService } from '../../../services/auth.service';
+
 @Component({
   selector: 'app-company-add',
   standalone: true,
@@ -30,13 +34,17 @@ import { CompanyService } from '../../../services/company.service';
   templateUrl: './company-add.component.html',
   styleUrls: ['./company-add.component.css']
 })
-export class CompanyAddComponent {
+export class CompanyAddComponent implements OnInit {
+
   companyForm: FormGroup;
+
   constructor(
     private fb: FormBuilder,
     private companyService: CompanyService,
+    private authService: AuthService,
     private router: Router
   ) {
+
     this.companyForm = this.fb.group({
       CompanyCode: ['', Validators.required],
       CompanyName: ['', Validators.required],
@@ -46,23 +54,49 @@ export class CompanyAddComponent {
       Address: [''],
       IsActive: [true]
     });
+
   }
+
+  ngOnInit(): void {
+
+    if (!this.hasPermission('CREATE_COMPANY')) {
+      alert('You are not authorized to access this page.');
+      this.router.navigate(['/company']);
+      return;
+    }
+
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.authService.hasPermission(permission);
+  }
+
   saveCompany() {
+
+    if (!this.hasPermission('CREATE_COMPANY')) {
+      alert('You do not have permission to create companies.');
+      return;
+    }
+
     if (this.companyForm.invalid) {
       this.companyForm.markAllAsTouched();
       return;
     }
+
     this.companyService.addCompany(this.companyForm.value).subscribe({
       next: () => {
-        alert("Company Added Successfully");
+        alert('Company Added Successfully');
         this.router.navigate(['/company']);
       },
       error: (err) => {
         alert(err.error.detail);
       }
     });
+
   }
+
   cancel() {
     this.router.navigate(['/company']);
   }
+
 }

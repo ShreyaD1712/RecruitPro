@@ -47,8 +47,6 @@ export class DesignationEditComponent implements OnInit {
   companies: any[] = [];
   departments: any[] = [];
 
-  roleId = 0;
-
   constructor(
     private fb: FormBuilder,
     private designationService: DesignationService,
@@ -57,11 +55,20 @@ export class DesignationEditComponent implements OnInit {
     private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
 
-    this.roleId = this.authService.getRoleId();
+    // Permission Check
+    if (!this.hasPermission('UPDATE_DESIGNATION')) {
+
+      alert('You are not authorized to access this page.');
+
+      this.router.navigate(['/designation']);
+
+      return;
+
+    }
 
     this.designationId = Number(
       this.route.snapshot.paramMap.get('id')
@@ -85,14 +92,25 @@ export class DesignationEditComponent implements OnInit {
 
     this.loadCompanies();
 
+    this.loadDesignation();
+
   }
 
+  hasPermission(permission: string): boolean {
+
+    return this.authService.hasPermission(permission);
+
+  }
+
+  // -------------------------
+  // Load Companies
+  // -------------------------
   loadCompanies() {
 
     const companyId = this.authService.getCompanyId();
 
-    if (this.roleId === 1) {
-
+    // Super Admin
+    if (this.hasPermission('VIEW_ALL_COMPANIES')) {
       this.companyService.getCompanies(
         '',
         'CompanyName',
@@ -105,13 +123,19 @@ export class DesignationEditComponent implements OnInit {
 
           this.companies = res.data;
 
-          this.loadDesignation();
+        },
+
+        error: (err) => {
+
+          console.log(err);
 
         }
 
       });
 
     }
+
+    // Company Admin
     else {
 
       this.companyService.getCompany(companyId).subscribe({
@@ -120,35 +144,13 @@ export class DesignationEditComponent implements OnInit {
 
           this.companies = [company];
 
-          this.loadDesignation();
+          this.designationForm.patchValue({
 
-        }
+            CompanyId: company.CompanyId
 
-      });
+          });
 
-    }
-
-  }
-
-  loadDesignation() {
-
-    this.designationService
-      .getDesignationById(this.designationId)
-      .subscribe({
-
-        next: (res: any) => {
-
-          this.designationForm.patchValue(res);
-
-          this.loadDepartments(res.CompanyId);
-
-          if (this.roleId !== 1) {
-
-            this.designationForm
-              .get('CompanyId')
-              ?.disable();
-
-          }
+          this.designationForm.get('CompanyId')?.disable();
 
         },
 
@@ -160,8 +162,44 @@ export class DesignationEditComponent implements OnInit {
 
       });
 
+    }
+
   }
 
+  // -------------------------
+  // Load Designation
+  // -------------------------
+  loadDesignation() {
+
+    this.designationService
+      .getDesignationById(this.designationId)
+      .subscribe({
+
+        next: (designation: any) => {
+
+          this.designationForm.patchValue(designation);
+
+          this.loadDepartments(designation.CompanyId);
+
+        },
+
+        error: (err) => {
+
+          console.log(err);
+
+          alert(err.error.detail);
+
+          this.router.navigate(['/designation']);
+
+        }
+
+      });
+
+  }
+
+  // -------------------------
+  // Company Changed
+  // -------------------------
   companyChanged() {
 
     const companyId =
@@ -177,6 +215,9 @@ export class DesignationEditComponent implements OnInit {
 
   }
 
+  // -------------------------
+  // Load Departments
+  // -------------------------
   loadDepartments(companyId: number) {
 
     this.departmentService.getDepartments(
@@ -192,13 +233,30 @@ export class DesignationEditComponent implements OnInit {
 
         this.departments = res.data;
 
+      },
+
+      error: (err) => {
+
+        console.log(err);
+
       }
 
     });
 
   }
 
+  // -------------------------
+  // Update
+  // -------------------------
   updateDesignation() {
+
+    if (!this.hasPermission('UPDATE_DESIGNATION')) {
+
+      alert('You do not have permission to update designations.');
+
+      return;
+
+    }
 
     if (this.designationForm.invalid) {
 
@@ -208,6 +266,7 @@ export class DesignationEditComponent implements OnInit {
 
     }
 
+    // Enable CompanyId before submit
     this.designationForm.get('CompanyId')?.enable();
 
     this.designationService.updateDesignation(
@@ -235,6 +294,9 @@ export class DesignationEditComponent implements OnInit {
 
   }
 
+  // -------------------------
+  // Cancel
+  // -------------------------
   cancel() {
 
     this.router.navigate(['/designation']);

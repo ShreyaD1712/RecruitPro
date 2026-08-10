@@ -1,99 +1,140 @@
-<div class="page-container">
-  <mat-card class="form-card">
+<div class="page">
+  <div class="card">
     <h2>Add User</h2>
 
     <form [formGroup]="userForm" (ngSubmit)="saveUser()">
       <!-- First Name -->
 
       <mat-form-field appearance="outline">
-        <mat-label>First Name</mat-label>
+        <mat-label>First Name*</mat-label>
 
         <input matInput formControlName="FirstName" />
+
+        <mat-error *ngIf="userForm.get('FirstName')?.hasError('required')">
+          First Name is required
+        </mat-error>
       </mat-form-field>
 
       <!-- Last Name -->
 
       <mat-form-field appearance="outline">
-        <mat-label>Last Name</mat-label>
+        <mat-label>Last Name*</mat-label>
 
         <input matInput formControlName="LastName" />
+
+        <mat-error *ngIf="userForm.get('LastName')?.hasError('required')">
+          Last Name is required
+        </mat-error>
       </mat-form-field>
 
       <!-- Email -->
 
       <mat-form-field appearance="outline">
-        <mat-label>Email</mat-label>
+        <mat-label>Email*</mat-label>
 
         <input matInput type="email" formControlName="Email" />
+
+        <mat-error *ngIf="userForm.get('Email')?.hasError('required')">
+          Email is required
+        </mat-error>
+
+        <mat-error *ngIf="userForm.get('Email')?.hasError('email')">
+          Enter a valid email address
+        </mat-error>
       </mat-form-field>
 
       <!-- Password -->
 
       <mat-form-field appearance="outline">
-        <mat-label>Password</mat-label>
+        <mat-label>Password*</mat-label>
 
         <input matInput type="password" formControlName="Password" />
+
+        <mat-error *ngIf="userForm.get('Password')?.hasError('required')">
+          Password is required
+        </mat-error>
       </mat-form-field>
 
-      <!-- Mobile Number -->
+      <!-- Phone Number -->
 
       <mat-form-field appearance="outline">
-        <mat-label>Mobile Number</mat-label>
+        <mat-label>MobileNo</mat-label>
 
-        <input matInput formControlName="MobileNo" />
+        <input matInput type="tel" formControlName="MobileNo" />
       </mat-form-field>
 
       <!-- Company -->
+      <p class="company-count">Total Companies : {{ companies.length }}</p>
 
       <mat-form-field appearance="outline">
-        <mat-label>Company</mat-label>
+        <mat-label>Company*</mat-label>
 
         <mat-select
           formControlName="CompanyId"
+          [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
           (selectionChange)="companyChanged()"
-          [disabled]="loggedInRoleId != 1"
         >
           <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
             {{ company.CompanyName }}
           </mat-option>
         </mat-select>
+
+        <mat-error *ngIf="userForm.get('CompanyId')?.hasError('required')">
+          Company is required
+        </mat-error>
       </mat-form-field>
 
       <!-- Department -->
 
       <mat-form-field appearance="outline">
-        <mat-label>Department</mat-label>
+        <mat-label>Department*</mat-label>
 
         <mat-select formControlName="DepartmentId">
           <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
             {{ department.DepartmentName }}
           </mat-option>
         </mat-select>
+
+        <mat-error *ngIf="userForm.get('DepartmentId')?.hasError('required')">
+          Department is required
+        </mat-error>
       </mat-form-field>
 
       <!-- Role -->
 
       <mat-form-field appearance="outline">
-        <mat-label>Role</mat-label>
+        <mat-label>Role*</mat-label>
 
         <mat-select formControlName="RoleId">
           <mat-option *ngFor="let role of roles" [value]="role.RoleId">
             {{ role.RoleName }}
           </mat-option>
         </mat-select>
+
+        <mat-error *ngIf="userForm.get('RoleId')?.hasError('required')">
+          Role is required
+        </mat-error>
       </mat-form-field>
 
-      <!-- Status -->
+      <!-- Active Status -->
 
       <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
       <!-- Buttons -->
 
-      <div class="button-row">
-        <button mat-raised-button color="primary" type="submit">Save</button>
+      <div class="buttons">
+        <button
+          *ngIf="authService.hasPermission('CREATE_USER')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Saving...' : 'Save' }}
+        </button>
 
         <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
       </div>
     </form>
-  </mat-card>
+  </div>
 </div>

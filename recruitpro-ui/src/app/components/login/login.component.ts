@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import {
   ReactiveFormsModule,
   FormBuilder,
+  FormGroup,
   Validators
 } from '@angular/forms';
 
@@ -31,48 +33,76 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
-  // Reactive Form
-  loginForm!: ReturnType<FormBuilder['group']>;
+  loginForm!: FormGroup;
+
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
-  ) {
+  ) { }
+
+  ngOnInit(): void {
 
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.email
+        ]
+      ],
+
+      password: [
+        '',
+        Validators.required
+      ]
+
     });
 
   }
 
-  login() {
+  login(): void {
 
     if (this.loginForm.invalid) {
-      alert("Please enter a valid Email and Password.");
+
+      this.loginForm.markAllAsTouched();
+
       return;
     }
 
+    this.loading = true;
+
     this.authService.login(this.loginForm.value).subscribe({
 
-      next: (response : any) => {
+      next: (response: any) => {
+
+        this.loading = false;
 
         // Save JWT Token
-        localStorage.setItem("token", response.access_token);
+        localStorage.setItem(
+          'token',
+          response.access_token
+        );
 
-        // Redirect to Company Page
         this.router.navigate(['/dashboard']);
 
       },
 
       error: (error) => {
 
-        console.error(error);
+        this.loading = false;
 
-        alert(error.error.detail || "Invalid Email or Password");
+        console.log(error);
+
+        alert(
+          error.error?.detail ||
+          'Invalid Email or Password'
+        );
 
       }
 
@@ -81,3 +111,4 @@ export class LoginComponent {
   }
 
 }
+

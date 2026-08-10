@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
+
 # ==========================
 # Base Schema
 # ==========================
@@ -13,34 +14,40 @@ class RoleBase(BaseModel):
 
     IsActive: bool = True
 
+
 # ==========================
 # Create Schema
 # ==========================
-class RoleCreate(RoleBase):
-    pass
+class RoleCreate(BaseModel):
+    RoleName: str
+    CompanyId: Optional[int] = None
+    Description: Optional[str] = None
+    IsActive: bool = True
+
+
 # ==========================
 # Update Schema
 # ==========================
-class RoleUpdate(RoleBase):
-    pass
+class RoleUpdate(BaseModel):
+    RoleName: str
+    CompanyId: Optional[int] = None
+    Description: Optional[str] = None
+    IsActive: bool = True
+
 
 # ==========================
 # Response Schema
 # ==========================
-class RoleResponse(RoleBase):
-
+class RoleResponse(BaseModel):
     RoleId: int
-
-    CreatedOn: Optional[datetime]
-
-    CreatedBy: Optional[int]
-
-    UpdatedOn: Optional[datetime]
-
-    UpdatedBy: Optional[int]
+    RoleName: str
+    CompanyId: Optional[int]
+    Description: Optional[str]
+    IsActive: bool = True
 
     class Config:
         from_attributes = True
+
 
 # ==========================
 # List Response

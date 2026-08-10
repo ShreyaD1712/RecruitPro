@@ -1,118 +1,223 @@
-.page-container {
-  padding: 20px;
+.page {
+  background: #f5f8ff;
+
+  min-height: 100vh;
+
+  padding: 40px;
 }
+
+.card {
+  max-width: 1200px;
+
+  margin: auto;
+
+  padding: 35px;
+
+  border-radius: 18px;
+
+  background: white;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================= */
+/* Header */
+/* ============================= */
 
 .header {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
-  margin-bottom: 20px;
+
+  margin-bottom: 25px;
 }
 
 .header h2 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 600;
+  color: #1565c0;
+
+  margin: 0 0 6px 0;
+
+  font-weight: 700;
 }
 
 .header p {
-  margin: 5px 0 0;
-  color: gray;
+  margin: 0;
+
+  color: #666;
+
+  font-size: 15px;
 }
 
-.search-card {
-  margin-bottom: 20px;
-  padding: 15px;
-}
+/* ============================= */
+/* Filters */
+/* ============================= */
 
-.search-row {
+.filters {
   display: flex;
-  gap: 15px;
+
+  gap: 18px;
+
   align-items: center;
-  flex-wrap: wrap;
+
+  margin-bottom: 25px;
 }
 
 .filter-box {
-  width: 250px;
+  min-width: 250px;
 }
 
 .search-box {
-  flex: 1;
   min-width: 300px;
 }
 
-.table-card {
+/* ============================= */
+/* Form Fields */
+/* ============================= */
+
+mat-form-field {
+  margin-bottom: 10px;
+}
+
+/* ============================= */
+/* Table */
+/* ============================= */
+
+.table-container {
+  width: 100%;
+
   overflow-x: auto;
 }
 
-table {
+.user-table {
   width: 100%;
 }
 
-th {
+th.mat-mdc-header-cell {
+  font-weight: 700;
+}
+
+td.mat-mdc-cell,
+th.mat-mdc-header-cell {
+  padding: 14px 16px;
+}
+
+/* ============================= */
+/* Status */
+/* ============================= */
+
+.badge {
+  padding: 6px 12px;
+
+  border-radius: 20px;
+
+  font-size: 13px;
+
   font-weight: 600;
 }
 
-td,
-th {
-  padding: 12px;
+.badge.active {
+  background: #e8f5e9;
+
+  color: #2e7d32;
 }
 
-.badge {
-  padding: 5px 12px;
-  border-radius: 20px;
-  color: white;
-  font-size: 13px;
+.badge.inactive {
+  background: #ffebee;
+
+  color: #c62828;
 }
 
-.active {
-  background: #4caf50;
+/* ============================= */
+/* Actions */
+/* ============================= */
+
+td button {
+  margin-right: 5px;
 }
 
-.inactive {
-  background: #f44336;
+/* ============================= */
+/* Loading */
+/* ============================= */
+
+.loading {
+  text-align: center;
+
+  padding: 25px;
+
+  color: #666;
+
+  font-size: 15px;
 }
+
+/* ============================= */
+/* No Data */
+/* ============================= */
 
 .no-data {
   text-align: center;
+
   padding: 30px;
-  color: gray;
-  font-size: 16px;
+
+  color: #777;
+
+  font-size: 15px;
 }
 
+/* ============================= */
+/* Pagination */
+/* ============================= */
+
 .pagination {
-  margin-top: 20px;
+  margin-top: 25px;
+
   display: flex;
-  justify-content: flex-end;
+
   align-items: center;
+
+  justify-content: center;
+
   gap: 20px;
 }
 
-button mat-icon {
-  font-size: 20px;
+.pagination span {
+  font-size: 14px;
+
+  color: #555;
 }
 
-.mat-mdc-row:hover {
-  background: #f5f5f5;
-}
+/* ============================= */
+/* Responsive */
+/* ============================= */
 
 @media (max-width: 768px) {
+  .page {
+    padding: 20px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
   .header {
     flex-direction: column;
+
     align-items: flex-start;
+
     gap: 15px;
   }
 
-  .search-row {
+  .filters {
     flex-direction: column;
+
+    align-items: stretch;
   }
 
   .filter-box,
   .search-box {
     width: 100%;
-  }
 
-  .pagination {
-    justify-content: center;
+    min-width: unset;
   }
 }

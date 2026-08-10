@@ -26,11 +26,9 @@ class DepartmentRepository:
     ):
 
         query = db.query(Department).options(joinedload(Department.company))
-        # Company- admin
-        if current_user["role_id"] != 1:
-            query = query.filter(Department.CompanyId == current_user["company_id"])
+
         # Super Admin select company
-        elif company_id:
+        if company_id:
             query = query.filter(Department.CompanyId == company_id)
         # Search
         if search:

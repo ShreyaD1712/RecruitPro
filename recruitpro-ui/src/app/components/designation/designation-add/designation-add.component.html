@@ -1,131 +1,67 @@
 <div class="page">
+  <div class="card">
+    <h2>Add Designation</h2>
 
-    <mat-card class="card">
+    <form [formGroup]="designationForm" (ngSubmit)="saveDesignation()">
+      <!-- Designation Code -->
+      <mat-form-field appearance="outline">
+        <mat-label>Designation Code</mat-label>
 
-        <h2>Add Designation</h2>
+        <input matInput formControlName="DesignationCode" />
+      </mat-form-field>
 
-        <form
-            [formGroup]="designationForm"
-            (ngSubmit)="saveDesignation()">
+      <!-- Designation Name -->
+      <mat-form-field appearance="outline">
+        <mat-label>Designation Name</mat-label>
 
-            <!-- Designation Code -->
+        <input matInput formControlName="DesignationName" />
+      </mat-form-field>
 
-            <mat-form-field appearance="outline">
+      <!-- Company -->
+      <mat-form-field appearance="outline">
+        <mat-label>Company</mat-label>
 
-                <mat-label>Designation Code</mat-label>
+        <mat-select formControlName="CompanyId" (selectionChange)="companyChanged()">
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-                <input
-                    matInput
-                    formControlName="DesignationCode">
+      <!-- Department -->
+      <mat-form-field appearance="outline">
+        <mat-label>Department</mat-label>
 
-            </mat-form-field>
+        <mat-select formControlName="DepartmentId">
+          <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
+            {{ department.DepartmentName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-            <!-- Designation Name -->
+      <!-- Description -->
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
 
-            <mat-form-field appearance="outline">
+        <textarea matInput rows="4" formControlName="Description"></textarea>
+      </mat-form-field>
 
-                <mat-label>Designation Name</mat-label>
+      <!-- Status -->
+      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
-                <input
-                    matInput
-                    formControlName="DesignationName">
+      <!-- Buttons -->
+      <div class="buttons">
+        <button
+          *ngIf="hasPermission('CREATE_DESIGNATION')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+        >
+          Save
+        </button>
 
-            </mat-form-field>
-
-            <!-- Company -->
-
-            <mat-form-field appearance="outline">
-
-                <mat-label>Company</mat-label>
-
-                <mat-select
-                    formControlName="CompanyId"
-                    (selectionChange)="companyChanged()">
-
-                    <mat-option
-                        *ngFor="let company of companies"
-                        [value]="company.CompanyId">
-
-                        {{ company.CompanyName }}
-
-                    </mat-option>
-
-                </mat-select>
-
-            </mat-form-field>
-
-            <!-- Department -->
-
-            <mat-form-field appearance="outline">
-
-                <mat-label>Department</mat-label>
-
-                <mat-select
-                    formControlName="DepartmentId">
-
-                    <mat-option
-                        *ngFor="let department of departments"
-                        [value]="department.DepartmentId">
-
-                        {{ department.DepartmentName }}
-
-                    </mat-option>
-
-                </mat-select>
-
-            </mat-form-field>
-
-            <!-- Description -->
-
-            <mat-form-field appearance="outline">
-
-                <mat-label>Description</mat-label>
-
-                <textarea
-                    matInput
-                    rows="4"
-                    formControlName="Description">
-
-                </textarea>
-
-            </mat-form-field>
-
-            <!-- Status -->
-
-            <mat-slide-toggle
-                formControlName="IsActive">
-
-                Active
-
-            </mat-slide-toggle>
-
-            <!-- Buttons -->
-
-            <div class="buttons">
-
-                <button
-                    mat-raised-button
-                    color="primary"
-                    type="submit">
-
-                    Save
-
-                </button>
-
-                <button
-                    mat-raised-button
-                    color="warn"
-                    type="button"
-                    (click)="cancel()">
-
-                    Cancel
-
-                </button>
-
-            </div>
-
-        </form>
-
-    </mat-card>
-
+        <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>

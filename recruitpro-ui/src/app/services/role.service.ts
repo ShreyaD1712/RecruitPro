@@ -19,7 +19,8 @@ export class RoleService {
     sortBy: string = 'RoleId',
     order: string = 'asc',
     page: number = 1,
-    pageSize: number = 10
+    pageSize: number = 10,
+    companyId?: number
   ): Observable<any> {
 
     let params = new HttpParams()
@@ -28,6 +29,10 @@ export class RoleService {
       .set('order', order)
       .set('page', page)
       .set('page_size', pageSize);
+
+    if (companyId !== undefined && companyId !== null) {
+      params = params.set('company_id', companyId);
+    }
 
     return this.http.get<any>(`${this.apiUrl}/`, { params });
 

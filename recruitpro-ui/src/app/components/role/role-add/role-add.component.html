@@ -1,30 +1,58 @@
 <div class="page">
-  <mat-card class="card">
+  <div class="card">
     <h2>Add Role</h2>
 
     <form [formGroup]="roleForm" (ngSubmit)="saveRole()">
       <!-- Role Name -->
-
       <mat-form-field appearance="outline">
         <mat-label>Role Name</mat-label>
+
         <input matInput formControlName="RoleName" />
+
+        <mat-error *ngIf="roleForm.get('RoleName')?.hasError('required')">
+          Role Name is required
+        </mat-error>
       </mat-form-field>
 
+      <!-- Company -->
+      <mat-form-field appearance="outline">
+        <mat-label>Company</mat-label>
+
+        <mat-select formControlName="CompanyId">
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="roleForm.get('CompanyId')?.hasError('required')">
+          Company is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Description -->
       <mat-form-field appearance="outline">
         <mat-label>Description</mat-label>
-        <input matInput formControlName="Description" />
+
+        <textarea matInput rows="4" formControlName="Description"></textarea>
       </mat-form-field>
 
       <!-- Status -->
       <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
       <!-- Buttons -->
-
       <div class="buttons">
-        <button mat-raised-button color="primary" type="submit">Save</button>
+        <button
+          *ngIf="hasPermission('CREATE_ROLE')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Saving...' : 'Save' }}
+        </button>
 
         <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
       </div>
     </form>
-  </mat-card>
+  </div>
 </div>

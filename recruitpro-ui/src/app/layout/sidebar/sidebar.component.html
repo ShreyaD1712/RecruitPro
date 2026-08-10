@@ -1,47 +1,59 @@
 <div class="sidebar">
+  <!-- Dashboard -->
   <a routerLink="/dashboard" routerLinkActive="active">
     <mat-icon>dashboard</mat-icon>
-
-    Dashboard
+    <span>Dashboard</span>
   </a>
 
-  <a routerLink="/company" routerLinkActive="active">
+  <!-- Companies -->
+  <a *ngIf="hasPermission('VIEW_COMPANY')" routerLink="/company" routerLinkActive="active">
     <mat-icon>business</mat-icon>
-
-    Companies
+    <span>Companies</span>
   </a>
 
-  <a routerLink="/department" routerLinkActive="active">
-    <mat-icon>apartment</mat-icon>
-
-    Departments
+  <!-- Departments -->
+  <a *ngIf="hasPermission('VIEW_DEPARTMENT')" routerLink="/department" routerLinkActive="active">
+    <mat-icon>account_tree</mat-icon>
+    <span>Departments</span>
   </a>
 
-  <a routerLink="/designation" routerLinkActive="active">
+  <!-- Designations -->
+  <a *ngIf="hasPermission('VIEW_DESIGNATION')" routerLink="/designation" routerLinkActive="active">
     <mat-icon>badge</mat-icon>
-
-    Designations
+    <span>Designations</span>
   </a>
-  <a routerLink="/role" routerLinkActive="active">
-    <mat-icon>security</mat-icon>
 
-    Roles
+  <!-- Roles -->
+  <a *ngIf="hasPermission('VIEW_ROLE')" routerLink="/role" routerLinkActive="active">
+    <mat-icon>admin_panel_settings</mat-icon>
+    <span>Roles</span>
   </a>
-  <a routerLink="/user" routerLinkActive="active">
+
+  <!-- Users -->
+  <a *ngIf="hasPermission('VIEW_USER')" routerLink="/user" routerLinkActive="active">
     <mat-icon>people</mat-icon>
-
-    Users
+    <span>Users</span>
   </a>
 
-  <a routerLink="/jobs" routerLinkActive="active">
+  <!-- Permissions -->
+  <a
+    *ngIf="hasPermission('UPDATE_ROLE_PERMISSION')"
+    routerLink="/role-permission"
+    routerLinkActive="active"
+  >
+    <mat-icon>lock</mat-icon>
+    <span>Permissions</span>
+  </a>
+
+  <!-- Jobs -->
+  <a *ngIf="hasPermission('VIEW_JOB')" routerLink="/job" routerLinkActive="active">
     <mat-icon>work</mat-icon>
-
-    Jobs
+    <span>Jobs</span>
   </a>
 
-  <a routerLink="/reports" routerLinkActive="active">
-    <mat-icon>description</mat-icon>
-
-    Reports
+  <!-- Reports -->
+  <a *ngIf="hasPermission('VIEW_REPORT')" routerLink="/report" routerLinkActive="active">
+    <mat-icon>assessment</mat-icon>
+    <span>Reports</span>
   </a>
 </div>

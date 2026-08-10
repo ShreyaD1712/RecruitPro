@@ -8,6 +8,8 @@ from app.routers.auth import router as auth_router
 from app.routers.company import router as company_router
 from app.routers.department import router as department_router
 from app.routers.designation import router as designation_router
+from app.routers import role_permission
+
 app = FastAPI(title="RecruitPro API")
 
 # CORS
@@ -28,11 +30,12 @@ app.include_router(department_router)
 app.include_router(designation_router)
 app.include_router(role_router)
 app.include_router(user_router)
+app.include_router(role_permission.router)
+
+
 @app.get("/")
 def home():
-    return {
-        "message": "RecruitPro API is Running"
-    }
+    return {"message": "RecruitPro API is Running"}
 
 
 @app.get("/db-test")
@@ -41,7 +44,4 @@ def db_test():
         result = connection.execute(text("SELECT DB_NAME()"))
         db_name = result.scalar()
 
-    return {
-        "status": "Connected Successfully",
-        "database": db_name
-    }
+    return {"status": "Connected Successfully", "database": db_name}

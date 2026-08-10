@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
+import { ProfileService } from '../../services/profile.service';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-navbar',
@@ -15,47 +13,32 @@ import { MatDividerModule } from '@angular/material/divider';
     CommonModule,
     MatToolbarModule,
     MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatDividerModule
+    MatIconModule
   ],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
 
-  profileImage = 'assets/images/default-user.png';
+  profileImage = '';
 
   userName = '';
-  email = '';
 
-  constructor(private router: Router) {
-
+  constructor(private router: Router, private profileService: ProfileService) {
     const token = localStorage.getItem('token');
 
     if (token) {
-
       const payload = JSON.parse(atob(token.split('.')[1]));
-
       this.userName = payload.sub;
-      this.email = payload.sub;
-
     }
 
+    this.profileService.profileImage$.subscribe(image => {
+      this.profileImage = image;
+    });
   }
 
-  logout() {
-
-    localStorage.removeItem('token');
-
-    this.router.navigate(['/']);
-
-  }
-
-  changePassword() {
-
-    this.router.navigate(['/change-password']);
-
+  openProfile() {
+    this.router.navigate(['/profile']);
   }
 
 }

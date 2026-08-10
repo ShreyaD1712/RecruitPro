@@ -26,6 +26,10 @@ import { RoleEditComponent } from './components/role/role-edit/role-edit.compone
 import { UserListComponent } from './components/user/user-list/user-list.component';
 import { UserAddComponent } from './components/user/user-add/user-add.component';
 import { UserEditComponent } from './components/user/user-edit/user-edit.component';
+
+import { ProfileComponent } from './components/profile/profile.component';
+// Role Permission Components
+import { RolePermissionListComponent } from './components/role-permission/role-permission-list/role-permission-list.component';
 export const routes: Routes = [
 
   // Login Page
@@ -113,6 +117,16 @@ export const routes: Routes = [
       {
         path: 'user/edit/:id',
         component: UserEditComponent
+      },
+      // Profile
+      {
+        path: 'profile',
+        component: ProfileComponent
+      },
+      // Role Permission
+      {
+        path: 'role-permission',
+        component: RolePermissionListComponent
       },
       // Default Route
       {

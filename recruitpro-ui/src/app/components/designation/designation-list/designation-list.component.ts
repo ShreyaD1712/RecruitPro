@@ -45,7 +45,8 @@ export class DesignationListComponent implements OnInit {
   selectedCompanyId: number | null = null;
   selectedDepartmentId: number | null = null;
 
-  roleId = 0;
+  loggedInRoleId = 0;
+  loggedInCompanyId = 0;
 
   sortBy = 'DesignationName';
   order = 'asc';
@@ -69,58 +70,106 @@ export class DesignationListComponent implements OnInit {
     private designationService: DesignationService,
     private companyService: CompanyService,
     private departmentService: DepartmentService,
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
 
-    this.roleId = this.authService.getRoleId();
+    if (!this.hasPermission('VIEW_DESIGNATION')) {
 
-    if (this.roleId === 1) {
+      alert('You are not authorized to access this page.');
 
-      this.loadCompanies();
+      this.router.navigate(['/dashboard']);
 
-    } else {
+      return;
 
-      this.selectedCompanyId = this.authService.getCompanyId();
-
-      this.companyService
-        .getCompany(this.selectedCompanyId!)
-        .subscribe({
-
-          next: (company) => {
-
-            this.companies = [company];
-            this.loadDepartments();
-            this.loadDesignations();
-          }
-        });
     }
+
+    this.loggedInRoleId = this.authService.getRoleId();
+    this.loggedInCompanyId = this.authService.getCompanyId();
+
+    this.loadCompanies();
+
   }
 
+  hasPermission(permission: string): boolean {
+
+    return this.authService.hasPermission(permission);
+
+  }
+
+  // -------------------------
+  // Load Companies
+  // -------------------------
   loadCompanies() {
 
-    this.companyService.getCompanies(
-      '',
-      'CompanyName',
-      'asc',
-      1,
-      100
-    ).subscribe({
+    if (this.hasPermission('VIEW_ALL_COMPANIES')) {
 
-      next: (res: any) => {
-        this.companies = res.data;
-        this.selectedCompanyId = null;
-        this.loadDepartments();
-        this.loadDesignations();
-      }
+      this.companyService.getCompanies(
+        '',
+        'CompanyName',
+        'asc',
+        1,
+        1000
+      ).subscribe({
 
-    });
+        next: (response: any) => {
+
+          this.companies = response.data;
+
+          this.selectedCompanyId = null;
+          this.selectedDepartmentId = null;
+
+          this.loadDepartments();
+          this.loadDesignations();
+
+        },
+
+        error: (err) => {
+
+          console.log(err);
+
+        }
+
+      });
+
+    }
+
+    else {
+
+      this.companyService.getCompany(
+        this.loggedInCompanyId
+      ).subscribe({
+
+        next: (company: any) => {
+
+          this.companies = [company];
+
+          this.selectedCompanyId = company.CompanyId;
+          this.selectedDepartmentId = null;
+
+          this.loadDepartments();
+          this.loadDesignations();
+
+        },
+
+        error: (err) => {
+
+          console.log(err);
+
+        }
+
+      });
+
+    }
 
   }
 
+  // -------------------------
+  // Load Departments
+  // -------------------------
   loadDepartments() {
 
     this.departmentService.getDepartments(
@@ -132,47 +181,61 @@ export class DesignationListComponent implements OnInit {
       1000
     ).subscribe({
 
-      next: (res: any) => {
-        this.departments = res.data;
+      next: (response: any) => {
+
+        this.departments = response.data;
+
       },
+
       error: (err) => {
+
         console.log(err);
-       }
+
+      }
+
     });
 
   }
 
+  // -------------------------
+  // Company Changed
+  // -------------------------
   companyChanged() {
+
     this.page = 1;
+
     this.selectedDepartmentId = null;
+
     this.loadDepartments();
+
     this.loadDesignations();
+
   }
 
+  // -------------------------
+  // Department Changed
+  // -------------------------
   departmentChanged() {
 
+    this.page = 1;
+
     this.loadDesignations();
 
   }
 
+  // -------------------------
+  // Load Designations
+  // -------------------------
   loadDesignations() {
 
     this.designationService.getDesignations(
-
       this.search,
-
       this.selectedCompanyId,
-
       this.selectedDepartmentId,
-
       this.sortBy,
-
       this.order,
-
       this.page,
-
       this.pageSize
-
     ).subscribe({
 
       next: (response: any) => {
@@ -205,11 +268,27 @@ export class DesignationListComponent implements OnInit {
 
   addDesignation() {
 
+    if (!this.hasPermission('CREATE_DESIGNATION')) {
+
+      alert('You do not have permission to add designations.');
+
+      return;
+
+    }
+
     this.router.navigate(['/designation/add']);
 
   }
 
   editDesignation(id: number) {
+
+    if (!this.hasPermission('UPDATE_DESIGNATION')) {
+
+      alert('You do not have permission to update designations.');
+
+      return;
+
+    }
 
     this.router.navigate(['/designation/edit', id]);
 
@@ -217,25 +296,35 @@ export class DesignationListComponent implements OnInit {
 
   deleteDesignation(id: number) {
 
+    if (!this.hasPermission('DELETE_DESIGNATION')) {
+
+      alert('You do not have permission to delete designations.');
+
+      return;
+
+    }
+
     if (confirm('Delete this Designation?')) {
 
-      this.designationService
-        .deleteDesignation(id)
-        .subscribe({
+      this.designationService.deleteDesignation(id).subscribe({
 
-          next: () => {
+        next: () => {
 
-            this.loadDesignations();
+          alert('Designation Deleted Successfully');
 
-          },
+          this.loadDesignations();
 
-          error: (err) => {
+        },
 
-            console.log(err);
+        error: (err) => {
 
-          }
+          console.log(err);
 
-        });
+          alert(err.error.detail);
+
+        }
+
+      });
 
     }
 

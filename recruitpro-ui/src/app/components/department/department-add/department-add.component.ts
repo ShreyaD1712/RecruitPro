@@ -6,7 +6,6 @@ import {
   Validators,
   ReactiveFormsModule
 } from '@angular/forms';
-import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -18,6 +17,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { DepartmentService } from '../../../services/department.service';
 import { CompanyService } from '../../../services/company.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-department-add',
@@ -47,26 +47,31 @@ export class DepartmentAddComponent implements OnInit {
     private companyService: CompanyService,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
 
+    // Permission Check
+    if (!this.hasPermission('CREATE_DEPARTMENT')) {
+      alert('You are not authorized to access this page.');
+      this.router.navigate(['/department']);
+      return;
+    }
+
     this.departmentForm = this.fb.group({
-
       DepartmentCode: ['', Validators.required],
-
       DepartmentName: ['', Validators.required],
-
       CompanyId: ['', Validators.required],
-
       Description: [''],
-
       IsActive: [true]
-
     });
 
     this.loadCompanies();
 
+  }
+
+  hasPermission(permission: string): boolean {
+    return this.authService.hasPermission(permission);
   }
 
   loadCompanies() {
@@ -86,22 +91,18 @@ export class DepartmentAddComponent implements OnInit {
       ).subscribe({
 
         next: (res) => {
-
           this.companies = res.data;
-
         },
 
         error: (err) => {
-
           console.error(err);
-
         }
 
       });
 
     }
 
-    // Company Admin / Other Users
+    // Company Admin
     else {
 
       this.companyService.getCompany(companyId).subscribe({
@@ -111,9 +112,7 @@ export class DepartmentAddComponent implements OnInit {
           this.companies = [company];
 
           this.departmentForm.patchValue({
-
             CompanyId: company.CompanyId
-
           });
 
           this.departmentForm.get('CompanyId')?.disable();
@@ -121,9 +120,7 @@ export class DepartmentAddComponent implements OnInit {
         },
 
         error: (err) => {
-
           console.error(err);
-
         }
 
       });
@@ -133,6 +130,11 @@ export class DepartmentAddComponent implements OnInit {
   }
 
   saveDepartment() {
+
+    if (!this.hasPermission('CREATE_DEPARTMENT')) {
+      alert('You do not have permission to create departments.');
+      return;
+    }
 
     if (this.departmentForm.invalid) {
 

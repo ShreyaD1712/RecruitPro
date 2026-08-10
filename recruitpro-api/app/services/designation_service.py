@@ -1,10 +1,11 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
+
 from app.models.department import Department
 from app.repositories.designation_repository import DesignationRepository
 from app.schemas.designation_schema import (
     DesignationCreate,
-    DesignationUpdate
+    DesignationUpdate,
 )
 
 
@@ -26,7 +27,7 @@ class DesignationService:
         sort_by: str = "DesignationName",
         order: str = "asc",
         page: int = 1,
-        page_size: int = 10
+        page_size: int = 10,
     ):
 
         return self.repository.get_all(
@@ -38,7 +39,7 @@ class DesignationService:
             sort_by,
             order,
             page,
-            page_size
+            page_size,
         )
 
     # -------------------------
@@ -47,18 +48,29 @@ class DesignationService:
     def get_designation_by_id(
         self,
         db: Session,
-        designation_id: int
+        designation_id: int,
+        current_user,
     ):
 
         designation = self.repository.get_by_id(
             db,
-            designation_id
+            designation_id,
         )
 
         if not designation:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Designation not found"
+                detail="Designation not found",
+            )
+
+        # Company users can access only their own company
+        if (
+            not current_user["is_super_admin"]
+            and designation.CompanyId != current_user["company_id"]
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You are not authorized to access this designation",
             )
 
         return designation
@@ -70,61 +82,62 @@ class DesignationService:
         self,
         db: Session,
         designation: DesignationCreate,
-        current_user
+        current_user,
     ):
-        # Only Super Admin and Company Admin can create designations
-        if current_user["role_id"] not in [1, 2]:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You are not authorized to create designations"
-            )
-        # Company Admin can create only in their own company
-        if current_user["role_id"] == 2:
+
+        # Company users can create only in their own company
+        if not current_user["is_super_admin"]:
             designation.CompanyId = current_user["company_id"]
-            
-        #check department exists
-        department = ( db.query(Department).filter(Department.DepartmentId == designation.DepartmentId).first())
+
+        # Check Department Exists
+        department = (
+            db.query(Department)
+            .filter(Department.DepartmentId == designation.DepartmentId)
+            .first()
+        )
+
         if not department:
             raise HTTPException(
                 status_code=400,
-                detail="Department not found"
+                detail="Department not found",
             )
-        #Check department belongs to company
+
+        # Check Department belongs to Company
         if department.CompanyId != designation.CompanyId:
             raise HTTPException(
                 status_code=400,
-                detail="Selected Department does not belong to the selected company"
+                detail="Selected Department does not belong to the selected company",
             )
-        
-        # Check duplicate designation code in same company
+
+        # Duplicate Code
         existing_code = self.repository.get_by_code(
             db,
             designation.DesignationCode,
-            designation.CompanyId
+            designation.CompanyId,
         )
 
         if existing_code:
             raise HTTPException(
                 status_code=400,
-                detail="Designation Code already exists in this company"
+                detail="Designation Code already exists in this company",
             )
 
-        # Check duplicate designation name in same company
+        # Duplicate Name
         existing_name = self.repository.get_by_name(
             db,
             designation.DesignationName,
-            designation.CompanyId
+            designation.CompanyId,
         )
 
         if existing_name:
             raise HTTPException(
                 status_code=400,
-                detail="Designation Name already exists in this company"
+                detail="Designation Name already exists in this company",
             )
 
         return self.repository.create(
             db,
-            designation
+            designation,
         )
 
     # -------------------------
@@ -135,90 +148,83 @@ class DesignationService:
         db: Session,
         designation_id: int,
         designation: DesignationUpdate,
-        current_user
+        current_user,
     ):
-        #Only Super Admin and Company Admin can update designations
-        if current_user["role_id"] not in [1, 2]:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You are not authorized to update designations"
-            )
+
         existing_designation = self.repository.get_by_id(
             db,
-            designation_id
+            designation_id,
         )
-        if (current_user["role_id"] == 2) and (existing_designation.CompanyId != current_user["company_id"]):
-            raise HTTPException(
-                status_code=403,
-                detail="You are not authorized to update this designation"
-            )
-        if current_user["role_id"] == 2: 
-            designation.CompanyId = current_user["company_id"]
+
         if not existing_designation:
             raise HTTPException(
                 status_code=404,
-                detail="Designation not found"
+                detail="Designation not found",
             )
-            
-        department = ( db.query(Department).filter(Department.DepartmentId == designation.DepartmentId).first())
+
+        # Company users can update only their own company
+        if (
+            not current_user["is_super_admin"]
+            and existing_designation.CompanyId != current_user["company_id"]
+        ):
+            raise HTTPException(
+                status_code=403,
+                detail="You are not authorized to update this designation",
+            )
+
+        if not current_user["is_super_admin"]:
+            designation.CompanyId = current_user["company_id"]
+
+        # Check Department Exists
+        department = (
+            db.query(Department)
+            .filter(Department.DepartmentId == designation.DepartmentId)
+            .first()
+        )
+
         if not department:
             raise HTTPException(
                 status_code=400,
-                detail="Department not found"
+                detail="Department not found",
             )
+
+        # Check Department belongs to Company
         if department.CompanyId != designation.CompanyId:
             raise HTTPException(
                 status_code=400,
-                detail="Selected Department does not belong to the selected company"
-            )
-        if not department:
-            raise HTTPException(
-                status_code=400,
-                detail="Department not found"
+                detail="Selected Department does not belong to the selected company",
             )
 
-        if department.CompanyId != designation.CompanyId:
-            raise HTTPException(
-                status_code=400,
-                detail="Selected Department does not belong to the selected company"
-            )
-
-        # Duplicate Designation Code
+        # Duplicate Code
         duplicate_code = self.repository.get_by_code(
             db,
             designation.DesignationCode,
-            designation.CompanyId
+            designation.CompanyId,
         )
 
-        if (
-            duplicate_code
-            and duplicate_code.DesignationId != designation_id
-        ):
+        if duplicate_code and duplicate_code.DesignationId != designation_id:
             raise HTTPException(
                 status_code=400,
-                detail="Designation Code already exists in this company"
+                detail="Designation Code already exists in this company",
             )
 
-        # Duplicate Designation Name
+        # Duplicate Name
         duplicate_name = self.repository.get_by_name(
             db,
             designation.DesignationName,
-            designation.CompanyId
+            designation.CompanyId,
         )
 
-        if (
-            duplicate_name
-            and duplicate_name.DesignationId != designation_id
-        ):
+        if duplicate_name and duplicate_name.DesignationId != designation_id:
             raise HTTPException(
                 status_code=400,
-                detail="Designation Name already exists in this company"
+                detail="Designation Name already exists in this company",
             )
 
         return self.repository.update(
             db,
             designation_id,
-            designation
+            designation,
         )
 
     # -------------------------
@@ -228,40 +234,33 @@ class DesignationService:
         self,
         db: Session,
         designation_id: int,
-        current_user
+        current_user,
     ):
-        # Only Super Admin and Company Admin can delete designations
-        if current_user["role_id"] not in [1, 2]:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You are not authorized to delete designations"
-            )
+
         designation = self.repository.get_by_id(
             db,
-            designation_id
+            designation_id,
         )
+
         if not designation:
             raise HTTPException(
                 status_code=404,
-                detail="Designation not found"
+                detail="Designation not found",
             )
-        if (current_user["role_id"] == 2) and (designation.CompanyId != current_user["company_id"]):
+
+        # Company users can delete only their own company
+        if (
+            not current_user["is_super_admin"]
+            and designation.CompanyId != current_user["company_id"]
+        ):
             raise HTTPException(
                 status_code=403,
-                detail="You are not authorized to delete this designation"
+                detail="You are not authorized to delete this designation",
             )
 
-        deleted_designation = self.repository.delete(
+        self.repository.delete(
             db,
-            designation_id
+            designation_id,
         )
 
-        if not deleted_designation:
-            raise HTTPException(
-                status_code=404,
-                detail="Designation not found"
-            )
-
-        return {
-            "message": "Designation deleted successfully"
-        }
+        return {"message": "Designation deleted successfully"}

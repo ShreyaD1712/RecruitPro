@@ -1,0 +1,133 @@
+<div class="permission-container">
+  <!-- ==========================
+       HEADER
+  =========================== -->
+
+  <div class="header">
+    <div>
+      <h2>Permission Management</h2>
+
+      <p>Assign permissions to roles</p>
+    </div>
+  </div>
+
+  <!-- ==========================
+       SELECTION CARD
+  =========================== -->
+
+  <mat-card class="selection-card">
+    <!-- COMPANY -->
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label> Company </mat-label>
+
+      <mat-select
+        [(ngModel)]="selectedCompanyId"
+        (selectionChange)="companyChanged()"
+        [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
+      >
+        <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+          {{ company.CompanyName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- ROLE -->
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label> Role </mat-label>
+
+      <mat-select
+        [(ngModel)]="selectedRoleId"
+        (selectionChange)="roleChanged()"
+        [disabled]="!selectedCompanyId"
+      >
+        <mat-option *ngFor="let role of roles" [value]="role.RoleId">
+          {{ role.RoleName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-card>
+
+  <!-- ==========================
+       PERMISSION CARD
+  =========================== -->
+
+  <mat-card class="permission-card" *ngIf="selectedRoleId">
+    <div class="permission-header">
+      <div>
+        <h3>Permissions</h3>
+
+        <p>Select permissions for the selected role</p>
+      </div>
+
+      <div class="permission-actions">
+        <button mat-stroked-button color="primary" type="button" (click)="selectAll()">
+          <mat-icon> done_all </mat-icon>
+
+          Select All
+        </button>
+
+        <button mat-stroked-button color="warn" type="button" (click)="clearAll()">
+          <mat-icon> clear_all </mat-icon>
+
+          Clear All
+        </button>
+      </div>
+    </div>
+
+    <!-- ==========================
+         LOADING
+    =========================== -->
+
+    <div class="loading" *ngIf="loadingPermissions">Loading permissions...</div>
+
+    <!-- ==========================
+         PERMISSION GRID
+    =========================== -->
+
+    <div class="permission-grid" *ngIf="!loadingPermissions">
+      <div class="permission-item" *ngFor="let permission of permissions">
+        <mat-checkbox
+          [checked]="isPermissionSelected(permission)"
+          (change)="togglePermission(permission, $event.checked)"
+        >
+          {{ permission }}
+        </mat-checkbox>
+      </div>
+    </div>
+
+    <!-- ==========================
+         BUTTONS
+    =========================== -->
+
+    <div class="buttons">
+      <button
+        *ngIf="hasPermission('UPDATE_ROLE_PERMISSION')"
+        mat-raised-button
+        color="primary"
+        type="button"
+        [disabled]="saving"
+        (click)="savePermissions()"
+      >
+        <mat-icon> save </mat-icon>
+
+        {{ saving ? 'Saving...' : 'Save Permissions' }}
+      </button>
+
+      <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
+    </div>
+  </mat-card>
+
+  <!-- ==========================
+       MESSAGE
+  =========================== -->
+
+  <mat-card class="empty-card" *ngIf="!selectedRoleId">
+    <mat-icon> admin_panel_settings </mat-icon>
+
+    <h3>Select a Role</h3>
+
+    <p>Select a company and role to manage permissions.</p>
+  </mat-card>
+</div>

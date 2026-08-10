@@ -29,8 +29,8 @@ class UserRepository:
         # -------------------------
         # Company Filter
         # -------------------------
-        if current_user["role_id"] == 1:
-            if company_id:
+        if current_user["is_super_admin"]:
+            if company_id is not None:
                 query = query.filter(User.CompanyId == company_id)
         else:
             query = query.filter(User.CompanyId == current_user["company_id"])

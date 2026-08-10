@@ -1,41 +1,77 @@
-<div class="page-container">
-  <mat-card class="form-card">
+<div class="page">
+  <div class="card">
     <h2>Edit User</h2>
 
     <form [formGroup]="userForm" (ngSubmit)="updateUser()">
+      <!-- First Name -->
+
       <mat-form-field appearance="outline">
         <mat-label>First Name</mat-label>
+
         <input matInput formControlName="FirstName" />
+
+        <mat-error *ngIf="userForm.get('FirstName')?.hasError('required')">
+          First Name is required
+        </mat-error>
       </mat-form-field>
+
+      <!-- Last Name -->
 
       <mat-form-field appearance="outline">
         <mat-label>Last Name</mat-label>
+
         <input matInput formControlName="LastName" />
+
+        <mat-error *ngIf="userForm.get('LastName')?.hasError('required')">
+          Last Name is required
+        </mat-error>
       </mat-form-field>
+
+      <!-- Email -->
 
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
+
         <input matInput type="email" formControlName="Email" />
+
+        <mat-error *ngIf="userForm.get('Email')?.hasError('required')">
+          Email is required
+        </mat-error>
+
+        <mat-error *ngIf="userForm.get('Email')?.hasError('email')">
+          Enter a valid email
+        </mat-error>
       </mat-form-field>
 
+      <!-- Phone Number -->
+
       <mat-form-field appearance="outline">
-        <mat-label>Mobile Number</mat-label>
+        <mat-label>MobileNo</mat-label>
+
         <input matInput formControlName="MobileNo" />
       </mat-form-field>
+
+      <!-- Company -->
 
       <mat-form-field appearance="outline">
         <mat-label>Company</mat-label>
 
         <mat-select
           formControlName="CompanyId"
+          [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
           (selectionChange)="companyChanged()"
-          [disabled]="loggedInRoleId != 1"
         >
           <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
             {{ company.CompanyName }}
           </mat-option>
         </mat-select>
+
+        <mat-error *ngIf="userForm.get('CompanyId')?.hasError('required')">
+          Company is required
+        </mat-error>
       </mat-form-field>
+
+      <!-- Department -->
 
       <mat-form-field appearance="outline">
         <mat-label>Department</mat-label>
@@ -45,7 +81,13 @@
             {{ department.DepartmentName }}
           </mat-option>
         </mat-select>
+
+        <mat-error *ngIf="userForm.get('DepartmentId')?.hasError('required')">
+          Department is required
+        </mat-error>
       </mat-form-field>
+
+      <!-- Role -->
 
       <mat-form-field appearance="outline">
         <mat-label>Role</mat-label>
@@ -55,15 +97,30 @@
             {{ role.RoleName }}
           </mat-option>
         </mat-select>
+
+        <mat-error *ngIf="userForm.get('RoleId')?.hasError('required')">
+          Role is required
+        </mat-error>
       </mat-form-field>
+
+      <!-- Status -->
 
       <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
-      <div class="button-row">
-        <button mat-raised-button color="primary" type="submit">Update</button>
+      <!-- Buttons -->
+
+      <div class="buttons">
+        <button
+          *ngIf="authService.hasPermission('UPDATE_USER')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+        >
+          Update
+        </button>
 
         <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
       </div>
     </form>
-  </mat-card>
+  </div>
 </div>

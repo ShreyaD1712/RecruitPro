@@ -1,97 +1,52 @@
 <div class="page">
+  <mat-card class="card">
+    <h2>Add Department</h2>
 
-    <mat-card class="card">
+    <form [formGroup]="departmentForm" (ngSubmit)="saveDepartment()">
+      <mat-form-field appearance="outline">
+        <mat-label>Department Code</mat-label>
 
-        <h2>Add Department</h2>
+        <input matInput formControlName="DepartmentCode" />
+      </mat-form-field>
 
-        <form
-            [formGroup]="departmentForm"
-            (ngSubmit)="saveDepartment()">
+      <mat-form-field appearance="outline">
+        <mat-label>Department Name</mat-label>
 
-            <mat-form-field appearance="outline">
+        <input matInput formControlName="DepartmentName" />
+      </mat-form-field>
 
-                <mat-label>Department Code</mat-label>
+      <p>Total Companies : {{ companies.length }}</p>
 
-                <input
-                    matInput
-                    formControlName="DepartmentCode">
+      <mat-form-field appearance="outline">
+        <mat-label>Company</mat-label>
 
-            </mat-form-field>
+        <mat-select formControlName="CompanyId">
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-            <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
 
-                <mat-label>Department Name</mat-label>
+        <textarea matInput rows="4" formControlName="Description"> </textarea>
+      </mat-form-field>
 
-                <input
-                    matInput
-                    formControlName="DepartmentName">
+      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
-            </mat-form-field>
+      <div class="buttons">
+        <button
+          *ngIf="hasPermission('CREATE_DEPARTMENT')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+        >
+          Save
+        </button>
 
-            <p>Total Companies : {{companies.length}}</p>
-
-            <mat-form-field appearance="outline">
-
-                <mat-label>Company</mat-label>
-
-                <mat-select formControlName="CompanyId">
-
-                    <mat-option
-                        *ngFor="let company of companies"
-                        [value]="company.CompanyId">
-
-                        {{company.CompanyName}}
-
-                    </mat-option>
-
-                </mat-select>
-
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-
-                <mat-label>Description</mat-label>
-
-                <textarea
-                    matInput
-                    rows="4"
-                    formControlName="Description">
-                </textarea>
-
-            </mat-form-field>
-
-            <mat-slide-toggle
-                formControlName="IsActive">
-
-                Active
-
-            </mat-slide-toggle>
-
-            <div class="buttons">
-
-                <button
-                    mat-raised-button
-                    color="primary"
-                    type="submit">
-
-                    Save
-
-                </button>
-
-                <button
-                    mat-raised-button
-                    color="warn"
-                    type="button"
-                    (click)="cancel()">
-
-                    Cancel
-
-                </button>
-
-            </div>
-
-        </form>
-
-    </mat-card>
-
+        <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </mat-card>
 </div>

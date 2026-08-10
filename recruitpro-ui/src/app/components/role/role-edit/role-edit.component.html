@@ -1,67 +1,62 @@
 <div class="page">
+  <div class="card">
+    <h2>Edit Role</h2>
 
-    <mat-card class="card">
+    <form [formGroup]="roleForm" (ngSubmit)="updateRole()">
+      <!-- Role Name -->
 
-        <h2>Edit Role</h2>
+      <mat-form-field appearance="outline">
+        <mat-label>Role Name</mat-label>
 
-        <form
-            [formGroup]="roleForm"
-            (ngSubmit)="updateRole()">
+        <input matInput formControlName="RoleName" />
 
-            <!-- Role Name -->
+        <mat-error *ngIf="roleForm.get('RoleName')?.hasError('required')">
+          Role Name is required
+        </mat-error>
+      </mat-form-field>
 
-            <mat-form-field appearance="outline">
+      <!-- Company -->
 
-                <mat-label>Role Name</mat-label>
+      <mat-form-field appearance="outline">
+        <mat-label>Company</mat-label>
 
-                <input
-                    matInput
-                    formControlName="RoleName">
+        <mat-select formControlName="CompanyId">
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
 
-            </mat-form-field>
+        <mat-error *ngIf="roleForm.get('CompanyId')?.hasError('required')">
+          Company is required
+        </mat-error>
+      </mat-form-field>
 
-            <mat-form-field appearance="outline">
-                    <mat-label>Description</mat-label>
-                <input
-                    matInput
-                    formControlName="Description">
-            </mat-form-field>
-            <!-- Status -->
+      <!-- Description -->
 
-            <mat-slide-toggle
-                formControlName="IsActive">
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
 
-                Active
+        <textarea matInput rows="4" formControlName="Description"></textarea>
+      </mat-form-field>
 
-            </mat-slide-toggle>
+      <!-- Status -->
 
-            <!-- Buttons -->
+      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
-            <div class="buttons">
+      <!-- Buttons -->
 
-                <button
-                    mat-raised-button
-                    color="primary"
-                    type="submit">
+      <div class="buttons">
+        <button
+          *ngIf="authService.hasPermission('UPDATE_ROLE')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+        >
+          Update
+        </button>
 
-                    Update
-
-                </button>
-
-                <button
-                    mat-raised-button
-                    color="warn"
-                    type="button"
-                    (click)="cancel()">
-
-                    Cancel
-
-                </button>
-
-            </div>
-
-        </form>
-
-    </mat-card>
-
+        <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
 </div>

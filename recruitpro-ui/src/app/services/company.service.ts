@@ -12,11 +12,11 @@ export class CompanyService {
   constructor(private http: HttpClient) {}
 
   getCompanies(
-    search: string,
-    sortBy: string,
-    order: string,
-    page: number,
-    pageSize: number
+    search: string = '',
+    sortBy: string = '',
+    order: string = 'asc',
+    page: number = 1,
+    pageSize: number = 1000
   ): Observable<any> {
 
     return this.http.get(

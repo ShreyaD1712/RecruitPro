@@ -10,7 +10,7 @@ class Role(Base):
     RoleId = Column(Integer, primary_key=True, index=True)
 
     RoleName = Column(String(200), nullable=False, unique=True)
-
+    CompanyId = Column(Integer, nullable=True)
     Description = Column(String(510), nullable=True)
 
     IsActive = Column(Boolean, default=True, nullable=False)
