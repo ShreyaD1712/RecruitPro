@@ -1,74 +1,98 @@
-<div class="company-page">
-  <div class="page-header">
-    <div>
-      <h2>Add Company</h2>
-      <p>Create a new company in RecruitPro</p>
-    </div>
-  </div>
+<div class="page">
+  <mat-card class="card">
+    <h2>Add Company</h2>
 
-  <mat-card class="company-card">
-    <form [formGroup]="companyForm">
-      <div class="grid">
-        <mat-form-field appearance="outline">
-          <mat-label>Company Code</mat-label>
-          <input matInput formControlName="CompanyCode" />
+    <form [formGroup]="companyForm" (ngSubmit)="saveCompany()">
+      <!-- Company Code -->
 
-          <mat-error *ngIf="companyForm.get('CompanyCode')?.hasError('required')">
-            Company Code is required
-          </mat-error>
-        </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Company Code</mat-label>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Company Name</mat-label>
-          <input matInput formControlName="CompanyName" />
+        <input matInput formControlName="CompanyCode" />
 
-          <mat-error *ngIf="companyForm.get('CompanyName')?.hasError('required')">
-            Company Name is required
-          </mat-error>
-        </mat-form-field>
+        <mat-error *ngIf="companyForm.get('CompanyCode')?.hasError('required')">
+          Company Code is required
+        </mat-error>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="Email" />
+      <!-- Company Name -->
 
-          <mat-error *ngIf="companyForm.get('Email')?.hasError('email')">
-            Enter Valid Email
-          </mat-error>
-        </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Company Name</mat-label>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Phone</mat-label>
-          <input matInput formControlName="Phone" />
-        </mat-form-field>
+        <input matInput formControlName="CompanyName" />
 
-        <mat-form-field appearance="outline">
-          <mat-label>Website</mat-label>
-          <input matInput formControlName="Website" />
-        </mat-form-field>
+        <mat-error *ngIf="companyForm.get('CompanyName')?.hasError('required')">
+          Company Name is required
+        </mat-error>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Address</mat-label>
-          <textarea matInput rows="4" formControlName="Address"></textarea>
-        </mat-form-field>
-      </div>
+      <!-- Email -->
 
-      <div class="status">
-        <mat-slide-toggle formControlName="IsActive"> Active Company </mat-slide-toggle>
-      </div>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+
+        <input matInput type="email" formControlName="Email" />
+
+        <mat-error *ngIf="companyForm.get('Email')?.hasError('required')">
+          Email is required
+        </mat-error>
+
+        <mat-error *ngIf="companyForm.get('Email')?.hasError('email')">
+          Enter a valid email address
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Phone -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone</mat-label>
+
+        <input matInput formControlName="Phone" />
+      </mat-form-field>
+
+      <!-- Website -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Website</mat-label>
+
+        <input matInput formControlName="Website" />
+      </mat-form-field>
+
+      <!-- Address -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Address</mat-label>
+
+        <textarea matInput rows="4" formControlName="Address"></textarea>
+      </mat-form-field>
+
+      <!-- Active -->
+
+      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+
+      <!-- Buttons -->
 
       <div class="buttons">
         <button
           *ngIf="hasPermission('CREATE_COMPANY')"
           mat-raised-button
           color="primary"
-          type="button"
-          (click)="saveCompany()"
+          type="submit"
+          [disabled]="loading"
         >
-          <mat-icon>save</mat-icon>
-          Save
+          {{ loading ? 'Saving...' : 'Save' }}
         </button>
 
-        <button mat-stroked-button color="warn" type="button" (click)="cancel()">Cancel</button>
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   </mat-card>

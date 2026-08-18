@@ -38,7 +38,6 @@ import { AuthService } from '../../../services/auth.service';
     MatSelectModule
   ],
   templateUrl: './role-edit.component.html',
-  styleUrls: ['./role-edit.component.css']
 })
 export class RoleEditComponent implements OnInit {
 

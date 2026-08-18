@@ -119,7 +119,43 @@ export class RolePermissionListComponent
         // Role Permissions
         // -------------------------
         'VIEW_ROLE_PERMISSION',
-        'UPDATE_ROLE_PERMISSION'
+        'UPDATE_ROLE_PERMISSION',
+        // -------------------------
+        // Skill
+        // -------------------------
+        'VIEW_SKILL',
+        'CREATE_SKILL',
+        'UPDATE_SKILL',
+        'DELETE_SKILL',
+        // -------------------------
+        // Job Category
+        // -------------------------
+        'VIEW_JOB_CATEGORY',
+        'CREATE_JOB_CATEGORY',
+        'UPDATE_JOB_CATEGORY',
+        'DELETE_JOB_CATEGORY',
+        // -------------------------
+        // Employment Type
+        // -------------------------
+        'VIEW_EMPLOYMENT_TYPE',
+        'CREATE_EMPLOYMENT_TYPE',
+        'UPDATE_EMPLOYMENT_TYPE',
+        'DELETE_EMPLOYMENT_TYPE',
+        // -------------------------
+        // Experience Level
+        // -------------------------
+        'VIEW_EXPERIENCE_LEVEL',
+        'CREATE_EXPERIENCE_LEVEL',
+        'UPDATE_EXPERIENCE_LEVEL',
+        'DELETE_EXPERIENCE_LEVEL',
+        // -------------------------
+        // Interview Round
+        // -------------------------
+        'VIEW_INTERVIEW_ROUND',
+        'CREATE_INTERVIEW_ROUND',
+        'UPDATE_INTERVIEW_ROUND',
+        'DELETE_INTERVIEW_ROUND'
+
     ];
     selectedPermissions:
         string[] = [];
@@ -426,6 +462,7 @@ export class RolePermissionListComponent
                     alert(
                         'Permissions saved successfully.'
                     );
+                    this.router.navigate(['/role-permission']);
                 },
                 error: (err) => {
                     this.saving = false;
@@ -445,7 +482,7 @@ export class RolePermissionListComponent
     // ==================================================
     cancel(): void {
         this.router.navigate([
-            '/dashboard'
+            '/role-permission'
         ]);
     }
 }

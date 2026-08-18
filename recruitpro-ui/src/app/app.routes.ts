@@ -30,8 +30,27 @@ import { UserEditComponent } from './components/user/user-edit/user-edit.compone
 import { ProfileComponent } from './components/profile/profile.component';
 // Role Permission Components
 import { RolePermissionListComponent } from './components/role-permission/role-permission-list/role-permission-list.component';
+// Skill Components
+import { SkillListComponent } from './components/skill/skill-list/skill-list.component';
+import { SkillAddComponent } from './components/skill/skill-add/skill-add.component';
+import { SkillEditComponent } from './components/skill/skill-edit/skill-edit.component';
+// Job Category Components
+import { JobCategoryListComponent } from './components/job-category/job-category-list/job-category-list.component';
+import { JobCategoryAddComponent } from './components/job-category/job-category-add/job-category-add.component';
+import { JobCategoryEditComponent } from './components/job-category/job-category-edit/job-category-edit.component';
+// Employment Type Components
+import { EmploymentTypeListComponent } from './components/employment-type/employment-type-list/employment-type-list.component';
+import { EmploymentTypeAddComponent } from './components/employment-type/employment-type-add/employment-type-add.component';
+import { EmploymentTypeEditComponent } from './components/employment-type/employment-type-edit/employment-type-edit.component';
+// Experience Level Components
+import { ExperienceLevelListComponent } from './components/experience-level/experience-level-list/experience-level-list.component';
+import { ExperienceLevelAddComponent } from './components/experience-level/experience-level-add/experience-level-add.component';
+import { ExperienceLevelEditComponent } from './components/experience-level/experience-level-edit/experience-level-edit.component';
+// Interview Round Components
+import { InterviewRoundListComponent } from './components/interview-round/interview-round-list/interview-round-list.component';
+import { InterviewRoundAddComponent } from './components/interview-round/interview-round-add/interview-round-add.component';
+import { InterviewRoundEditComponent } from './components/interview-round/interview-round-edit/interview-round-edit.component';
 export const routes: Routes = [
-
   // Login Page
   {
     path: '',
@@ -127,6 +146,71 @@ export const routes: Routes = [
       {
         path: 'role-permission',
         component: RolePermissionListComponent
+      },
+      // Skill
+      {
+        path: 'skill',
+        component: SkillListComponent
+      },
+      {
+        path: 'skill/add',
+        component: SkillAddComponent
+      },
+      {
+        path: 'skill/edit/:id',
+        component: SkillEditComponent
+      },
+      // Job Category
+      {
+        path: 'job-category',
+        component: JobCategoryListComponent
+      },
+      {
+        path: 'job-category/add',
+        component: JobCategoryAddComponent
+      },
+      {
+        path: 'job-category/edit/:id',
+        component: JobCategoryEditComponent
+      },
+      // Employment Type
+      {
+        path: 'employment-type',
+        component: EmploymentTypeListComponent
+      },
+      {
+        path: 'employment-type/add',
+        component: EmploymentTypeAddComponent
+      },
+      {
+        path: 'employment-type/edit/:id',
+        component: EmploymentTypeEditComponent
+      },
+      // Experience Level
+      {
+        path: 'experience-level',
+        component: ExperienceLevelListComponent
+      },
+      {
+        path: 'experience-level/add',
+        component: ExperienceLevelAddComponent
+      },
+      {
+        path: 'experience-level/edit/:id',
+        component: ExperienceLevelEditComponent
+      },
+      // Interview Round
+      {
+        path: 'interview-round',
+        component: InterviewRoundListComponent
+      },
+      {
+        path: 'interview-round/add',
+        component: InterviewRoundAddComponent
+      },
+      {
+        path: 'interview-round/edit/:id',
+        component: InterviewRoundEditComponent
       },
       // Default Route
       {

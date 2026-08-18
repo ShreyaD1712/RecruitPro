@@ -1,5 +1,5 @@
-<div class="page">
-  <div class="card">
+<div class="user-page">
+  <div class="list-container">
     <!-- Header -->
 
     <div class="header">
@@ -9,12 +9,11 @@
         <p>Manage all users</p>
       </div>
 
-      <!-- Add User -->
-
       <button
         *ngIf="authService.hasPermission('CREATE_USER')"
         mat-raised-button
         color="primary"
+        class="add-button"
         type="button"
         (click)="addUser()"
       >
@@ -27,7 +26,7 @@
     <!-- Filters -->
 
     <div class="filters">
-      <!-- Company -->
+      <!-- Company Filter -->
 
       <mat-form-field appearance="outline" class="filter-box">
         <mat-label>Company</mat-label>
@@ -37,13 +36,9 @@
           (selectionChange)="companyChanged()"
           [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
         >
-          <!-- All Companies -->
-
           <mat-option *ngIf="authService.hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
             All Companies
           </mat-option>
-
-          <!-- Companies -->
 
           <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
             {{ company.CompanyName }}
@@ -72,7 +67,7 @@
     <!-- Table -->
 
     <div class="table-container">
-      <table mat-table [dataSource]="users" class="user-table">
+      <table mat-table [dataSource]="users" class="list-table">
         <!-- First Name -->
 
         <ng-container matColumnDef="FirstName">
@@ -102,7 +97,6 @@
             {{ row.Email }}
           </td>
         </ng-container>
-
         <!-- Company -->
 
         <ng-container matColumnDef="CompanyName">
@@ -112,7 +106,6 @@
             {{ row.CompanyName }}
           </td>
         </ng-container>
-
         <!-- Department -->
 
         <ng-container matColumnDef="DepartmentName">
@@ -151,8 +144,6 @@
           <th mat-header-cell *matHeaderCellDef>Actions</th>
 
           <td mat-cell *matCellDef="let row">
-            <!-- Edit -->
-
             <button
               *ngIf="authService.hasPermission('UPDATE_USER')"
               mat-icon-button
@@ -161,10 +152,8 @@
               matTooltip="Edit"
               (click)="editUser(row.UserId)"
             >
-              <mat-icon> edit </mat-icon>
+              <mat-icon>edit</mat-icon>
             </button>
-
-            <!-- Delete -->
 
             <button
               *ngIf="authService.hasPermission('DELETE_USER')"
@@ -174,7 +163,7 @@
               matTooltip="Delete"
               (click)="deleteUser(row.UserId)"
             >
-              <mat-icon> delete </mat-icon>
+              <mat-icon>delete</mat-icon>
             </button>
           </td>
         </ng-container>
@@ -200,23 +189,15 @@
     <!-- Pagination -->
 
     <div class="pagination">
-      <!-- Previous -->
-
       <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
         Previous
       </button>
 
-      <!-- Page -->
-
       <span>
         Page {{ page }}
-
         of
-
         {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
       </span>
-
-      <!-- Next -->
 
       <button
         mat-stroked-button

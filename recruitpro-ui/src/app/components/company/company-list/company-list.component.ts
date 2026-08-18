@@ -27,7 +27,6 @@ import { AuthService } from '../../../services/auth.service';   // <-- Added
     MatInputModule
   ],
   templateUrl: './company-list.component.html',
-  styleUrls: ['./company-list.component.css']
 })
 export class CompanyListComponent implements OnInit {
 
@@ -40,10 +39,18 @@ export class CompanyListComponent implements OnInit {
   totalRecords = 0;
   Math = Math;
   loading = false;
+  displayedColumns = [
+    'CompanyCode',
+    'CompanyName',
+    'Email',
+    'Phone',
+    'Status',
+    'Actions'
+  ];
 
   constructor(
     private companyService: CompanyService,
-    private authService: AuthService,   // <-- Added
+    public authService: AuthService,   // <-- Added
     private router: Router,
     private cdr: ChangeDetectorRef
   ) { }

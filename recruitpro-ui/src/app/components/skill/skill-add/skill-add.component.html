@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="card">
+    <h2>Add Skill</h2>
+
+    <form [formGroup]="skillForm" (ngSubmit)="saveSkill()">
+      <!-- Skill Name -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Skill Name*</mat-label>
+
+        <input matInput formControlName="SkillName" placeholder="Enter Skill Name" />
+
+        <mat-error *ngIf="skillForm.get('SkillName')?.hasError('required')">
+          Skill Name is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Description -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+
+        <textarea
+          matInput
+          rows="4"
+          formControlName="Description"
+          placeholder="Enter Description"
+        ></textarea>
+      </mat-form-field>
+
+      <!-- Company -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Company*</mat-label>
+
+        <mat-select formControlName="CompanyId">
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="skillForm.get('CompanyId')?.hasError('required')">
+          Company is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Active -->
+
+      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+
+      <!-- Buttons -->
+
+      <div class="buttons">
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+          {{ loading ? 'Saving...' : 'Save' }}
+        </button>
+
+        <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

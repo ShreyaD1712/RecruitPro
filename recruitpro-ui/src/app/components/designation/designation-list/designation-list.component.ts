@@ -31,7 +31,6 @@ import { AuthService } from '../../../services/auth.service';
     MatSelectModule
   ],
   templateUrl: './designation-list.component.html',
-  styleUrls: ['./designation-list.component.css']
 })
 export class DesignationListComponent implements OnInit {
 

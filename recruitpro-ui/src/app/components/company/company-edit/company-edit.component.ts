@@ -34,7 +34,7 @@ import { CompanyService } from '../../../services/company.service';
     MatIconModule
   ],
   templateUrl: './company-edit.component.html',
-  styleUrls: ['./company-edit.component.css']
+  
 })
 export class CompanyEditComponent implements OnInit {
 

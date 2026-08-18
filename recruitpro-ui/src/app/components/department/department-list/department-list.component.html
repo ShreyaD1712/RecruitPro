@@ -1,147 +1,168 @@
-<div class="page-container">
-  <!-- Header -->
-  <div class="header">
-    <div>
-      <h2>Department Management</h2>
+<div class="department-page">
+  <div class="list-container">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h2>Department Management</h2>
 
-      <p>Manage all departments</p>
+        <p>Manage all departments</p>
+      </div>
+
+      <button
+        *ngIf="authService.hasPermission('CREATE_DEPARTMENT')"
+        mat-raised-button
+        color="primary"
+        class="add-button"
+        type="button"
+        (click)="addDepartment()"
+      >
+        <mat-icon>add</mat-icon>
+
+        Add Department
+      </button>
     </div>
 
-    <button
-      *ngIf="hasPermission('CREATE_DEPARTMENT')"
-      mat-raised-button
-      color="primary"
-      (click)="addDepartment()"
-    >
-      <mat-icon>add</mat-icon>
-
-      Add Department
-    </button>
-  </div>
-
-  <!-- Search & Company Filter -->
-  <mat-card class="search-card">
-    <div class="filter-container">
+    <!-- Search & Company Filter -->
+    <div class="filters">
       <!-- Company -->
-      <mat-form-field appearance="outline" class="company-field">
+      <mat-form-field appearance="outline" class="filter-box">
         <mat-label>Company</mat-label>
 
         <mat-select
           [(ngModel)]="selectedCompanyId"
           (selectionChange)="onCompanyChange()"
-          [disabled]="loggedInRoleId != 1"
+          [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
         >
-          <mat-option [value]="null"> All Companies </mat-option>
+          <!-- All Companies -->
+          <mat-option *ngIf="authService.hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
+            All Companies
+          </mat-option>
 
+          <!-- Companies -->
           <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
             {{ company.CompanyName }}
           </mat-option>
         </mat-select>
       </mat-form-field>
-
       <!-- Search -->
-      <mat-form-field appearance="outline" class="search-field">
+      <mat-form-field appearance="outline" class="search-box">
         <mat-label>Search Department</mat-label>
 
-        <input matInput [(ngModel)]="search" placeholder="Search by Department Name or Code" />
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Search by Department Name or Code"
+          (keyup.enter)="searchDepartment()"
+        />
 
-        <button mat-icon-button matSuffix (click)="searchDepartment()">
+        <button mat-icon-button matSuffix type="button" (click)="searchDepartment()">
           <mat-icon>search</mat-icon>
         </button>
       </mat-form-field>
     </div>
-  </mat-card>
 
-  <!-- Table -->
-  <mat-card class="table-card">
-    <table mat-table [dataSource]="departments">
-      <!-- Department Code -->
-      <ng-container matColumnDef="DepartmentCode">
-        <th mat-header-cell *matHeaderCellDef>Code</th>
+    <!-- Table -->
+    <div class="table-container">
+      <table mat-table [dataSource]="departments" class="list-table">
+        <!-- Department Code -->
+        <ng-container matColumnDef="DepartmentCode">
+          <th mat-header-cell *matHeaderCellDef>Code</th>
 
-        <td mat-cell *matCellDef="let row">
-          {{ row.DepartmentCode }}
-        </td>
-      </ng-container>
+          <td mat-cell *matCellDef="let row">
+            {{ row.DepartmentCode }}
+          </td>
+        </ng-container>
 
-      <!-- Department -->
-      <ng-container matColumnDef="DepartmentName">
-        <th mat-header-cell *matHeaderCellDef>Department</th>
+        <!-- Department -->
+        <ng-container matColumnDef="DepartmentName">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
 
-        <td mat-cell *matCellDef="let row">
-          {{ row.DepartmentName }}
-        </td>
-      </ng-container>
+          <td mat-cell *matCellDef="let row">
+            {{ row.DepartmentName }}
+          </td>
+        </ng-container>
 
-      <!-- Company -->
-      <ng-container matColumnDef="CompanyName">
-        <th mat-header-cell *matHeaderCellDef>Company</th>
+        <!-- Company -->
+        <ng-container matColumnDef="CompanyName">
+          <th mat-header-cell *matHeaderCellDef>Company</th>
 
-        <td mat-cell *matCellDef="let row">
-          {{ row.CompanyName }}
-        </td>
-      </ng-container>
+          <td mat-cell *matCellDef="let row">
+            {{ row.CompanyName }}
+          </td>
+        </ng-container>
 
-      <!-- Status -->
-      <ng-container matColumnDef="Status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <!-- Status -->
+        <ng-container matColumnDef="Status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
 
-        <td mat-cell *matCellDef="let row">
-          <span class="badge" [class.active]="row.IsActive" [class.inactive]="!row.IsActive">
-            {{ row.IsActive ? 'Active' : 'Inactive' }}
-          </span>
-        </td>
-      </ng-container>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge" [class.active]="row.IsActive" [class.inactive]="!row.IsActive">
+              {{ row.IsActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+        </ng-container>
 
-      <!-- Actions -->
-      <ng-container matColumnDef="Actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <!-- Actions -->
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
 
-        <td mat-cell *matCellDef="let row">
-          <!-- Edit -->
-          <button
-            *ngIf="hasPermission('UPDATE_DEPARTMENT')"
-            mat-icon-button
-            color="primary"
-            (click)="editDepartment(row.DepartmentId)"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
+          <td mat-cell *matCellDef="let row">
+            <!-- Edit -->
+            <button
+              *ngIf="authService.hasPermission('UPDATE_DEPARTMENT')"
+              mat-icon-button
+              color="primary"
+              type="button"
+              (click)="editDepartment(row.DepartmentId)"
+              matTooltip="Edit"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
 
-          <!-- Delete -->
-          <button
-            *ngIf="hasPermission('DELETE_DEPARTMENT')"
-            mat-icon-button
-            color="warn"
-            (click)="deleteDepartment(row.DepartmentId)"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
+            <!-- Delete -->
+            <button
+              *ngIf="authService.hasPermission('DELETE_DEPARTMENT')"
+              mat-icon-button
+              color="warn"
+              type="button"
+              (click)="deleteDepartment(row.DepartmentId)"
+              matTooltip="Delete"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
 
-    <div class="no-data" *ngIf="departments.length == 0">No Departments Found</div>
-  </mat-card>
+      <div class="no-data" *ngIf="departments.length === 0">No Departments Found</div>
 
-  <!-- Pagination -->
-  <div class="pagination">
-    <button mat-stroked-button (click)="previousPage()" [disabled]="page == 1">Previous</button>
+      <!-- Pagination -->
+      <div class="pagination">
+        <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+          Previous
+        </button>
 
-    <span>
-      Page {{ page }}
+        <span>
+          Page {{ page }}
 
-      of
+          of
 
-      {{ Math.ceil(totalRecords / pageSize) }}
-    </span>
+          {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+        </span>
 
-    <button mat-stroked-button (click)="nextPage()" [disabled]="page * pageSize >= totalRecords">
-      Next
-    </button>
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="page * pageSize >= totalRecords"
+        >
+          Next
+        </button>
+      </div>
+    </div>
   </div>
 </div>

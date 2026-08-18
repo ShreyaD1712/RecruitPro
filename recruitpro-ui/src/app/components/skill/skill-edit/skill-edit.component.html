@@ -1,0 +1,74 @@
+<div class="page">
+  <div class="card">
+    <h2>Edit Skill</h2>
+
+    <form [formGroup]="skillForm" (ngSubmit)="updateSkill()">
+      <!-- Skill Name -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Skill Name*</mat-label>
+
+        <input matInput formControlName="SkillName" />
+
+        <mat-error *ngIf="skillForm.get('SkillName')?.hasError('required')">
+          Skill Name is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Company -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Company*</mat-label>
+
+        <mat-select
+          formControlName="CompanyId"
+          [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
+        >
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="skillForm.get('CompanyId')?.hasError('required')">
+          Company is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Description -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+
+        <textarea matInput rows="4" formControlName="Description"></textarea>
+      </mat-form-field>
+
+      <!-- Active -->
+
+      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+
+      <!-- Buttons -->
+
+      <div class="buttons">
+        <button
+          *ngIf="authService.hasPermission('UPDATE_SKILL')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Updating...' : 'Update' }}
+        </button>
+
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

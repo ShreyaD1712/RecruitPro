@@ -1,0 +1,60 @@
+<div class="page">
+  <div class="card">
+    <h2>Add Interview Round</h2>
+    <form [formGroup]="interviewRoundForm" (ngSubmit)="saveInterviewRound()">
+      <!-- Company -->
+      <mat-form-field appearance="outline">
+        <mat-label>Company*</mat-label>
+        <mat-select formControlName="CompanyId">
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="interviewRoundForm.get('CompanyId')?.hasError('required')">
+          Company is required
+        </mat-error>
+      </mat-form-field>
+      <!-- Interview Round Name -->
+      <mat-form-field appearance="outline">
+        <mat-label>Interview Round Name*</mat-label>
+        <input matInput formControlName="RoundName" placeholder="Enter Interview Round Name" />
+        <mat-error *ngIf="interviewRoundForm.get('RoundName')?.hasError('required')">
+          Interview Round Name is required
+        </mat-error>
+      </mat-form-field>
+      <!-- Description -->
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          rows="4"
+          formControlName="Description"
+          placeholder="Enter Description"
+        ></textarea>
+      </mat-form-field>
+      <!-- Active -->
+      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+      <!-- Buttons -->
+      <div class="buttons">
+        <button
+          *ngIf="authService.hasPermission('CREATE_INTERVIEW_ROUND')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Saving...' : 'Save' }}
+        </button>
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

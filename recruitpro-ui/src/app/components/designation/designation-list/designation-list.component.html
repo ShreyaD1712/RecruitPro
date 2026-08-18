@@ -1,33 +1,34 @@
-<div class="page-container">
-  <!-- Header -->
+<div class="designation-page">
+  <div class="list-container">
+    <!-- Header -->
 
-  <div class="header">
-    <div>
-      <h2>Designation Management</h2>
+    <div class="header">
+      <div>
+        <h2>Designation Management</h2>
 
-      <p>Manage all designations</p>
+        <p>Manage all designations</p>
+      </div>
+
+      <!-- Add Designation -->
+
+      <button
+        *ngIf="authService.hasPermission('CREATE_DESIGNATION')"
+        mat-raised-button
+        color="primary"
+        class="add-button"
+        type="button"
+        (click)="addDesignation()"
+      >
+        <mat-icon>add</mat-icon>
+
+        Add Designation
+      </button>
     </div>
 
-    <!-- Add Designation -->
-
-    <button
-      *ngIf="authService.hasPermission('CREATE_DESIGNATION')"
-      mat-raised-button
-      color="primary"
-      (click)="addDesignation()"
-    >
-      <mat-icon>add</mat-icon>
-
-      Add Designation
-    </button>
-  </div>
-
-  <!-- Search & Filters -->
-
-  <mat-card class="search-card">
-    <div class="search-row">
+    <!-- Search & Filters -->
+    <div class="filters">
       <!-- Company -->
-      <!-- Company Filter -->
+
       <mat-form-field appearance="outline" class="filter-box">
         <mat-label>Company</mat-label>
 
@@ -37,11 +38,13 @@
           [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
         >
           <!-- All Companies -->
+
           <mat-option *ngIf="authService.hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
             All Companies
           </mat-option>
 
           <!-- Companies -->
+
           <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
             {{ company.CompanyName }}
           </mat-option>
@@ -71,145 +74,151 @@
       <mat-form-field appearance="outline" class="search-box">
         <mat-label>Search Designation</mat-label>
 
-        <input matInput [(ngModel)]="search" placeholder="Search by Code or Name" />
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Search by Code or Name"
+          (keyup.enter)="searchDesignation()"
+        />
 
         <button mat-icon-button matSuffix type="button" (click)="searchDesignation()">
           <mat-icon>search</mat-icon>
         </button>
       </mat-form-field>
     </div>
-  </mat-card>
+    <!-- Designation Table -->
 
-  <!-- Designation Table -->
+    <div class="table-container">
+      <table mat-table [dataSource]="designations" class="list-table">
+        <!-- Designation Code -->
 
-  <mat-card class="table-card">
-    <table mat-table [dataSource]="designations">
-      <!-- Designation Code -->
+        <ng-container matColumnDef="DesignationCode">
+          <th mat-header-cell *matHeaderCellDef>Code</th>
 
-      <ng-container matColumnDef="DesignationCode">
-        <th mat-header-cell *matHeaderCellDef>Code</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.DesignationCode }}
+          </td>
+        </ng-container>
 
-        <td mat-cell *matCellDef="let row">
-          {{ row.DesignationCode }}
-        </td>
-      </ng-container>
+        <!-- Designation Name -->
 
-      <!-- Designation Name -->
+        <ng-container matColumnDef="DesignationName">
+          <th mat-header-cell *matHeaderCellDef>Designation</th>
 
-      <ng-container matColumnDef="DesignationName">
-        <th mat-header-cell *matHeaderCellDef>Designation</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.DesignationName }}
+          </td>
+        </ng-container>
 
-        <td mat-cell *matCellDef="let row">
-          {{ row.DesignationName }}
-        </td>
-      </ng-container>
+        <!-- Company -->
 
-      <!-- Company -->
+        <ng-container matColumnDef="CompanyName">
+          <th mat-header-cell *matHeaderCellDef>Company</th>
 
-      <ng-container matColumnDef="CompanyName">
-        <th mat-header-cell *matHeaderCellDef>Company</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.Company?.CompanyName || row.CompanyName }}
+          </td>
+        </ng-container>
 
-        <td mat-cell *matCellDef="let row">
-          {{ row.Company?.CompanyName || row.CompanyName }}
-        </td>
-      </ng-container>
+        <!-- Department -->
 
-      <!-- Department -->
+        <ng-container matColumnDef="DepartmentName">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
 
-      <ng-container matColumnDef="DepartmentName">
-        <th mat-header-cell *matHeaderCellDef>Department</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.Department?.DepartmentName || row.DepartmentName }}
+          </td>
+        </ng-container>
 
-        <td mat-cell *matCellDef="let row">
-          {{ row.Department?.DepartmentName || row.DepartmentName }}
-        </td>
-      </ng-container>
+        <!-- Status -->
 
-      <!-- Status -->
+        <ng-container matColumnDef="Status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
 
-      <ng-container matColumnDef="Status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge" [class.active]="row.IsActive" [class.inactive]="!row.IsActive">
+              {{ row.IsActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+        </ng-container>
 
-        <td mat-cell *matCellDef="let row">
-          <span class="badge" [class.active]="row.IsActive" [class.inactive]="!row.IsActive">
-            {{ row.IsActive ? 'Active' : 'Inactive' }}
-          </span>
-        </td>
-      </ng-container>
+        <!-- Actions -->
 
-      <!-- Actions -->
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
 
-      <ng-container matColumnDef="Actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <!-- Edit -->
 
-        <td mat-cell *matCellDef="let row">
-          <!-- Edit -->
+            <button
+              *ngIf="authService.hasPermission('UPDATE_DESIGNATION')"
+              mat-icon-button
+              color="primary"
+              type="button"
+              (click)="editDesignation(row.DesignationId)"
+              matTooltip="Edit"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
 
-          <button
-            *ngIf="authService.hasPermission('UPDATE_DESIGNATION')"
-            mat-icon-button
-            color="primary"
-            type="button"
-            (click)="editDesignation(row.DesignationId)"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
+            <!-- Delete -->
 
-          <!-- Delete -->
+            <button
+              *ngIf="authService.hasPermission('DELETE_DESIGNATION')"
+              mat-icon-button
+              color="warn"
+              type="button"
+              (click)="deleteDesignation(row.DesignationId)"
+              matTooltip="Delete"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
 
-          <button
-            *ngIf="authService.hasPermission('DELETE_DESIGNATION')"
-            mat-icon-button
-            color="warn"
-            type="button"
-            (click)="deleteDesignation(row.DesignationId)"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
+        <!-- Header Row -->
 
-      <!-- Header Row -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <!-- Data Row -->
 
-      <!-- Data Row -->
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
 
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
+      <!-- No Data -->
 
-    <!-- No Data -->
+      <div class="no-data" *ngIf="designations.length === 0">No Designations Found</div>
 
-    <div class="no-data" *ngIf="designations.length === 0">No Designations Found</div>
-  </mat-card>
+      <!-- Pagination -->
 
-  <!-- Pagination -->
+      <div class="pagination">
+        <!-- Previous -->
 
-  <div class="pagination">
-    <!-- Previous -->
+        <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+          Previous
+        </button>
 
-    <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page === 1">
-      Previous
-    </button>
+        <!-- Page Number -->
 
-    <!-- Page Number -->
+        <span>
+          Page {{ page }}
 
-    <span>
-      Page {{ page }}
+          of
 
-      of
+          {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+        </span>
 
-      {{ Math.ceil(totalRecords / pageSize) }}
-    </span>
+        <!-- Next -->
 
-    <!-- Next -->
-
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="nextPage()"
-      [disabled]="page * pageSize >= totalRecords"
-    >
-      Next
-    </button>
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="page * pageSize >= totalRecords"
+        >
+          Next
+        </button>
+      </div>
+    </div>
   </div>
 </div>

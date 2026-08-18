@@ -1,0 +1,74 @@
+<div class="page">
+  <div class="card">
+    <h2>Add Employment Type</h2>
+
+    <form [formGroup]="employmentTypeForm" (ngSubmit)="saveEmploymentType()">
+      <!-- Company -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Company*</mat-label>
+
+        <mat-select formControlName="CompanyId">
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="employmentTypeForm.get('CompanyId')?.hasError('required')">
+          Company is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Employment Type Name -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Employment Type Name*</mat-label>
+
+        <input
+          matInput
+          formControlName="EmploymentTypeName"
+          placeholder="Enter Employment Type Name"
+        />
+
+        <mat-error *ngIf="employmentTypeForm.get('EmploymentTypeName')?.hasError('required')">
+          Employment Type Name is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Description -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+
+        <textarea
+          matInput
+          rows="4"
+          formControlName="Description"
+          placeholder="Enter Description"
+        ></textarea>
+      </mat-form-field>
+
+      <!-- Active -->
+
+      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+
+      <!-- Buttons -->
+
+      <div class="buttons">
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+          {{ loading ? 'Saving...' : 'Save' }}
+        </button>
+
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

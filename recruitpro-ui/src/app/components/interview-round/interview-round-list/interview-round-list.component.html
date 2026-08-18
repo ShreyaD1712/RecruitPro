@@ -1,0 +1,131 @@
+<div class="interview-round-page">
+  <div class="list-container">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h2>Interview Round Management</h2>
+        <p>Manage company interview rounds</p>
+      </div>
+      <button
+        *ngIf="authService.hasPermission('CREATE_INTERVIEW_ROUND')"
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="addInterviewRound()"
+      >
+        <mat-icon>add</mat-icon> Add Interview Round
+      </button>
+    </div>
+    <!-- Filters -->
+    <div class="filters">
+      <!-- Company -->
+      <mat-form-field appearance="outline" class="filter-box">
+        <mat-label>Company</mat-label>
+        <mat-select
+          [(ngModel)]="selectedCompanyId"
+          (selectionChange)="companyChanged()"
+          [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
+        >
+          <mat-option *ngIf="authService.hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
+            All Companies
+          </mat-option>
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- Search -->
+      <mat-form-field appearance="outline" class="search-box">
+        <mat-label>Search Interview Round</mat-label>
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Search Interview Round"
+          (keyup.enter)="searchInterviewRounds()"
+        />
+        <button mat-icon-button matSuffix type="button" (click)="searchInterviewRounds()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+    <!-- Table -->
+    <div class="table-container">
+      <table mat-table [dataSource]="interviewRounds" class="list-table">
+        <!-- Interview Round Name -->
+        <ng-container matColumnDef="RoundName">
+          <th mat-header-cell *matHeaderCellDef>Interview Round</th>
+          <td mat-cell *matCellDef="let row">{{ row.RoundName }}</td>
+        </ng-container>
+        <!-- Description -->
+        <ng-container matColumnDef="Description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let row">{{ row.Description }}</td>
+        </ng-container>
+        <!-- Status -->
+        <ng-container matColumnDef="Status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge" [class.active]="row.IsActive" [class.inactive]="!row.IsActive">
+              {{ row.IsActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+        </ng-container>
+        <!-- Actions -->
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <!-- Edit -->
+            <button
+              *ngIf="authService.hasPermission('UPDATE_INTERVIEW_ROUND')"
+              mat-icon-button
+              color="primary"
+              type="button"
+              matTooltip="Edit"
+              (click)="editInterviewRound(row.InterviewRoundId)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <!-- Delete -->
+            <button
+              *ngIf="authService.hasPermission('DELETE_INTERVIEW_ROUND')"
+              mat-icon-button
+              color="warn"
+              type="button"
+              matTooltip="Delete"
+              (click)="deleteInterviewRound(row.InterviewRoundId)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <!-- Header -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <!-- Rows -->
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+    <!-- Loading -->
+    <div class="loading" *ngIf="loading">Loading Interview Rounds...</div>
+    <!-- No Data -->
+    <div class="no-data" *ngIf="!loading && interviewRounds.length === 0">
+      No Interview Rounds Found
+    </div>
+    <!-- Pagination -->
+    <div class="pagination">
+      <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+        Previous
+      </button>
+      <span>
+        Page {{ page }} of {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+      </span>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page * pageSize >= totalRecords"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>

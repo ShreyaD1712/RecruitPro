@@ -30,7 +30,6 @@ import { AuthService } from '../../../services/auth.service';
     MatSelectModule
   ],
   templateUrl: './department-list.component.html',
-  styleUrls: ['./department-list.component.css']
 })
 export class DepartmentListComponent implements OnInit {
 
@@ -64,7 +63,7 @@ export class DepartmentListComponent implements OnInit {
   constructor(
     private departmentService: DepartmentService,
     private companyService: CompanyService,
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) { }

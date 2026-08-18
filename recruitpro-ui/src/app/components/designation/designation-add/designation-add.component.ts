@@ -34,7 +34,7 @@ import { AuthService } from '../../../services/auth.service';
     MatSlideToggleModule
   ],
   templateUrl: './designation-add.component.html',
-  styleUrls: ['./designation-add.component.css']
+ 
 })
 export class DesignationAddComponent implements OnInit {
 

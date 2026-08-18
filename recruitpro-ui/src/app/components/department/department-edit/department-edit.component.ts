@@ -35,7 +35,7 @@ import { AuthService } from '../../../services/auth.service';
     MatSlideToggleModule
   ],
   templateUrl: './department-edit.component.html',
-  styleUrl: './department-edit.component.css'
+  
 })
 export class DepartmentEditComponent implements OnInit {
 

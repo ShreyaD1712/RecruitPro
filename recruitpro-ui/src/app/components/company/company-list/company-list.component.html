@@ -1,114 +1,118 @@
-<div class="company-container">
-  <!-- ==========================
+<div class="company-page">
+  <div class="list-container">
+    <!-- ==========================
        HEADER
   =========================== -->
 
-  <div class="header">
-    <div>
-      <h2>Company Management</h2>
+    <div class="header">
+      <div>
+        <h2>Company Management</h2>
 
-      <p>Manage companies and company information</p>
+        <p>Manage companies and company information</p>
+      </div>
+
+      <button
+        *ngIf="authService.hasPermission('CREATE_COMPANY')"
+        mat-raised-button
+        color="primary"
+        class="add-button"
+        type="button"
+        (click)="addCompany()"
+      >
+        <mat-icon>add</mat-icon>
+        Add Company
+      </button>
     </div>
 
-    <button
-      *ngIf="hasPermission('CREATE_COMPANY')"
-      mat-raised-button
-      color="primary"
-      (click)="addCompany()"
-    >
-      <mat-icon>add</mat-icon>
-      Add Company
-    </button>
-  </div>
-
-  <!-- ==========================
+    <!-- ==========================
        SEARCH CARD
   =========================== -->
 
-  <mat-card class="search-card">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label> Search Company </mat-label>
+    <div class="filters">
+      <mat-form-field appearance="outline" class="search-box">
+        <mat-label> Search Company </mat-label>
 
-      <input
-        matInput
-        [(ngModel)]="search"
-        placeholder="Search by Company Name or Code"
-        (keyup.enter)="searchCompany()"
-      />
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Search by Company Name or Code"
+          (keyup.enter)="searchCompany()"
+        />
 
-      <button mat-icon-button matSuffix type="button" (click)="searchCompany()" matTooltip="Search">
-        <mat-icon> search </mat-icon>
-      </button>
-    </mat-form-field>
-  </mat-card>
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="searchCompany()"
+          matTooltip="Search"
+        >
+          <mat-icon> search </mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
 
-  <!-- ==========================
+    <!-- ==========================
        COMPANY TABLE
   =========================== -->
 
-  <mat-card class="table-card">
-    <table class="company-table">
-      <thead>
-        <tr>
-          <th (click)="sort('CompanyCode')">
-            Code
+    <div class="table-container">
+      <table mat-table [dataSource]="companies" class="list-table">
+        <!-- Company Code -->
+        <ng-container matColumnDef="CompanyCode">
+          <th mat-header-cell *matHeaderCellDef>Code</th>
 
-            <mat-icon> swap_vert </mat-icon>
-          </th>
-
-          <th (click)="sort('CompanyName')">
-            Company Name
-
-            <mat-icon> swap_vert </mat-icon>
-          </th>
-
-          <th>Email</th>
-
-          <th>Phone</th>
-
-          <th>Status</th>
-
-          <th>Actions</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <!-- ==========================
-             COMPANY ROW
-        =========================== -->
-
-        <tr *ngFor="let company of companies">
-          <td>
-            {{ company.CompanyCode }}
+          <td mat-cell *matCellDef="let row">
+            {{ row.CompanyCode }}
           </td>
+        </ng-container>
+        <!-- Company -->
+        <ng-container matColumnDef="CompanyName">
+          <th mat-header-cell *matHeaderCellDef>Company</th>
 
-          <td>
-            {{ company.CompanyName }}
+          <td mat-cell *matCellDef="let row">
+            {{ row.CompanyName }}
           </td>
+        </ng-container>
 
-          <td>
-            {{ company.Email }}
+        <!-- Email -->
+        <ng-container matColumnDef="Email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.Email }}
           </td>
+        </ng-container>
 
-          <td>
-            {{ company.Phone }}
+        <!-- phone -->
+        <ng-container matColumnDef="Phone">
+          <th mat-header-cell *matHeaderCellDef>Phone</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.Phone }}
           </td>
+        </ng-container>
 
-          <td>
-            <span class="status active" *ngIf="company.IsActive"> Active </span>
+        <!-- Status -->
+        <ng-container matColumnDef="Status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
 
-            <span class="status inactive" *ngIf="!company.IsActive"> Inactive </span>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge" [class.active]="row.IsActive" [class.inactive]="!row.IsActive">
+              {{ row.IsActive ? 'Active' : 'Inactive' }}
+            </span>
           </td>
+        </ng-container>
 
-          <td class="actions">
-            <!-- EDIT -->
+        <!-- Actions -->
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
 
+          <td mat-cell *matCellDef="let row">
             <button
-              *ngIf="hasPermission('UPDATE_COMPANY')"
+              *ngIf="authService.hasPermission('UPDATE_COMPANY')"
               mat-icon-button
               color="primary"
               type="button"
-              (click)="editCompany(company.CompanyId)"
+              (click)="editCompany(row.CompanyId)"
               matTooltip="Edit"
             >
               <mat-icon> edit </mat-icon>
@@ -117,55 +121,61 @@
             <!-- DELETE -->
 
             <button
-              *ngIf="hasPermission('DELETE_COMPANY')"
+              *ngIf="authService.hasPermission('DELETE_COMPANY')"
               mat-icon-button
               color="warn"
               type="button"
-              (click)="deleteCompany(company.CompanyId)"
+              (click)="deleteCompany(row.CompanyId)"
               matTooltip="Delete"
             >
               <mat-icon> delete </mat-icon>
             </button>
           </td>
-        </tr>
+        </ng-container>
 
-       
+        <!-- Header -->
 
-        <!-- ==========================
-             NO DATA
-        =========================== -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
-        <tr *ngIf="!loading && companies.length === 0">
-          <td colspan="6" class="no-data">No Companies Found</td>
-        </tr>
-      </tbody>
-    </table>
-  </mat-card>
+        <!-- Rows -->
 
-  <!-- ==========================
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <!-- Loading -->
+
+    <div class="loading" *ngIf="loading">Loading Companies...</div>
+
+    <!-- No Data -->
+
+    <div class="no-data" *ngIf="!loading && companies.length === 0">No Users Found</div>
+
+    <!-- ==========================
        PAGINATION
   =========================== -->
 
-  <div class="pagination">
-    <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page === 1">
-      Previous
-    </button>
+    <div class="pagination">
+      <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+        Previous
+      </button>
 
-    <span>
-      Page {{ page }}
+      <span>
+        Page {{ page }}
 
-      of
+        of
 
-      {{ totalRecords > 0 ? Math.ceil(totalRecords / pageSize) : 1 }}
-    </span>
+        {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+      </span>
 
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="nextPage()"
-      [disabled]="page * pageSize >= totalRecords"
-    >
-      Next
-    </button>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page * pageSize >= totalRecords"
+      >
+        Next
+      </button>
+    </div>
   </div>
 </div>

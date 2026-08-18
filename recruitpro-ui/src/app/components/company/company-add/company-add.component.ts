@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule
+    FormBuilder,
+    FormGroup,
+    Validators,
+    ReactiveFormsModule
 } from '@angular/forms';
+
 import { Router } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
@@ -13,90 +15,235 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatIconModule } from '@angular/material/icon';
 
 import { CompanyService } from '../../../services/company.service';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
-  selector: 'app-company-add',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatSlideToggleModule,
-    MatIconModule
-  ],
-  templateUrl: './company-add.component.html',
-  styleUrls: ['./company-add.component.css']
+    selector: 'app-company-add',
+    standalone: true,
+
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatSlideToggleModule
+    ],
+
+    templateUrl: './company-add.component.html'
 })
 export class CompanyAddComponent implements OnInit {
 
-  companyForm: FormGroup;
+    // ==========================
+    // FORM
+    // ==========================
 
-  constructor(
-    private fb: FormBuilder,
-    private companyService: CompanyService,
-    private authService: AuthService,
-    private router: Router
-  ) {
+    companyForm!: FormGroup;
 
-    this.companyForm = this.fb.group({
-      CompanyCode: ['', Validators.required],
-      CompanyName: ['', Validators.required],
-      Email: ['', [Validators.required, Validators.email]],
-      Phone: ['', Validators.required],
-      Website: [''],
-      Address: [''],
-      IsActive: [true]
-    });
+    // ==========================
+    // LOADING
+    // ==========================
 
-  }
+    loading = false;
 
-  ngOnInit(): void {
+    constructor(
+        private fb: FormBuilder,
+        private companyService: CompanyService,
+        public authService: AuthService,
+        private router: Router
+    ) { }
 
-    if (!this.hasPermission('CREATE_COMPANY')) {
-      alert('You are not authorized to access this page.');
-      this.router.navigate(['/company']);
-      return;
+    // ==========================
+    // INIT
+    // ==========================
+
+    ngOnInit(): void {
+
+        // Permission Check
+
+        if (
+            !this.authService.hasPermission(
+                'CREATE_COMPANY'
+            )
+        ) {
+
+            alert(
+                'You are not authorized to create companies.'
+            );
+
+            this.router.navigate([
+                '/company'
+            ]);
+
+            return;
+        }
+
+        // ==========================
+        // CREATE FORM
+        // ==========================
+
+        this.companyForm = this.fb.group({
+
+            CompanyCode: [
+                '',
+                [
+                    Validators.required,
+                    Validators.maxLength(50)
+                ]
+            ],
+
+            CompanyName: [
+                '',
+                [
+                    Validators.required,
+                    Validators.maxLength(150)
+                ]
+            ],
+
+            Email: [
+                '',
+                [
+                    Validators.required,
+                    Validators.email,
+                    Validators.maxLength(150)
+                ]
+            ],
+
+            Phone: [
+                '',
+                [
+                    Validators.maxLength(20)
+                ]
+            ],
+
+            Website: [
+                '',
+                [
+                    Validators.maxLength(250)
+                ]
+            ],
+
+            Address: [
+                '',
+                [
+                    Validators.maxLength(500)
+                ]
+            ],
+
+            IsActive: [
+                true
+            ]
+
+        });
+
     }
 
-  }
+    // ==========================
+    // PERMISSION CHECK
+    // ==========================
 
-  hasPermission(permission: string): boolean {
-    return this.authService.hasPermission(permission);
-  }
+    hasPermission(
+        permission: string
+    ): boolean {
 
-  saveCompany() {
-
-    if (!this.hasPermission('CREATE_COMPANY')) {
-      alert('You do not have permission to create companies.');
-      return;
+        return this.authService.hasPermission(
+            permission
+        );
     }
 
-    if (this.companyForm.invalid) {
-      this.companyForm.markAllAsTouched();
-      return;
+    // ==========================
+    // SAVE COMPANY
+    // ==========================
+
+    saveCompany(): void {
+
+        // Permission Check
+
+        if (
+            !this.hasPermission(
+                'CREATE_COMPANY'
+            )
+        ) {
+
+            alert(
+                'You do not have permission to create companies.'
+            );
+
+            return;
+        }
+
+        // Form Validation
+
+        if (
+            this.companyForm.invalid
+        ) {
+
+            this.companyForm.markAllAsTouched();
+
+            return;
+        }
+
+        // Loading
+
+        this.loading = true;
+
+        // Form Data
+
+        const data =
+            this.companyForm.value;
+
+        // ==========================
+        // ADD COMPANY
+        // ==========================
+
+        this.companyService
+            .addCompany(data)
+            .subscribe({
+
+                next: () => {
+
+                    this.loading = false;
+
+                    alert(
+                        'Company Added Successfully'
+                    );
+
+                    this.router.navigate([
+                        '/company'
+                    ]);
+
+                },
+
+                error: (err: any) => {
+
+                    console.log(err);
+
+                    this.loading = false;
+
+                    alert(
+                        err?.error?.detail ||
+                        'Unable to add company'
+                    );
+
+                }
+
+            });
+
     }
 
-    this.companyService.addCompany(this.companyForm.value).subscribe({
-      next: () => {
-        alert('Company Added Successfully');
-        this.router.navigate(['/company']);
-      },
-      error: (err) => {
-        alert(err.error.detail);
-      }
-    });
+    // ==========================
+    // CANCEL
+    // ==========================
 
-  }
+    cancel(): void {
 
-  cancel() {
-    this.router.navigate(['/company']);
-  }
+        this.router.navigate([
+            '/company'
+        ]);
+
+    }
 
 }

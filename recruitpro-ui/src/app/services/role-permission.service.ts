@@ -4,7 +4,12 @@ import {
     HttpClient
 } from '@angular/common/http';
 
-import { Observable } from 'rxjs';
+import {
+    Observable,
+    catchError,
+    throwError,
+    tap
+} from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -26,10 +31,33 @@ export class RolePermissionService {
         roleId: number
     ): Observable<any> {
 
-        return this.http.get(
+        return this.http.get<any>(
             `${this.apiUrl}/${roleId}`
-        );
+        ).pipe(
 
+            tap(response => {
+
+                console.log(
+                    'Permissions loaded:',
+                    response
+                );
+
+            }),
+
+            catchError(error => {
+
+                console.error(
+                    'Error loading permissions:',
+                    error
+                );
+
+                return throwError(
+                    () => error
+                );
+
+            })
+
+        );
     }
 
     // ==========================
@@ -46,11 +74,38 @@ export class RolePermissionService {
             Permissions: permissions
         };
 
-        return this.http.post(
-            `${this.apiUrl}/`,
+        console.log(
+            'Saving permissions:',
             data
         );
 
-    }
+        return this.http.post<any>(
+            `${this.apiUrl}/`,
+            data
+        ).pipe(
 
+            tap(response => {
+
+                console.log(
+                    'Save permissions response:',
+                    response
+                );
+
+            }),
+
+            catchError(error => {
+
+                console.error(
+                    'Save permissions error:',
+                    error
+                );
+
+                return throwError(
+                    () => error
+                );
+
+            })
+
+        );
+    }
 }

@@ -1,0 +1,70 @@
+<div class="page">
+  <div class="card">
+    <h2>Edit Job Category</h2>
+
+    <form [formGroup]="jobCategoryForm" (ngSubmit)="updateJobCategory()">
+      <!-- Company -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Company*</mat-label>
+
+        <mat-select formControlName="CompanyId">
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="jobCategoryForm.get('CompanyId')?.hasError('required')">
+          Company is required
+        </mat-error>
+      </mat-form-field>
+      <!-- Job Category Name -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Category Name*</mat-label>
+
+        <input matInput formControlName="CategoryName" />
+
+        <mat-error *ngIf="jobCategoryForm.get('CategoryName')?.hasError('required')">
+          Category Name is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Description -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+
+        <textarea matInput rows="4" formControlName="Description"></textarea>
+      </mat-form-field>
+
+      <!-- Active -->
+
+      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+
+      <!-- Buttons -->
+
+      <div class="buttons">
+        <button
+          *ngIf="authService.hasPermission('UPDATE_JOB_CATEGORY')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Updating...' : 'Update' }}
+        </button>
+
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

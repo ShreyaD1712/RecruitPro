@@ -44,7 +44,47 @@
     <mat-icon>lock</mat-icon>
     <span>Permissions</span>
   </a>
-
+  <!-- Skills -->
+  <a *ngIf="hasPermission('VIEW_SKILL')" routerLink="/skill" routerLinkActive="active">
+    <mat-icon>build</mat-icon>
+    <span>Skills</span>
+  </a>
+  <!-- Job Categories -->
+  <a
+    *ngIf="hasPermission('VIEW_JOB_CATEGORY')"
+    routerLink="/job-category"
+    routerLinkActive="active"
+  >
+    <mat-icon>category</mat-icon>
+    <span>Job Categories</span>
+  </a>
+  <!-- Employment Types-->
+  <a
+    *ngIf="hasPermission('VIEW_EMPLOYMENT_TYPE')"
+    routerLink="/employment-type"
+    routerLinkActive="active"
+  >
+    <mat-icon>work</mat-icon>
+    <span>Employment Types</span>
+  </a>
+  <!-- Experience Levels-->
+  <a
+    *ngIf="hasPermission('VIEW_EXPERIENCE_LEVEL')"
+    routerLink="/experience-level"
+    routerLinkActive="active"
+  >
+    <mat-icon>workspace_premium</mat-icon>
+    <span>Experience Levels</span>
+  </a>
+  <!-- Interview Round -->
+  <a
+    *ngIf="hasPermission('VIEW_INTERVIEW_ROUND')"
+    routerLink="/interview-round"
+    routerLinkActive="active"
+  >
+    <mat-icon>groups</mat-icon>
+    <span>Interview Rounds</span>
+  </a>
   <!-- Jobs -->
   <a *ngIf="hasPermission('VIEW_JOB')" routerLink="/job" routerLinkActive="active">
     <mat-icon>work</mat-icon>

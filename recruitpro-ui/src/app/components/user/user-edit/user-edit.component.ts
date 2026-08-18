@@ -40,7 +40,6 @@ import { AuthService } from '../../../services/auth.service';
         MatCardModule
     ],
     templateUrl: './user-edit.component.html',
-    styleUrls: ['./user-edit.component.css']
 })
 export class UserEditComponent implements OnInit {
 

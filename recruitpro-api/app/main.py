@@ -9,6 +9,12 @@ from app.routers.company import router as company_router
 from app.routers.department import router as department_router
 from app.routers.designation import router as designation_router
 from app.routers import role_permission
+from app.routers import skill
+from app.routers.job_category import router as job_category_router
+from app.routers.employment_type import router as employment_type_router
+from app.routers.experience_level import router as experience_level_router
+from app.routers.interview_round import router as interview_round_router
+
 
 app = FastAPI(title="RecruitPro API")
 
@@ -31,7 +37,11 @@ app.include_router(designation_router)
 app.include_router(role_router)
 app.include_router(user_router)
 app.include_router(role_permission.router)
-
+app.include_router(skill.router)
+app.include_router(job_category_router)
+app.include_router(employment_type_router)
+app.include_router(experience_level_router)
+app.include_router(interview_round_router)
 
 @app.get("/")
 def home():
