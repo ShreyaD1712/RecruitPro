@@ -1,0 +1,239 @@
+<div class="job-opening-page">
+  <div class="list-container">
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
+    <div class="header">
+      <div>
+        <h2>Job Opening Management</h2>
+        <p>Manage company job openings</p>
+      </div>
+      <!-- ADD -->
+      <button
+        *ngIf="authService.hasPermission('CREATE_JOB_OPENING')"
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="addJobOpening()"
+      >
+        <mat-icon>add</mat-icon>
+        Add Job Opening
+      </button>
+    </div>
+    <!-- ==================================================
+         FILTERS
+    ================================================== -->
+    <div class="filters">
+      <!-- ==================================================
+           DEPARTMENT
+      ================================================== -->
+      <mat-form-field appearance="outline" class="filter-box">
+        <mat-label>Department</mat-label>
+        <mat-select [(ngModel)]="selectedDepartmentId" (selectionChange)="departmentChanged()">
+          <!-- ALL DEPARTMENTS -->
+          <mat-option [value]="null"> All Departments </mat-option>
+          <!-- DEPARTMENTS -->
+          <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
+            {{ department.DepartmentName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- ==================================================
+           DESIGNATION
+      ================================================== -->
+      <mat-form-field appearance="outline" class="filter-box">
+        <mat-label>Designation</mat-label>
+        <mat-select
+          [(ngModel)]="selectedDesignationId"
+          (selectionChange)="designationChanged()"
+          [disabled]="selectedDepartmentId === null"
+        >
+          <!-- ALL DESIGNATIONS -->
+          <mat-option [value]="null"> All Designations </mat-option>
+          <!-- DESIGNATIONS -->
+          <mat-option *ngFor="let designation of designations" [value]="designation.DesignationId">
+            {{ designation.DesignationName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- ==================================================
+           STATUS
+      ================================================== -->
+      <mat-form-field appearance="outline" class="filter-box">
+        <mat-label>Status</mat-label>
+
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="statusChanged()">
+          <mat-option value="Open"> Open </mat-option>
+
+          <mat-option value="Closed"> Closed </mat-option>
+
+          <mat-option value="All"> All </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- ==================================================
+           SEARCH
+      ================================================== -->
+      <mat-form-field appearance="outline" class="search-box">
+        <mat-label>Search Job Opening</mat-label>
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Search Job Title, Description or Location"
+          (keyup.enter)="searchJobOpenings()"
+        />
+        <button mat-icon-button matSuffix type="button" (click)="searchJobOpenings()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+    <!-- ==================================================
+         TABLE
+    ================================================== -->
+    <div class="table-container">
+      <table mat-table [dataSource]="jobOpenings" class="list-table">
+        <!-- ==================================================
+             JOB TITLE
+        ================================================== -->
+        <ng-container matColumnDef="JobTitle">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('JobTitle')">Job Title</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.JobTitle }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             DEPARTMENT
+        ================================================== -->
+        <ng-container matColumnDef="Department">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.department?.DepartmentName || '-' }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             DESIGNATION
+        ================================================== -->
+        <ng-container matColumnDef="Designation">
+          <th mat-header-cell *matHeaderCellDef>Designation</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.designation?.DesignationName || '-' }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             LOCATION
+        ================================================== -->
+        <ng-container matColumnDef="Location">
+          <th mat-header-cell *matHeaderCellDef>Location</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.Location || '-' }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             VACANCIES
+        ================================================== -->
+        <ng-container matColumnDef="NoOfVacancies">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('NoOfVacancies')">Vacancies</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.NoOfVacancies }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             SALARY
+        ================================================== -->
+        <ng-container matColumnDef="Salary">
+          <th mat-header-cell *matHeaderCellDef>Salary</th>
+          <td mat-cell *matCellDef="let row">
+            <span *ngIf="row.SalaryFrom || row.SalaryTo">
+              {{ row.SalaryFrom || 0 }}
+              -
+              {{ row.SalaryTo || 0 }}
+            </span>
+            <span *ngIf="!row.SalaryFrom && !row.SalaryTo"> Not Specified </span>
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             STATUS
+        ================================================== -->
+        <ng-container matColumnDef="Status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge active">
+              {{ row.Status }}
+            </span>
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             ACTIONS
+        ================================================== -->
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <!-- EDIT -->
+            <button
+              *ngIf="authService.hasPermission('UPDATE_JOB_OPENING')"
+              mat-icon-button
+              color="primary"
+              type="button"
+              matTooltip="Edit"
+              (click)="editJobOpening(row.JobOpeningId)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <!-- DELETE -->
+            <button
+              *ngIf="authService.hasPermission('DELETE_JOB_OPENING')"
+              mat-icon-button
+              color="warn"
+              type="button"
+              matTooltip="Delete"
+              (click)="deleteJobOpening(row.JobOpeningId)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             HEADER ROW
+        ================================================== -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <!-- ==================================================
+             DATA ROW
+        ================================================== -->
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+    <!-- ==================================================
+         LOADING
+    ================================================== -->
+    <div class="loading" *ngIf="loading">Loading Job Openings...</div>
+    <!-- ==================================================
+         NO DATA
+    ================================================== -->
+    <div class="no-data" *ngIf="!loading && jobOpenings.length === 0">
+      No Open Job Openings Found
+    </div>
+    <!-- ==================================================
+         PAGINATION
+    ================================================== -->
+    <div class="pagination">
+      <!-- PREVIOUS -->
+      <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+        Previous
+      </button>
+      <!-- PAGE NUMBER -->
+      <span>
+        Page {{ page }}
+        of
+        {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+      </span>
+      <!-- NEXT -->
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page * pageSize >= totalRecords"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>

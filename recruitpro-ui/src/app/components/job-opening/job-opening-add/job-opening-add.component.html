@@ -1,0 +1,215 @@
+<div class="page">
+  <div class="card">
+    <h2>Add Job Opening</h2>
+    <form [formGroup]="jobOpeningForm" (ngSubmit)="saveJobOpening()">
+      <!-- ================================================== -->
+      <!-- DEPARTMENT -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Department*</mat-label>
+        <mat-select formControlName="DepartmentId">
+          <mat-option *ngIf="loadingDepartments" disabled> Loading Departments... </mat-option>
+          <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
+            {{ department.DepartmentName }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="jobOpeningForm.get('DepartmentId')?.hasError('required')">
+          Department is required
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- DESIGNATION -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Designation*</mat-label>
+        <mat-select
+          formControlName="DesignationId"
+          [disabled]="!jobOpeningForm.get('DepartmentId')?.value"
+        >
+          <mat-option *ngIf="loadingDesignations" disabled> Loading Designations... </mat-option>
+          <mat-option *ngFor="let designation of designations" [value]="designation.DesignationId">
+            {{ designation.DesignationName }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="jobOpeningForm.get('DesignationId')?.hasError('required')">
+          Designation is required
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- JOB CATEGORY -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Job Category*</mat-label>
+        <mat-select formControlName="JobCategoryId">
+          <mat-option *ngIf="loadingJobCategories" disabled> Loading Job Categories... </mat-option>
+          <mat-option *ngFor="let category of jobCategories" [value]="category.JobCategoryId">
+            {{ category.CategoryName }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="jobOpeningForm.get('JobCategoryId')?.hasError('required')">
+          Job Category is required
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- EMPLOYMENT TYPE -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Employment Type*</mat-label>
+        <mat-select formControlName="EmploymentTypeId">
+          <mat-option *ngIf="loadingEmploymentTypes" disabled>
+            Loading Employment Types...
+          </mat-option>
+          <mat-option
+            *ngFor="let employmentType of employmentTypes"
+            [value]="employmentType.EmploymentTypeId"
+          >
+            {{ employmentType.EmploymentTypeName }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="jobOpeningForm.get('EmploymentTypeId')?.hasError('required')">
+          Employment Type is required
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- EXPERIENCE LEVEL -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Experience Level*</mat-label>
+        <mat-select formControlName="ExperienceLevelId">
+          <mat-option *ngIf="loadingExperienceLevels" disabled>
+            Loading Experience Levels...
+          </mat-option>
+          <mat-option
+            *ngFor="let experience of experienceLevels"
+            [value]="experience.ExperienceLevelId"
+          >
+            {{ experience.LevelName }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="jobOpeningForm.get('ExperienceLevelId')?.hasError('required')">
+          Experience Level is required
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- JOB TITLE -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Job Title*</mat-label>
+        <input matInput formControlName="JobTitle" placeholder="Enter Job Title" />
+        <mat-error *ngIf="jobOpeningForm.get('JobTitle')?.hasError('required')">
+          Job Title is required
+        </mat-error>
+        <mat-error *ngIf="jobOpeningForm.get('JobTitle')?.hasError('maxlength')">
+          Job Title cannot exceed 150 characters
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- JOB DESCRIPTION -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Job Description</mat-label>
+        <textarea
+          matInput
+          rows="5"
+          formControlName="JobDescription"
+          placeholder="Enter Job Description"
+        ></textarea>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- LOCATION -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Location</mat-label>
+        <input matInput formControlName="Location" placeholder="Enter Job Location" />
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- NUMBER OF VACANCIES -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>No. of Vacancies*</mat-label>
+        <input
+          matInput
+          type="number"
+          min="1"
+          formControlName="NoOfVacancies"
+          placeholder="Enter Number of Vacancies"
+        />
+        <mat-error *ngIf="jobOpeningForm.get('NoOfVacancies')?.hasError('required')">
+          Number of Vacancies is required
+        </mat-error>
+        <mat-error *ngIf="jobOpeningForm.get('NoOfVacancies')?.hasError('min')">
+          At least 1 vacancy is required
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- SALARY FROM -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Salary From</mat-label>
+        <input
+          matInput
+          type="number"
+          min="0"
+          formControlName="SalaryFrom"
+          placeholder="Enter Minimum Salary"
+        />
+        <mat-error *ngIf="jobOpeningForm.get('SalaryFrom')?.hasError('min')">
+          Salary cannot be negative
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- SALARY TO -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Salary To</mat-label>
+        <input
+          matInput
+          type="number"
+          min="0"
+          formControlName="SalaryTo"
+          placeholder="Enter Maximum Salary"
+        />
+        <mat-error *ngIf="jobOpeningForm.get('SalaryTo')?.hasError('min')">
+          Salary cannot be negative
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- STATUS -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Status*</mat-label>
+        <mat-select formControlName="Status">
+          <mat-option *ngFor="let status of statuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="jobOpeningForm.get('Status')?.hasError('required')">
+          Status is required
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- BUTTONS -->
+      <!-- ================================================== -->
+      <div class="buttons">
+        <button
+          *ngIf="authService.hasPermission('CREATE_JOB_OPENING')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Saving...' : 'Save' }}
+        </button>
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

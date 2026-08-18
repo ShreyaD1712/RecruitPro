@@ -97,18 +97,17 @@ class DesignationRepository:
     # -------------------------
     # Get By Id
     # -------------------------
-    def get_by_id(
-        self,
-        db: Session,
-        designation_id: int,
-    ):
+    def get_by_id(self, db: Session, designation_id: int, company_id: int):
         return (
             db.query(Designation)
             .options(
                 joinedload(Designation.company),
                 joinedload(Designation.department),
             )
-            .filter(Designation.DesignationId == designation_id)
+            .filter(
+                Designation.DesignationId == designation_id,
+                Designation.CompanyId == company_id,
+            )
             .first()
         )
 

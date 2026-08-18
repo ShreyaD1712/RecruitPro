@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy.orm import relationship
 
 from app.database import Base
 
@@ -24,3 +25,5 @@ class JobCategory(Base):
     UpdatedOn = Column(DateTime, nullable=True)
 
     UpdatedBy = Column(Integer, nullable=True)
+
+    job_openings = relationship("JobOpening", back_populates="job_category")

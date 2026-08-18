@@ -82,11 +82,15 @@ class ExperienceLevelRepository:
         self,
         db: Session,
         experience_level_id: int,
+        company_id: int,
     ):
 
         return (
             db.query(ExperienceLevel)
-            .filter(ExperienceLevel.ExperienceLevelId == experience_level_id)
+            .filter(
+                ExperienceLevel.ExperienceLevelId == experience_level_id,
+                ExperienceLevel.CompanyId == company_id,
+            )
             .first()
         )
 

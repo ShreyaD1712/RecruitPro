@@ -28,8 +28,8 @@ class Designation(Base):
     UpdatedBy = Column(Integer)
 
     company = relationship("Company", back_populates="designations")
-
     department = relationship("Department", back_populates="designations")
+    job_openings = relationship("JobOpening", back_populates="designation")
 
     @property
     def CompanyName(self):

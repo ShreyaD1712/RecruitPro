@@ -67,12 +67,15 @@ class DepartmentRepository:
     # -------------------------
     # Get By Id
     # -------------------------
-    def get_by_id(self, db: Session, department_id: int):
+    def get_by_id(self, db: Session, department_id: int, company_id: int):
 
         return (
             db.query(Department)
             .options(joinedload(Department.company))
-            .filter(Department.DepartmentId == department_id)
+            .filter(
+                Department.DepartmentId == department_id,
+                Department.CompanyId == company_id,
+            )
             .first()
         )
 

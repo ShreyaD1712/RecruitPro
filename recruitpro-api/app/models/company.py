@@ -26,3 +26,4 @@ class Company(Base):
         "Designation", back_populates="company", cascade="all, delete-orphan"
     )
     users = relationship("User", back_populates="company")
+    job_openings = relationship("JobOpening", back_populates="company")

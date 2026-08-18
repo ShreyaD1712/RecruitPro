@@ -78,15 +78,14 @@ class EmploymentTypeRepository:
     # -------------------------
     # Get Employment Type By Id
     # -------------------------
-    def get_by_id(
-        self,
-        db: Session,
-        employment_type_id: int,
-    ):
+    def get_by_id(self, db: Session, employment_type_id: int, company_id: int):
 
         return (
             db.query(EmploymentType)
-            .filter(EmploymentType.EmploymentTypeId == employment_type_id)
+            .filter(
+                EmploymentType.EmploymentTypeId == employment_type_id,
+                EmploymentType.CompanyId == company_id,
+            )
             .first()
         )
 

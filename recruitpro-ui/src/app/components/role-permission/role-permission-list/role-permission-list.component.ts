@@ -154,8 +154,14 @@ export class RolePermissionListComponent
         'VIEW_INTERVIEW_ROUND',
         'CREATE_INTERVIEW_ROUND',
         'UPDATE_INTERVIEW_ROUND',
-        'DELETE_INTERVIEW_ROUND'
-
+        'DELETE_INTERVIEW_ROUND',
+        // -------------------------
+        // Job Openings
+        // -------------------------
+        'VIEW_JOB_OPENING',
+        'CREATE_JOB_OPENING',
+        'UPDATE_JOB_OPENING',
+        'DELETE_JOB_OPENING'
     ];
     selectedPermissions:
         string[] = [];

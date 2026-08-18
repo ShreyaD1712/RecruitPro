@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
-
+from sqlalchemy.orm import relationship
 from app.database import Base
 
 
@@ -24,3 +24,5 @@ class ExperienceLevel(Base):
     UpdatedBy = Column(Integer)
 
     CompanyId = Column(Integer, nullable=False)
+
+    job_openings = relationship("JobOpening", back_populates="experience_level")

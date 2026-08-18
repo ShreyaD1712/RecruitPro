@@ -28,6 +28,7 @@ class Department(Base):
         "Designation", back_populates="department", cascade="all, delete-orphan"
     )
     users = relationship("User", back_populates="department")
+    job_openings = relationship("JobOpening", back_populates="department")
 
     @property
     def CompanyName(self):

@@ -50,6 +50,10 @@ import { ExperienceLevelEditComponent } from './components/experience-level/expe
 import { InterviewRoundListComponent } from './components/interview-round/interview-round-list/interview-round-list.component';
 import { InterviewRoundAddComponent } from './components/interview-round/interview-round-add/interview-round-add.component';
 import { InterviewRoundEditComponent } from './components/interview-round/interview-round-edit/interview-round-edit.component';
+// Job Opening Component
+import { JobOpeningListComponent } from './components/job-opening/job-opening-list/job-opening-list.component';
+import { JobOpeningAddComponent } from './components/job-opening/job-opening-add/job-opening-add.component';
+import { JobOpeningEditComponent } from './components/job-opening/job-opening-edit/job-opening-edit.component';
 export const routes: Routes = [
   // Login Page
   {
@@ -211,6 +215,19 @@ export const routes: Routes = [
       {
         path: 'interview-round/edit/:id',
         component: InterviewRoundEditComponent
+      },
+      // Job Opening
+      {
+        path: 'job-opening',
+        component: JobOpeningListComponent
+      },
+      {
+        path: 'job-opening/add',
+        component: JobOpeningAddComponent
+      },
+      {
+        path: 'job-opening/edit/:id',
+        component: JobOpeningEditComponent
       },
       // Default Route
       {
