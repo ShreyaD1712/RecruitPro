@@ -34,6 +34,7 @@ import { AuthService } from '../../../services/auth.service';
         MatTooltipModule
     ],
     templateUrl: './job-opening-list.component.html',
+    styleUrls: ['./job-opening-list.component.css']
 })
 export class JobOpeningListComponent implements OnInit {
     // ==================================================

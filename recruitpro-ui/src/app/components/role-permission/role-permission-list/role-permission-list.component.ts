@@ -161,7 +161,14 @@ export class RolePermissionListComponent
         'VIEW_JOB_OPENING',
         'CREATE_JOB_OPENING',
         'UPDATE_JOB_OPENING',
-        'DELETE_JOB_OPENING'
+        'DELETE_JOB_OPENING',
+        // -------------------------
+        // Applicants
+        // -------------------------
+        'VIEW_APPLICANT',
+        'CREATE_APPLICANT',
+        'UPDATE_APPLICANT',
+        'DELETE_APPLICANT'
     ];
     selectedPermissions:
         string[] = [];

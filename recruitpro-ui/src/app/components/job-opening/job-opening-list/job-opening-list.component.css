@@ -1,0 +1,198 @@
+/* ==================================================
+   JOB OPENING LIST PAGE
+================================================== */
+.job-opening-page {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+/* ==================================================
+   LIST CONTAINER
+================================================== */
+.job-opening-page .list-container {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+/* ==================================================
+   HEADER
+================================================== */
+.job-opening-page .header {
+  width: 100%;
+  box-sizing: border-box;
+}
+/* ==================================================
+   HEADER ACTIONS
+================================================== */
+.job-opening-page .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+/* ==================================================
+   JOB OPENING SEARCH
+================================================== */
+.job-opening-page .search-box {
+  width: 950px;
+  display: block;
+  margin-bottom: 20px;
+}
+/* ==================================================
+   FILTER BOX
+================================================== */
+.job-opening-page .filters {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  align-items: center;
+}
+/* Search */
+.job-opening-page .filters .search-box {
+  flex: 1;
+  min-width: 100;
+  width: 310px;
+}
+.job-opening-page .filter-box {
+  width: 310px;
+}
+/* ==================================================
+   TABLE
+================================================== */
+.job-opening-page .table-container {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.job-opening-page .list-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+/* ==================================================
+   TABLE HEADER
+================================================== */
+.job-opening-page .list-table th {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  padding: 18px 20px;
+  border-bottom: 1px solid #94a3b8;
+  text-align: left;
+}
+/* ==================================================
+   TABLE DATA
+================================================== */
+.job-opening-page .list-table td {
+  font-size: 16px;
+  color: #374151;
+  padding: 20px;
+  border-bottom: 1px solid #cbd5e1;
+}
+/* ==================================================
+   TABLE ROW HOVER
+================================================== */
+.job-opening-page .list-table tr:hover td {
+  background: #f8faff;
+}
+/* ==================================================
+   STATUS
+================================================== */
+.job-opening-page .badge {
+  display: inline-block;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+}
+.job-opening-page .active {
+  background: #e4f3e9;
+  color: #35734a;
+}
+.job-opening-page .inactive {
+  background: #fde8e8;
+  color: #c53030;
+}
+/* ==================================================
+   ACTION BUTTONS
+================================================== */
+.job-opening-page .list-table button {
+  margin-right: 8px;
+}
+/* ==================================================
+   LOADING
+================================================== */
+.job-opening-page .loading {
+  text-align: center;
+  padding: 40px;
+  color: #777;
+  font-size: 16px;
+}
+/* ==================================================
+   NO DATA
+================================================== */
+.job-opening-page .no-data {
+  text-align: center;
+  padding: 40px;
+  color: #777;
+  font-size: 16px;
+}
+/* ==================================================
+   PAGINATION
+================================================== */
+.job-opening-page .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 30px;
+}
+.job-opening-page .pagination button {
+  min-width: 110px;
+  height: 42px;
+  border-radius: 8px;
+}
+.job-opening-page .pagination span {
+  font-weight: 500;
+  color: #555;
+}
+/* ==================================================
+   TABLET
+================================================== */
+@media (max-width: 992px) {
+  .job-opening-page .filters {
+    flex-wrap: wrap;
+  }
+  .job-opening-page .filter-box,
+  .job-opening-page .search-box {
+    width: 100%;
+  }
+}
+/* ==================================================
+   MOBILE
+================================================== */
+@media (max-width: 768px) {
+  .job-opening-page .list-container {
+    padding: 15px;
+  }
+  .job-opening-page .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .job-opening-page .header-actions {
+    width: 100%;
+  }
+  .job-opening-page .header-actions button {
+    width: auto;
+  }
+  .job-opening-page .pagination {
+    flex-direction: column;
+  }
+  .job-opening-page .pagination button {
+    width: 100%;
+  }
+}

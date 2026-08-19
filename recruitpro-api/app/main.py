@@ -15,7 +15,7 @@ from app.routers.employment_type import router as employment_type_router
 from app.routers.experience_level import router as experience_level_router
 from app.routers.interview_round import router as interview_round_router
 from app.routers import job_opening_router
-
+from app.routers import applicant
 app = FastAPI(title="RecruitPro API")
 
 # CORS
@@ -43,7 +43,7 @@ app.include_router(employment_type_router)
 app.include_router(experience_level_router)
 app.include_router(interview_round_router)
 app.include_router(job_opening_router.router)
-
+app.include_router(applicant.router)
 
 @app.get("/")
 def home():
