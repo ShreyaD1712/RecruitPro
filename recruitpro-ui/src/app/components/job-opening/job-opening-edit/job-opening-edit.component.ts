@@ -35,29 +35,15 @@ import { AuthService } from '../../../services/auth.service';
     templateUrl: './job-opening-edit.component.html',
 })
 export class JobOpeningEditComponent implements OnInit {
-    // ==================================================
-    // FORM
-    // ==================================================
     jobOpeningForm!: FormGroup;
-    // ==================================================
-    // JOB OPENING ID
-    // ==================================================
     jobOpeningId!: number;
-    // ==================================================
-    // DROPDOWN DATA
-    // ==================================================
     departments: any[] = [];
     designations: any[] = [];
     jobCategories: any[] = [];
     employmentTypes: any[] = [];
     experienceLevels: any[] = [];
-    // ==================================================
-    // LOADING
-    // ==================================================
     loading = false;
-    // ==================================================
     // CONSTRUCTOR
-    // ==================================================
     constructor(
         private fb: FormBuilder,
         private route: ActivatedRoute,
@@ -70,482 +56,230 @@ export class JobOpeningEditComponent implements OnInit {
         private experienceLevelService: ExperienceLevelService,
         public authService: AuthService
     ) { }
-    // ==================================================
     // INIT
-    // ==================================================
     ngOnInit(): void {
-        // ----------------------------------------------
+
         // Permission Check
-        // ----------------------------------------------
-        if (
-            !this.hasPermission(
-                'UPDATE_JOB_OPENING'
-            )
-        ) {
-            alert(
-                'You are not authorized to edit job openings.'
-            );
-            this.router.navigate([
-                '/job-opening'
-            ]);
+        if (!this.hasPermission('UPDATE_JOB_OPENING')) {
+            alert('You are not authorized to edit job openings.');
+            this.router.navigate(['/job-opening']);
             return;
         }
-        // ----------------------------------------------
         // Get Job Opening ID
-        // ----------------------------------------------
-        this.jobOpeningId = Number(
-            this.route.snapshot.paramMap.get('id')
-        );
+        this.jobOpeningId = Number(this.route.snapshot.paramMap.get('id'));
         if (!this.jobOpeningId) {
-            alert(
-                'Invalid Job Opening ID.'
-            );
-            this.router.navigate([
-                '/job-opening'
-            ]);
+            alert('Invalid Job Opening ID.');
+            this.router.navigate(['/job-opening']);
             return;
         }
-        // ----------------------------------------------
         // Create Form
-        // ----------------------------------------------
         this.jobOpeningForm = this.fb.group({
-            DepartmentId: [
-                null,
-                Validators.required
-            ],
-            DesignationId: [
-                null,
-                Validators.required
-            ],
-            JobCategoryId: [
-                null,
-                Validators.required
-            ],
-            EmploymentTypeId: [
-                null,
-                Validators.required
-            ],
-            ExperienceLevelId: [
-                null,
-                Validators.required
-            ],
-            JobTitle: [
-                '',
-                [
-                    Validators.required,
-                    Validators.maxLength(150)
-                ]
-            ],
-            JobDescription: [
-                '',
-                Validators.maxLength(5000)
-            ],
-            Location: [
-                '',
-                Validators.maxLength(150)
-            ],
-            NoOfVacancies: [
-                1,
-                [
-                    Validators.required,
-                    Validators.min(1)
-                ]
-            ],
-            SalaryFrom: [
-                null,
-                Validators.min(0)
-            ],
-            SalaryTo: [
-                null,
-                Validators.min(0)
-            ],
-            Status: [
-                'Open',
-                Validators.required
-            ]
+            DepartmentId: [null, Validators.required],
+            DesignationId: [null, Validators.required],
+            JobCategoryId: [null, Validators.required],
+            EmploymentTypeId: [null, Validators.required],
+            ExperienceLevelId: [null, Validators.required],
+            JobTitle: ['', [Validators.required, Validators.maxLength(150)]],
+            JobDescription: ['', Validators.maxLength(5000)],
+            Location: ['', Validators.maxLength(150)],
+            NoOfVacancies: [1, [Validators.required, Validators.min(1)]],
+            SalaryFrom: [null, Validators.min(0)],
+            SalaryTo: [null, Validators.min(0)],
+            Status: ['Open', Validators.required]
         });
-        // ----------------------------------------------
         // Load Dropdowns
-        // ----------------------------------------------
         this.loadDepartments();
         this.loadJobCategories();
         this.loadEmploymentTypes();
         this.loadExperienceLevels();
-        // ----------------------------------------------
-        // Load Job Opening
-        // ----------------------------------------------
         this.loadJobOpening();
     }
-    // ==================================================
     // PERMISSION CHECK
-    // ==================================================
-    hasPermission(
-        permission: string
-    ): boolean {
-        return this.authService.hasPermission(
-            permission
-        );
+    hasPermission(permission: string): boolean {
+        return this.authService.hasPermission(permission);
     }
-    // ==================================================
     // LOAD DEPARTMENTS
-    // ==================================================
     loadDepartments(): void {
-        const companyId =
-            this.authService.getCompanyId();
+        const companyId = this.authService.getCompanyId();
         if (!companyId) {
-            alert(
-                'Company information not found.'
-            );
+            alert('Company information not found.');
             return;
         }
         this.departmentService
-            .getDepartments(
-                '',
-                companyId,
-                'DepartmentName',
-                'asc',
-                1,
-                1000
-            )
+            .getDepartments('', companyId, 'DepartmentName', 'asc', 1, 1000)
             .subscribe({
                 next: (response: any) => {
-                    this.departments =
-                        response.data || [];
+                    this.departments = response.data || [];
                 },
                 error: (err: any) => {
-                    console.log(
-                        'Error loading departments:',
-                        err
-                    );
+                    console.log('Error loading departments:', err);
                     this.departments = [];
                 }
             });
     }
-    // ==================================================
     // LOAD DESIGNATIONS
-    // ==================================================
-    loadDesignations(
-        departmentId?: number
+    loadDesignations(departmentId?: number
     ): void {
-        const companyId =
-            this.authService.getCompanyId();
-        if (!companyId) {
-            return;
-        }
+        const companyId = this.authService.getCompanyId();
+        if (!companyId) { return; }
         this.designationService
-            .getDesignations(
-                '',
-                companyId,
-                departmentId ?? null,
-                'DesignationName',
-                'asc',
-                1,
-                1000
-            )
+            .getDesignations('', companyId, departmentId ?? null, 'DesignationName', 'asc', 1, 1000)
             .subscribe({
                 next: (response: any) => {
-                    let data =
-                        response.data || [];
-                    // ----------------------------------
+                    let data = response.data || [];
                     // Optional Department Filtering
-                    // ----------------------------------
                     if (departmentId) {
-                        data = data.filter(
-                            (designation: any) =>
-                                designation.DepartmentId ===
-                                departmentId
-                        );
+                        data = data.filter((designation: any) =>
+                            designation.DepartmentId === departmentId);
                     }
-                    this.designations =
-                        data;
+                    this.designations = data;
                 },
                 error: (err: any) => {
-                    console.log(
-                        'Error loading designations:',
-                        err
-                    );
+                    console.log('Error loading designations:', err);
                     this.designations = [];
                 }
             });
     }
-    // ==================================================
     // DEPARTMENT CHANGE
-    // ==================================================
     departmentChanged(): void {
-        const departmentId =
-            this.jobOpeningForm
-                .get('DepartmentId')
-                ?.value;
+        const departmentId = this.jobOpeningForm.get('DepartmentId')?.value;
         // Reset designation
-        this.jobOpeningForm
-            .patchValue({
-                DesignationId: null
-            });
+        this.jobOpeningForm.patchValue({ DesignationId: null });
         this.designations = [];
-        if (!departmentId) {
-            return;
-        }
-        this.loadDesignations(
-            departmentId
-        );
+        if (!departmentId) { return; }
+        this.loadDesignations(departmentId);
     }
-    // ==================================================
     // LOAD JOB CATEGORIES
-    // ==================================================
     loadJobCategories(): void {
-        const companyId =
-            this.authService.getCompanyId();
+        const companyId = this.authService.getCompanyId();
         if (!companyId) {
             return;
         }
         this.jobCategoryService
-            .getJobCategories(
-                '',
-                companyId,
-                'CategoryName',
-                'asc',
-                1,
-                1000
-            )
+            .getJobCategories('', companyId, 'CategoryName', 'asc', 1, 1000)
             .subscribe({
                 next: (response: any) => {
-                    this.jobCategories =
-                        response.data || [];
+                    this.jobCategories = response.data || [];
                 },
                 error: (err: any) => {
-                    console.log(
-                        'Error loading job categories:',
-                        err
-                    );
+                    console.log('Error loading job categories:', err);
                     this.jobCategories = [];
                 }
             });
     }
-    // ==================================================
     // LOAD EMPLOYMENT TYPES
-    // ==================================================
     loadEmploymentTypes(): void {
-        const companyId =
-            this.authService.getCompanyId();
-        if (!companyId) {
-            return;
-        }
+        const companyId = this.authService.getCompanyId();
+        if (!companyId) { return; }
         this.employmentTypeService
-            .getEmploymentTypes(
-                '',
-                companyId,
-                'EmploymentTypeName',
-                'asc',
-                1,
-                1000
-            )
+            .getEmploymentTypes('', companyId, 'EmploymentTypeName', 'asc', 1, 1000)
             .subscribe({
                 next: (response: any) => {
-                    this.employmentTypes =
-                        response.data || [];
+                    this.employmentTypes = response.data || [];
                 },
                 error: (err: any) => {
-                    console.log(
-                        'Error loading employment types:',
-                        err
-                    );
+                    console.log('Error loading employment types:', err);
                     this.employmentTypes = [];
                 }
             });
     }
-    // ==================================================
     // LOAD EXPERIENCE LEVELS
-    // ==================================================
     loadExperienceLevels(): void {
-        const companyId =
-            this.authService.getCompanyId();
-        if (!companyId) {
-            return;
-        }
+        const companyId = this.authService.getCompanyId();
+        if (!companyId) { return; }
         this.experienceLevelService
-            .getExperienceLevels(
-                '',
-                companyId,
-                'ExperienceLevelName',
-                'asc',
-                1,
-                1000
-            )
+            .getExperienceLevels('', companyId, 'ExperienceLevelName', 'asc', 1, 1000)
             .subscribe({
-                next: (response: any) => {
-                    this.experienceLevels =
-                        response.data || [];
-                },
+                next: (response: any) => { this.experienceLevels = response.data || []; },
                 error: (err: any) => {
-                    console.log(
-                        'Error loading experience levels:',
-                        err
-                    );
+                    console.log('Error loading experience levels:', err);
                     this.experienceLevels = [];
                 }
             });
     }
-    // ==================================================
     // LOAD JOB OPENING
-    // ==================================================
     loadJobOpening(): void {
         this.loading = true;
-        this.jobOpeningService
-            .getJobOpeningById(
-                this.jobOpeningId
-            )
+        this.jobOpeningService.getJobOpeningById(this.jobOpeningId)
             .subscribe({
                 next: (jobOpening: any) => {
                     this.loading = false;
-                    // ----------------------------------
                     // Company Security Check
-                    // ----------------------------------
-                    const loggedInCompanyId =
-                        this.authService.getCompanyId();
-                    if (
-                        jobOpening.CompanyId !==
-                        loggedInCompanyId
-                    ) {
-                        alert(
-                            'You are not authorized to edit this job opening.'
-                        );
-                        this.router.navigate([
-                            '/job-opening'
-                        ]);
+                    const loggedInCompanyId = this.authService.getCompanyId();
+                    if (jobOpening.CompanyId !== loggedInCompanyId) {
+                        alert('You are not authorized to edit this job opening.');
+                        this.router.navigate(['/job-opening']);
                         return;
                     }
-                    // ----------------------------------
                     // Load Designations
-                    // ----------------------------------
-                    this.loadDesignations(
-                        jobOpening.DepartmentId
-                    );
-                    // ----------------------------------
+                    this.loadDesignations(jobOpening.DepartmentId);
                     // Fill Form
-                    // ----------------------------------
                     this.jobOpeningForm.patchValue({
-                        DepartmentId:
-                            jobOpening.DepartmentId,
-                        DesignationId:
-                            jobOpening.DesignationId,
-                        JobCategoryId:
-                            jobOpening.JobCategoryId,
-                        EmploymentTypeId:
-                            jobOpening.EmploymentTypeId,
-                        ExperienceLevelId:
-                            jobOpening.ExperienceLevelId,
-                        JobTitle:
-                            jobOpening.JobTitle,
-                        JobDescription:
-                            jobOpening.JobDescription,
-                        Location:
-                            jobOpening.Location,
-                        NoOfVacancies:
-                            jobOpening.NoOfVacancies,
-                        SalaryFrom:
-                            jobOpening.SalaryFrom,
-                        SalaryTo:
-                            jobOpening.SalaryTo,
-                        Status:
-                            jobOpening.Status
+                        DepartmentId: jobOpening.DepartmentId,
+                        DesignationId: jobOpening.DesignationId,
+                        JobCategoryId: jobOpening.JobCategoryId,
+                        EmploymentTypeId: jobOpening.EmploymentTypeId,
+                        ExperienceLevelId: jobOpening.ExperienceLevelId,
+                        JobTitle: jobOpening.JobTitle,
+                        JobDescription: jobOpening.JobDescription,
+                        Location: jobOpening.Location,
+                        NoOfVacancies: jobOpening.NoOfVacancies,
+                        SalaryFrom: jobOpening.SalaryFrom,
+                        SalaryTo: jobOpening.SalaryTo,
+                        Status: jobOpening.Status
                     });
                 },
                 error: (err: any) => {
-                    this.loading = false;
-                    console.log(err);
-                    alert(
-                        err?.error?.detail ||
-                        'Job Opening not found.'
-                    );
-                    this.router.navigate([
-                        '/job-opening'
-                    ]);
+                    this.loading = false; console.log(err);
+                    alert(err?.error?.detail || 'Job Opening not found.');
+                    this.router.navigate(['/job-opening']);
                 }
             });
     }
-    // ==================================================
     // UPDATE JOB OPENING
-    // ==================================================
     updateJobOpening(): void {
-        if (
-            !this.hasPermission(
-                'UPDATE_JOB_OPENING'
-            )
+        if (!this.hasPermission('UPDATE_JOB_OPENING')
         ) {
-            alert(
-                'You do not have permission to update job openings.'
-            );
+            alert('You do not have permission to update job openings.');
             return;
         }
-        if (
-            this.jobOpeningForm.invalid
-        ) {
+        if (this.jobOpeningForm.invalid) {
             this.jobOpeningForm.markAllAsTouched();
             return;
         }
-        // ----------------------------------------------
         // Salary Validation
-        // ----------------------------------------------
         const salaryFrom =
-            this.jobOpeningForm
-                .get('SalaryFrom')
-                ?.value;
+            this.jobOpeningForm.get('SalaryFrom')?.value;
         const salaryTo =
-            this.jobOpeningForm
-                .get('SalaryTo')
-                ?.value;
-        if (
-            salaryFrom !== null &&
-            salaryFrom !== '' &&
-            salaryTo !== null &&
-            salaryTo !== '' &&
+            this.jobOpeningForm.get('SalaryTo')?.value;
+        if (salaryFrom !== null && salaryFrom !== '' && salaryTo !== null && salaryTo !== '' &&
             Number(salaryFrom) > Number(salaryTo)
         ) {
-            alert(
-                'Salary From cannot be greater than Salary To.'
-            );
+            alert('Salary From cannot be greater than Salary To.');
             return;
         }
-        // ----------------------------------------------
         // Get Form Data
-        // ----------------------------------------------
         const data =
             this.jobOpeningForm.value;
         this.loading = true;
-        // ----------------------------------------------
         // Update API
-        // ----------------------------------------------
         this.jobOpeningService
-            .updateJobOpening(
-                this.jobOpeningId,
-                data
-            )
+            .updateJobOpening(this.jobOpeningId, data)
             .subscribe({
                 next: () => {
                     this.loading = false;
-                    alert(
-                        'Job Opening Updated Successfully'
-                    );
-                    this.router.navigate([
-                        '/job-opening'
-                    ]);
+                    alert('Job Opening Updated Successfully');
+                    this.router.navigate(['/job-opening']);
                 },
                 error: (err: any) => {
                     this.loading = false;
                     console.log(err);
-                    alert(
-                        err?.error?.detail ||
-                        'Failed to update job opening.'
-                    );
+                    alert(err?.error?.detail || 'Failed to update job opening.');
                 }
             });
     }
-    // ==================================================
     // CANCEL
-    // ==================================================
     cancel(): void {
-        this.router.navigate([
-            '/job-opening'
-        ]);
+        this.router.navigate(['/job-opening']);
     }
 }

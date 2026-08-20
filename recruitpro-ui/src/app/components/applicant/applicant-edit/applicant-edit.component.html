@@ -1,0 +1,164 @@
+<div class="page">
+  <div class="card">
+    <h2>Edit Applicant</h2>
+    <form [formGroup]="applicantForm" (ngSubmit)="updateApplicant()">
+      <!-- ================================================== -->
+      <!-- FIRST NAME -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>First Name*</mat-label>
+        <input matInput formControlName="FirstName" />
+        <mat-error *ngIf="applicantForm.get('FirstName')?.hasError('required')">
+          First Name is required
+        </mat-error>
+        <mat-error *ngIf="applicantForm.get('FirstName')?.hasError('maxlength')">
+          First Name cannot exceed 100 characters
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- LAST NAME -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Last Name*</mat-label>
+        <input matInput formControlName="LastName" />
+        <mat-error *ngIf="applicantForm.get('LastName')?.hasError('required')">
+          Last Name is required
+        </mat-error>
+        <mat-error *ngIf="applicantForm.get('LastName')?.hasError('maxlength')">
+          Last Name cannot exceed 100 characters
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- EMAIL -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Email*</mat-label>
+        <input matInput type="email" formControlName="Email" />
+        <mat-error *ngIf="applicantForm.get('Email')?.hasError('required')">
+          Email is required
+        </mat-error>
+        <mat-error *ngIf="applicantForm.get('Email')?.hasError('email')">
+          Please enter a valid email address
+        </mat-error>
+        <mat-error *ngIf="applicantForm.get('Email')?.hasError('maxlength')">
+          Email cannot exceed 150 characters
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- MOBILE NUMBER -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Mobile Number*</mat-label>
+        <input matInput type="text" formControlName="MobileNo" />
+        <mat-error *ngIf="applicantForm.get('MobileNo')?.hasError('required')">
+          Mobile Number is required
+        </mat-error>
+        <mat-error *ngIf="applicantForm.get('MobileNo')?.hasError('maxlength')">
+          Mobile Number cannot exceed 20 characters
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- DATE OF BIRTH -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Date of Birth</mat-label>
+        <input matInput type="date" formControlName="DOB" />
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- GENDER -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Gender</mat-label>
+        <mat-select formControlName="Gender">
+          <mat-option [value]="null"> Select Gender </mat-option>
+          <mat-option *ngFor="let gender of genders" [value]="gender">
+            {{ gender }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- CURRENT CITY -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Current City</mat-label>
+        <input matInput formControlName="CurrentCity" />
+        <mat-error *ngIf="applicantForm.get('CurrentCity')?.hasError('maxlength')">
+          Current City cannot exceed 100 characters
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- CURRENT COMPANY -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Current Company</mat-label>
+        <input matInput formControlName="CurrentCompany" />
+        <mat-error *ngIf="applicantForm.get('CurrentCompany')?.hasError('maxlength')">
+          Current Company cannot exceed 150 characters
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- CURRENT CTC -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Current CTC</mat-label>
+        <input matInput type="number" min="0" formControlName="CurrentCTC" />
+        <mat-error *ngIf="applicantForm.get('CurrentCTC')?.hasError('min')">
+          Current CTC cannot be negative
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- EXPECTED CTC -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Expected CTC</mat-label>
+        <input matInput type="number" min="0" formControlName="ExpectedCTC" />
+        <mat-error *ngIf="applicantForm.get('ExpectedCTC')?.hasError('min')">
+          Expected CTC cannot be negative
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- NOTICE PERIOD -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Notice Period</mat-label>
+        <input matInput formControlName="NoticePeriod" />
+        <mat-error *ngIf="applicantForm.get('NoticePeriod')?.hasError('maxlength')">
+          Notice Period cannot exceed 50 characters
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- LINKEDIN -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>LinkedIn URL</mat-label>
+        <input matInput type="url" formControlName="LinkedInUrl" />
+        <mat-error *ngIf="applicantForm.get('LinkedInUrl')?.hasError('maxlength')">
+          LinkedIn URL cannot exceed 255 characters
+        </mat-error>
+      </mat-form-field>
+      <!-- ================================================== -->
+      <!-- BUTTONS -->
+      <!-- ================================================== -->
+      <div class="buttons">
+        <button
+          *ngIf="authService.hasPermission('UPDATE_APPLICANT')"
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Updating...' : 'Update' }}
+        </button>
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

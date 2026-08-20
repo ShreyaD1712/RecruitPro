@@ -42,6 +42,7 @@ class JobOpening(Base):
     job_category = relationship("JobCategory", back_populates="job_openings")
     employment_type = relationship("EmploymentType", back_populates="job_openings")
     experience_level = relationship("ExperienceLevel", back_populates="job_openings")
+    applications = relationship("Application", back_populates="job_opening")
 
     @property
     def CompanyName(self):

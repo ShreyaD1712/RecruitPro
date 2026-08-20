@@ -1,0 +1,347 @@
+<div class="applicant-page">
+  <div class="list-container">
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
+
+    <div class="header">
+      <div>
+        <h2>Applicant Management</h2>
+        <p>Manage company applicants</p>
+      </div>
+
+      <!-- ADD APPLICANT -->
+
+      <button
+        *ngIf="authService.hasPermission('CREATE_APPLICANT')"
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="addApplicant()"
+      >
+        <mat-icon>add</mat-icon>
+
+        Add Applicant
+      </button>
+    </div>
+
+    <!-- ==================================================
+         SEARCH
+    ================================================== -->
+
+    <mat-form-field appearance="outline" class="search-box">
+      <mat-label>Search Applicant</mat-label>
+
+      <input
+        matInput
+        [(ngModel)]="search"
+        placeholder="Search Name, Email, Mobile or Company"
+        (keyup.enter)="searchApplicants()"
+      />
+
+      <button mat-icon-button matSuffix type="button" (click)="searchApplicants()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- ==================================================
+         TABLE
+    ================================================== -->
+
+    <div class="table-container">
+      <table mat-table [dataSource]="applicants" class="list-table">
+        <!-- ==================================================
+             NAME
+        ================================================== -->
+
+        <ng-container matColumnDef="Name">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('FirstName')">Name</th>
+          <td mat-cell *matCellDef="let row">{{ row.FirstName }} {{ row.LastName }}</td>
+        </ng-container>
+
+        <!-- ==================================================
+             EMAIL
+        ================================================== -->
+
+        <ng-container matColumnDef="Email">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('Email')">Email</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.Email }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             MOBILE
+        ================================================== -->
+
+        <ng-container matColumnDef="MobileNo">
+          <th mat-header-cell *matHeaderCellDef>Mobile No.</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.MobileNo }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             CURRENT COMPANY
+        ================================================== -->
+
+        <ng-container matColumnDef="CurrentCompany">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('CurrentCompany')">
+            Current Company
+          </th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.CurrentCompany || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             CURRENT CITY
+        ================================================== -->
+
+        <ng-container matColumnDef="CurrentCity">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('CurrentCity')">Current City</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.CurrentCity || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             EXPECTED CTC
+        ================================================== -->
+
+        <ng-container matColumnDef="ExpectedCTC">
+          <th mat-header-cell *matHeaderCellDef>Expected CTC</th>
+
+          <td mat-cell *matCellDef="let row">
+            <span *ngIf="row.ExpectedCTC !== null && row.ExpectedCTC !== undefined">
+              {{ row.ExpectedCTC }}
+            </span>
+
+            <span *ngIf="row.ExpectedCTC === null || row.ExpectedCTC === undefined">
+              Not Specified
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             NOTICE PERIOD
+        ================================================== -->
+
+        <ng-container matColumnDef="NoticePeriod">
+          <th mat-header-cell *matHeaderCellDef>Notice Period</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.NoticePeriod || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             ACTIONS
+        ================================================== -->
+
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+
+          <td mat-cell *matCellDef="let row">
+            <!-- VIEW -->
+
+            <button
+              mat-icon-button
+              color="primary"
+              type="button"
+              matTooltip="View Applicant"
+              (click)="openApplicantPopup(row)"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+
+            <!-- EDIT -->
+
+            <button
+              *ngIf="authService.hasPermission('UPDATE_APPLICANT')"
+              mat-icon-button
+              color="primary"
+              type="button"
+              matTooltip="Edit"
+              (click)="editApplicant(row.ApplicantId, $event)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <!-- DELETE -->
+
+            <button
+              *ngIf="authService.hasPermission('DELETE_APPLICANT')"
+              mat-icon-button
+              color="warn"
+              type="button"
+              matTooltip="Delete"
+              (click)="deleteApplicant(row.ApplicantId, $event)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             HEADER ROW
+        ================================================== -->
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+        <!-- ==================================================
+             DATA ROW
+        ================================================== -->
+
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <!-- ==================================================
+         LOADING
+    ================================================== -->
+
+    <div class="loading" *ngIf="loading">Loading Applicants...</div>
+
+    <!-- ==================================================
+         NO DATA
+    ================================================== -->
+
+    <div class="no-data" *ngIf="!loading && applicants.length === 0">No Applicants Found</div>
+
+    <!-- ==================================================
+         PAGINATION
+    ================================================== -->
+
+    <div class="pagination">
+      <!-- PREVIOUS -->
+
+      <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+        Previous
+      </button>
+
+      <!-- PAGE NUMBER -->
+
+      <span>
+        Page {{ page }}
+
+        of
+
+        {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+      </span>
+
+      <!-- NEXT -->
+
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page * pageSize >= totalRecords"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================================================
+       APPLICANT DETAILS POPUP
+       No separate component
+  ================================================== -->
+
+  <div class="popup-backdrop" *ngIf="showApplicantPopup" (click)="closePopupOnBackdrop($event)">
+    <div class="applicant-popup">
+      <div class="popup-header">
+        <h2>
+          {{ selectedApplicant?.FirstName }}
+          {{ selectedApplicant?.LastName }}
+        </h2>
+
+        <button mat-icon-button type="button" (click)="closeApplicantPopup()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Personal Details -->
+      <div class="details-section">
+        <h3>Personal Information</h3>
+
+        <div class="details-grid">
+          <div>
+            <label>Email</label>
+            <span>{{ selectedApplicant?.Email || '-' }}</span>
+          </div>
+
+          <div>
+            <label>Mobile No</label>
+            <span>{{ selectedApplicant?.MobileNo || '-' }}</span>
+          </div>
+
+          <div>
+            <label>Date of Birth</label>
+            <span>{{ selectedApplicant?.DOB || '-' }}</span>
+          </div>
+
+          <div>
+            <label>Gender</label>
+            <span>{{ selectedApplicant?.Gender || '-' }}</span>
+          </div>
+
+          <div>
+            <label>Current City</label>
+            <span>{{ selectedApplicant?.CurrentCity || '-' }}</span>
+          </div>
+
+          <div>
+            <label>LinkedIn</label>
+            <span>{{ selectedApplicant?.LinkedInUrl || '-' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Professional Details -->
+      <div class="details-section">
+        <h3>Professional Information</h3>
+
+        <div class="details-grid">
+          <div>
+            <label>Current Company</label>
+            <span>
+              {{ selectedApplicant?.CurrentCompany || '-' }}
+            </span>
+          </div>
+
+          <div>
+            <label>Current CTC</label>
+            <span>
+              {{ selectedApplicant?.CurrentCTC || '-' }}
+            </span>
+          </div>
+
+          <div>
+            <label>Expected CTC</label>
+            <span>
+              {{ selectedApplicant?.ExpectedCTC || '-' }}
+            </span>
+          </div>
+
+          <div>
+            <label>Notice Period</label>
+            <span>
+              {{ selectedApplicant?.NoticePeriod || '-' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="popup-footer">
+        <button mat-raised-button color="primary" type="button" (click)="closeApplicantPopup()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

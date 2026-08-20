@@ -28,3 +28,4 @@ class Company(Base):
     users = relationship("User", back_populates="company")
     job_openings = relationship("JobOpening", back_populates="company")
     applicants = relationship("Applicant", back_populates="company")
+    applications = relationship("Application", back_populates="company")
