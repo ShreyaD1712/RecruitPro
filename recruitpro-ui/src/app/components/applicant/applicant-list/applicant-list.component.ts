@@ -188,6 +188,10 @@ export class ApplicantListComponent implements OnInit {
     // ADD APPLICANT
     // ==================================================
     addApplicant(): void {
+        if (!this.authService.hasPermission('CREATE_APPLICANT')) {
+            alert('You are not authorized to create applicants.')
+            return;
+        }
         this.router.navigate([
             '/applicant/add'
         ]);

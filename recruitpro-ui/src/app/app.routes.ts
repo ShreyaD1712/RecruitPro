@@ -58,6 +58,10 @@ import { JobOpeningEditComponent } from './components/job-opening/job-opening-ed
 import { ApplicantListComponent } from './components/applicant/applicant-list/applicant-list.component';
 import { ApplicantAddComponent } from './components/applicant/applicant-add/applicant-add.component';
 import { ApplicantEditComponent } from './components/applicant/applicant-edit/applicant-edit.component';
+// Applications Component
+import { ApplicationListComponent } from './components/application/application-list/application-list.component';
+import { ApplicationAddComponent } from './components/application/application-add/application-add.component';
+import { ApplicationEditComponent } from './components/application/application-edit/application-edit.component';
 export const routes: Routes = [
   // Login Page
   {
@@ -245,6 +249,19 @@ export const routes: Routes = [
       {
         path: 'applicant/edit/:id',
         component: ApplicantEditComponent
+      },
+      // Application
+      {
+        path: 'application',
+        component: ApplicationListComponent
+      },
+      {
+        path: 'application/add',
+        component: ApplicationAddComponent
+      },
+      {
+        path: 'application/edit/:id',
+        component: ApplicationEditComponent
       },
       // Default Route
       {

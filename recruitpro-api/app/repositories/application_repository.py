@@ -8,6 +8,8 @@ from app.schemas.application_schema import (
     ApplicationCreate,
     ApplicationUpdate,
 )
+
+
 class ApplicationRepository:
     # ==================================================
     # Get All Applications
@@ -17,10 +19,9 @@ class ApplicationRepository:
         db: Session,
         company_id: int,
         search: str = "",
-        applicant_id: int | None = None,
         job_opening_id: int | None = None,
         department_id: int | None = None,
-        status: str | None = None,
+        Current_Status: str | None = None,
         sort_by: str = "AppliedDate",
         order: str = "desc",
         page: int = 1,
@@ -29,18 +30,13 @@ class ApplicationRepository:
         query = db.query(Application).options(
             joinedload(Application.company),
             joinedload(Application.applicant),
-            joinedload(Application.job_opening).joinedload("department"),
-            joinedload(Application.job_opening).joinedload("designation"),
+            joinedload(Application.job_opening).joinedload(JobOpening.department),
         )
         # ==================================================
         # COMPANY FILTER
         # ==================================================
         query = query.filter(Application.CompanyId == company_id)
-        # ==================================================
-        # APPLICANT FILTER
-        # ==================================================
-        if applicant_id is not None:
-            query = query.filter(Application.ApplicantId == applicant_id)
+
         # ==================================================
         # JOB OPENING FILTER
         # ==================================================
@@ -56,8 +52,8 @@ class ApplicationRepository:
         # ==================================================
         # STATUS FILTER
         # ==================================================
-        if status and status != "All":
-            query = query.filter(Application.CurrentStatus == status)
+        if Current_Status and Current_Status != "All":
+            query = query.filter(Application.CurrentStatus == Current_Status)
         # ==================================================
         # SEARCH
         # ==================================================
@@ -108,6 +104,7 @@ class ApplicationRepository:
             "page_size": page_size,
             "data": data,
         }
+
     # ==================================================
     # Get Application By ID
     # ==================================================
@@ -122,8 +119,7 @@ class ApplicationRepository:
             .options(
                 joinedload(Application.company),
                 joinedload(Application.applicant),
-                joinedload(Application.job_opening).joinedload("department"),
-                joinedload(Application.job_opening).joinedload("designation"),
+                joinedload(Application.job_opening).joinedload(JobOpening.department),
             )
             .filter(
                 Application.ApplicationId == application_id,
@@ -131,6 +127,7 @@ class ApplicationRepository:
             )
             .first()
         )
+
     # ==================================================
     # Check Existing Application
     # ==================================================
@@ -150,6 +147,46 @@ class ApplicationRepository:
             )
             .first()
         )
+
+    # ==================================================
+    # Get Applicant
+    # ==================================================
+    def get_applicant(
+        self,
+        db: Session,
+        applicant_id: int,
+        company_id: int,
+    ):
+        return (
+            db.query(Applicant)
+            .filter(
+                Applicant.ApplicantId == applicant_id,
+                Applicant.CompanyId == company_id,
+            )
+            .first()
+        )
+
+    # ==================================================
+    # Get Job Opening
+    # ==================================================
+    def get_job_opening(
+        self,
+        db: Session,
+        job_opening_id: int,
+        company_id: int,
+    ):
+        return (
+            db.query(JobOpening)
+            .options(
+                joinedload(JobOpening.department),
+            )
+            .filter(
+                JobOpening.JobOpeningId == job_opening_id,
+                JobOpening.CompanyId == company_id,
+            )
+            .first()
+        )
+
     # ==================================================
     # CREATE
     # ==================================================
@@ -193,6 +230,7 @@ class ApplicationRepository:
         db.commit()
         db.refresh(new_application)
         return new_application
+
     # ==================================================
     # UPDATE
     # ==================================================
@@ -248,6 +286,7 @@ class ApplicationRepository:
         db.commit()
         db.refresh(existing_application)
         return existing_application
+
     # ==================================================
     # DELETE
     # ==================================================

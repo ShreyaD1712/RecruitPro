@@ -95,6 +95,11 @@
     <mat-icon>persons</mat-icon>
     <span>Applicants</span>
   </a>
+  <!-- Applications -->
+  <a *ngIf="hasPermission('VIEW_APPLICATION')" routerLink="/application" routerLinkActive="active">
+    <mat-icon>assignment</mat-icon>
+    <span>Applications</span>
+  </a>
   <!-- Reports -->
   <a *ngIf="hasPermission('VIEW_REPORT')" routerLink="/report" routerLinkActive="active">
     <mat-icon>assessment</mat-icon>

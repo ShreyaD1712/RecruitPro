@@ -1,0 +1,214 @@
+<div class="application-page">
+  <div class="list-container">
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
+    <div class="header">
+      <div>
+        <h2>Application Management</h2>
+        <p>Manage applicant job applications</p>
+      </div>
+      <!-- ADD APPLICATION -->
+      <button
+        *ngIf="authService.hasPermission('CREATE_APPLICATION')"
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="addApplication()"
+      >
+        <mat-icon>add</mat-icon>
+        Add Application
+      </button>
+    </div><!-- SEARCH -->
+      <mat-form-field appearance="outline" class="search-box">
+        <mat-label>Search Application</mat-label>
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Applicant, Email, Job Title or Status"
+          (keyup.enter)="searchApplications()"
+        />
+        <button mat-icon-button matSuffix type="button" (click)="searchApplications()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    <!-- ==================================================
+         FILTERS
+    ================================================== -->
+    <div class="filters">
+      
+      <!-- DEPARTMENT -->
+      <mat-form-field appearance="outline" class="filter-box">
+        <mat-label>Department</mat-label>
+        <mat-select [(ngModel)]="selectedDepartmentId" (selectionChange)="onDepartmentChange()">
+          <mat-option [value]="null"> All Departments </mat-option>
+          <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
+            {{ department.DepartmentName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- JOB OPENING -->
+      <mat-form-field appearance="outline" class="filter-box">
+        <mat-label>Job Opening</mat-label>
+        <mat-select [(ngModel)]="selectedJobOpeningId" (selectionChange)="onJobOpeningChange()">
+          <mat-option [value]="null"> All Job Openings </mat-option>
+          <mat-option *ngFor="let job of jobOpenings" [value]="job.JobOpeningId">
+            {{ job.JobTitle }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- STATUS -->
+      <mat-form-field appearance="outline" class="filter-box">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onStatusChange()">
+          <mat-option *ngFor="let status of statuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <!-- ==================================================
+         TABLE
+    ================================================== -->
+    <div class="table-container">
+      <table mat-table [dataSource]="applications" class="list-table">
+        <!-- ==================================================
+             APPLICANT NAME
+        ================================================== -->
+        <ng-container matColumnDef="ApplicantName">
+          <th mat-header-cell *matHeaderCellDef>Applicant Name</th>
+          <td mat-cell *matCellDef="let row">
+            <!-- Normal text, NOT a button -->
+            {{ row.ApplicantName || '-' }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             EMAIL
+        ================================================== -->
+        <ng-container matColumnDef="ApplicantEmail">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.ApplicantEmail || '-' }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             MOBILE
+        ================================================== -->
+        <ng-container matColumnDef="ApplicantMobile">
+          <th mat-header-cell *matHeaderCellDef>Mobile No.</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.ApplicantMobile || '-' }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             JOB TITLE
+        ================================================== -->
+        <ng-container matColumnDef="JobTitle">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('ApplicationId')">Job Opening</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.JobTitle || '-' }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             DEPARTMENT
+        ================================================== -->
+        <ng-container matColumnDef="DepartmentName">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.DepartmentName || '-' }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             APPLIED DATE
+        ================================================== -->
+        <ng-container matColumnDef="AppliedDate">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('AppliedDate')">Applied Date</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.AppliedDate | date: 'dd-MM-yyyy' }}
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             STATUS
+        ================================================== -->
+        <ng-container matColumnDef="CurrentStatus">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('CurrentStatus')">Status</th>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge" [ngClass]="getStatusClass(row.CurrentStatus)">
+              {{ row.CurrentStatus }}
+            </span>
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             ACTIONS
+        ================================================== -->
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let row">
+            <!-- EDIT -->
+            <button
+              *ngIf="authService.hasPermission('UPDATE_APPLICATION')"
+              mat-icon-button
+              color="primary"
+              type="button"
+              matTooltip="Edit Application"
+              (click)="editApplication(row.ApplicationId, $event)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <!-- DELETE -->
+            <button
+              *ngIf="authService.hasPermission('DELETE_APPLICATION')"
+              mat-icon-button
+              color="warn"
+              type="button"
+              matTooltip="Delete Application"
+              (click)="deleteApplication(row.ApplicationId, $event)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+        <!-- ==================================================
+             HEADER ROW
+        ================================================== -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <!-- ==================================================
+             DATA ROW
+        ================================================== -->
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+    <!-- ==================================================
+         LOADING
+    ================================================== -->
+    <div class="loading" *ngIf="loading">Loading Applications...</div>
+    <!-- ==================================================
+         NO DATA
+    ================================================== -->
+    <div class="no-data" *ngIf="!loading && applications.length === 0">No Applications Found</div>
+    <!-- ==================================================
+         PAGINATION
+    ================================================== -->
+    <div class="pagination">
+      <!-- PREVIOUS -->
+      <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+        Previous
+      </button>
+      <!-- PAGE -->
+      <span>
+        Page {{ page }}
+        of
+        {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+      </span>
+      <!-- NEXT -->
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page * pageSize >= totalRecords"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>

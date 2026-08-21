@@ -80,95 +80,75 @@ export class RolePermissionListComponent
     selectedRoleId:
         number | null = null;
     permissions: string[] = [
-        // -------------------------
         // Company
-        // -------------------------
         'VIEW_ALL_COMPANIES',
         'CREATE_COMPANY',
         'UPDATE_COMPANY',
         'DELETE_COMPANY',
-        // -------------------------
         // Department
-        // -------------------------
         'VIEW_DEPARTMENT',
         'CREATE_DEPARTMENT',
         'UPDATE_DEPARTMENT',
         'DELETE_DEPARTMENT',
-        // -------------------------
         // Designation
-        // -------------------------
         'VIEW_DESIGNATION',
         'CREATE_DESIGNATION',
         'UPDATE_DESIGNATION',
         'DELETE_DESIGNATION',
-        // -------------------------
         // Role
-        // -------------------------
         'VIEW_ROLE',
         'CREATE_ROLE',
         'UPDATE_ROLE',
         'DELETE_ROLE',
-        // -------------------------
         // User
-        // -------------------------
         'VIEW_USER',
         'CREATE_USER',
         'UPDATE_USER',
         'DELETE_USER',
-        // -------------------------
         // Role Permissions
-        // -------------------------
         'VIEW_ROLE_PERMISSION',
         'UPDATE_ROLE_PERMISSION',
-        // -------------------------
         // Skill
-        // -------------------------
         'VIEW_SKILL',
         'CREATE_SKILL',
         'UPDATE_SKILL',
         'DELETE_SKILL',
-        // -------------------------
         // Job Category
-        // -------------------------
         'VIEW_JOB_CATEGORY',
         'CREATE_JOB_CATEGORY',
         'UPDATE_JOB_CATEGORY',
         'DELETE_JOB_CATEGORY',
-        // -------------------------
         // Employment Type
-        // -------------------------
         'VIEW_EMPLOYMENT_TYPE',
         'CREATE_EMPLOYMENT_TYPE',
         'UPDATE_EMPLOYMENT_TYPE',
         'DELETE_EMPLOYMENT_TYPE',
-        // -------------------------
         // Experience Level
-        // -------------------------
         'VIEW_EXPERIENCE_LEVEL',
         'CREATE_EXPERIENCE_LEVEL',
         'UPDATE_EXPERIENCE_LEVEL',
         'DELETE_EXPERIENCE_LEVEL',
-        // -------------------------
         // Interview Round
-        // -------------------------
         'VIEW_INTERVIEW_ROUND',
         'CREATE_INTERVIEW_ROUND',
         'UPDATE_INTERVIEW_ROUND',
         'DELETE_INTERVIEW_ROUND',
-        // -------------------------
         // Job Openings
-        // -------------------------
         'VIEW_JOB_OPENING',
         'CREATE_JOB_OPENING',
         'UPDATE_JOB_OPENING',
         'DELETE_JOB_OPENING',
-        // -------------------------
         // Applicants
-        // -------------------------
         'VIEW_APPLICANT',
         'CREATE_APPLICANT',
         'UPDATE_APPLICANT',
-        'DELETE_APPLICANT'
+        'DELETE_APPLICANT',
+        // Applications
+        'VIEW_APPLICATION',
+        'CREATE_APPLICATION',
+        'UPDATE_APPLICATION',
+        'DELETE_APPLICATION'
+
     ];
     selectedPermissions:
         string[] = [];
