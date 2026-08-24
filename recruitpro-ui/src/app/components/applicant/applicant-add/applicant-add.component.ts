@@ -223,19 +223,15 @@ export class ApplicantAddComponent implements OnInit {
         // ----------------------------------------------
         const data =
             this.applicantForm.getRawValue();
-        /*
-         * IMPORTANT:
-         *
-         * CompanyId is intentionally NOT sent
-         * from Angular.
-         *
-         * Backend gets CompanyId from:
-         *
-         * current_user["company_id"]
-         *
-         * This prevents a user from creating
-         * an Applicant for another company.
-         */
+        if (data.DOB) {
+            const date = new Date(data.DOB);
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            data.DOB = `${year}-${month}-${day}`;
+        }
         delete data.CompanyId;
         // ----------------------------------------------
         // Add Applicant

@@ -27,6 +27,12 @@ class Applicant(Base):
     # RELATIONSHIPS
     company = relationship("Company", back_populates="applicants")
     applications = relationship("Application", back_populates="applicant")
+    applicant_skills = relationship(
+        "ApplicantSkill", back_populates="applicant", cascade="all, delete-orphan"
+    )
+    educations = relationship(
+        "ApplicantEducation", back_populates="applicant", cascade="all, delete-orphan"
+    )
 
     # DISPLAY PROPERTIES
     @property

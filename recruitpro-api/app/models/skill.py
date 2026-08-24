@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
-
+from sqlalchemy.orm import relationship
 from app.database import Base
 
 
@@ -22,5 +22,9 @@ class Skill(Base):
     UpdatedOn = Column(DateTime)
 
     UpdatedBy = Column(Integer)
-    
+
     CompanyId = Column(Integer, nullable=False)
+
+    # RELATIONSHIPS
+
+    applicant_skills = relationship("ApplicantSkill", back_populates="skill")

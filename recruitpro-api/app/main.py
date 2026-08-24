@@ -17,6 +17,8 @@ from app.routers.interview_round import router as interview_round_router
 from app.routers import job_opening_router
 from app.routers import applicant
 from app.routers import application
+from app.routers import applicant_skill
+from app.routers import applicant_education
 
 app = FastAPI(title="RecruitPro API")
 
@@ -47,7 +49,8 @@ app.include_router(interview_round_router)
 app.include_router(job_opening_router.router)
 app.include_router(applicant.router)
 app.include_router(application.router)
-
+app.include_router(applicant_skill.router)
+app.include_router(applicant_education.router)
 
 @app.get("/")
 def home():
