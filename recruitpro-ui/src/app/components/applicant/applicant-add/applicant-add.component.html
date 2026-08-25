@@ -1,158 +1,120 @@
 <div class="page">
   <div class="card">
     <h2>Add Applicant</h2>
+
     <form [formGroup]="applicantForm" (ngSubmit)="saveApplicant()">
-      <!-- ================================================== -->
-      <!-- FIRST NAME -->
-      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>First Name*</mat-label>
+
         <input matInput formControlName="FirstName" placeholder="Enter First Name" />
+
         <mat-error *ngIf="applicantForm.get('FirstName')?.hasError('required')">
           First Name is required
         </mat-error>
-        <mat-error *ngIf="applicantForm.get('FirstName')?.hasError('maxlength')">
-          First Name cannot exceed 100 characters
-        </mat-error>
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- LAST NAME -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Last Name*</mat-label>
+
         <input matInput formControlName="LastName" placeholder="Enter Last Name" />
+
         <mat-error *ngIf="applicantForm.get('LastName')?.hasError('required')">
           Last Name is required
         </mat-error>
-        <mat-error *ngIf="applicantForm.get('LastName')?.hasError('maxlength')">
-          Last Name cannot exceed 100 characters
-        </mat-error>
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- EMAIL -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Email*</mat-label>
-        <input matInput type="email" formControlName="Email" placeholder="Enter Email Address" />
+
+        <input matInput type="email" formControlName="Email" placeholder="Enter Email" />
+
         <mat-error *ngIf="applicantForm.get('Email')?.hasError('required')">
           Email is required
         </mat-error>
+
         <mat-error *ngIf="applicantForm.get('Email')?.hasError('email')">
           Enter a valid email address
         </mat-error>
-        <mat-error *ngIf="applicantForm.get('Email')?.hasError('maxlength')">
-          Email cannot exceed 150 characters
-        </mat-error>
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- MOBILE NUMBER -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Mobile Number*</mat-label>
-        <input matInput type="tel" formControlName="MobileNo" placeholder="Enter Mobile Number" />
+
+        <input matInput formControlName="MobileNo" placeholder="Enter Mobile Number" />
+
         <mat-error *ngIf="applicantForm.get('MobileNo')?.hasError('required')">
           Mobile Number is required
         </mat-error>
-        <mat-error *ngIf="applicantForm.get('MobileNo')?.hasError('maxlength')">
-          Mobile Number cannot exceed 20 characters
-        </mat-error>
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- DATE OF BIRTH -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Date of Birth</mat-label>
-        <input
-          matInput
-          [matDatepicker]="dobPicker"
-          formControlName="DOB"
-          placeholder="Select Date of Birth"
-        />
+
+        <input matInput [matDatepicker]="dobPicker" formControlName="DOB" />
+
         <mat-datepicker-toggle matIconSuffix [for]="dobPicker"></mat-datepicker-toggle>
+
         <mat-datepicker #dobPicker></mat-datepicker>
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- GENDER -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Gender</mat-label>
+
         <mat-select formControlName="Gender">
-          <mat-option value="Male"> Male </mat-option>
-          <mat-option value="Female"> Female </mat-option>
-          <mat-option value="Other"> Other </mat-option>
+          <mat-option [value]="null"> Select Gender </mat-option>
+
+          <mat-option *ngFor="let gender of genders" [value]="gender">
+            {{ gender }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- CURRENT CITY -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Current City</mat-label>
+
         <input matInput formControlName="CurrentCity" placeholder="Enter Current City" />
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- CURRENT COMPANY -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Current Company</mat-label>
+
         <input matInput formControlName="CurrentCompany" placeholder="Enter Current Company" />
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- CURRENT CTC -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Current CTC</mat-label>
+
         <input
           matInput
           type="number"
-          min="0"
           formControlName="CurrentCTC"
           placeholder="Enter Current CTC"
         />
-        <mat-error *ngIf="applicantForm.get('CurrentCTC')?.hasError('min')">
-          CTC cannot be negative
-        </mat-error>
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- EXPECTED CTC -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Expected CTC</mat-label>
+
         <input
           matInput
           type="number"
-          min="0"
           formControlName="ExpectedCTC"
           placeholder="Enter Expected CTC"
         />
-        <mat-error *ngIf="applicantForm.get('ExpectedCTC')?.hasError('min')">
-          CTC cannot be negative
-        </mat-error>
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- NOTICE PERIOD -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Notice Period</mat-label>
+
         <input matInput formControlName="NoticePeriod" placeholder="e.g. 30 Days" />
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- LINKEDIN -->
-      <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
-        <mat-label>LinkedIn Profile</mat-label>
-        <input
-          matInput
-          type="url"
-          formControlName="LinkedInUrl"
-          placeholder="https://www.linkedin.com/in/username"
-        />
-        <mat-error *ngIf="applicantForm.get('LinkedInUrl')?.hasError('maxlength')">
-          LinkedIn URL cannot exceed 255 characters
-        </mat-error>
+        <mat-label>LinkedIn URL</mat-label>
+
+        <input matInput formControlName="LinkedInUrl" placeholder="Enter LinkedIn URL" />
       </mat-form-field>
-      <!-- ================================================== -->
-      <!-- BUTTONS -->
-      <!-- ================================================== -->
+
       <div class="buttons">
         <button
           *ngIf="authService.hasPermission('CREATE_APPLICANT')"
@@ -161,8 +123,9 @@
           type="submit"
           [disabled]="loading"
         >
-          {{ loading ? 'Saving...' : 'Save' }}
+          {{ loading ? 'Saving...' : 'Save Applicant' }}
         </button>
+
         <button
           mat-raised-button
           color="warn"
@@ -174,5 +137,415 @@
         </button>
       </div>
     </form>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- APPLICANT DETAILS -->
+  <!-- ================================================== -->
+
+  <div *ngIf="applicantCreated" class="card">
+    <h2>Applicant Details</h2>
+
+    <div class="buttons">
+      <button mat-raised-button color="primary" type="button" (click)="showSection('skills')">
+        Skills
+      </button>
+
+      <button mat-raised-button color="primary" type="button" (click)="showSection('education')">
+        Education
+      </button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="showSection('work-experience')"
+      >
+        Work Experience
+      </button>
+
+      <button mat-raised-button color="primary" type="button" (click)="showSection('documents')">
+        Documents
+      </button>
+
+      <button mat-raised-button color="accent" type="button" (click)="finishApplicant()">
+        Finish
+      </button>
+    </div>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- SKILLS -->
+  <!-- ================================================== -->
+
+  <div *ngIf="activeSection === 'skills'" class="card">
+    <h2>Skills</h2>
+
+    <p>Select one or more skills and enter the experience for each skill.</p>
+
+    <!-- ================================================== -->
+    <!-- LOADING -->
+    <!-- ================================================== -->
+
+    <div *ngIf="skillsLoading">
+      <p>Loading skills...</p>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- SKILL SELECTION -->
+    <!-- ================================================== -->
+
+    <form *ngIf="!skillsLoading">
+      <mat-form-field appearance="outline">
+        <mat-label> Select Skills* </mat-label>
+
+        <mat-select [(ngModel)]="selectedSkillIds" [ngModelOptions]="{ standalone: true }" multiple>
+          <mat-option *ngFor="let skill of availableSkills" [value]="skill.SkillId">
+            {{ skill.SkillName }}
+          </mat-option>
+        </mat-select>
+
+        <mat-hint> Select one or more skills </mat-hint>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- EXPERIENCE -->
+      <!-- ================================================== -->
+
+      <div *ngIf="selectedSkillIds && selectedSkillIds.length > 0" style="margin-top: 20px">
+        <h3>Skill Experience</h3>
+
+        <div
+          *ngFor="let skillId of selectedSkillIds"
+          style="display: flex; align-items: center; gap: 20px; margin-bottom: 10px"
+        >
+          <!-- SKILL NAME -->
+
+          <div style="width: 200px">
+            <strong>
+              {{ getSkillName(skillId) }}
+            </strong>
+          </div>
+
+          <!-- EXPERIENCE IN YEARS -->
+
+          <mat-form-field appearance="outline">
+            <mat-label> Experience (Years)* </mat-label>
+
+            <input
+              matInput
+              type="number"
+              min="0"
+              step="0.1"
+              [(ngModel)]="skillExperience[skillId]"
+              [ngModelOptions]="{
+                standalone: true,
+              }"
+              placeholder="e.g. 2.5"
+            />
+
+            <mat-hint> Example: 2.5 years </mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- ================================================== -->
+      <!-- ADD SKILLS -->
+      <!-- ================================================== -->
+
+      <div class="buttons">
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="addSkill()"
+          [disabled]="skillLoading || !selectedSkillIds || selectedSkillIds.length === 0"
+        >
+          {{ skillLoading ? 'Saving...' : 'Add Skills' }}
+        </button>
+      </div>
+    </form>
+
+    <!-- ================================================== -->
+    <!-- SELECTED APPLICANT SKILLS -->
+    <!-- ================================================== -->
+
+    <div *ngIf="skills && skills.length > 0" style="margin-top: 25px">
+      <h3>Selected Skills</h3>
+
+      <div *ngFor="let skill of skills" class="skill-item">
+        <strong>
+          {{ skill.SkillName }}
+        </strong>
+
+        <span>
+          -
+          {{ skill.ExperienceInYears }}
+          years
+        </span>
+      </div>
+    </div>
+
+    <!-- ================================================== -->
+    <!-- NO SKILLS -->
+    <!-- ================================================== -->
+
+    <div *ngIf="!skillsLoading && availableSkills && availableSkills.length === 0">
+      <p>No skills available for this company.</p>
+    </div>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- EDUCATION -->
+  <!-- ================================================== -->
+
+  <div *ngIf="activeSection === 'education'" class="card">
+    <h2>Education</h2>
+
+    <form [formGroup]="educationForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Degree*</mat-label>
+
+        <input matInput formControlName="Degree" placeholder="Enter Degree" />
+
+        <mat-error *ngIf="educationForm.get('Degree')?.hasError('required')">
+          Degree is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Institute*</mat-label>
+
+        <input matInput formControlName="Institute" placeholder="Enter Institute" />
+
+        <mat-error *ngIf="educationForm.get('Institute')?.hasError('required')">
+          Institute is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>University*</mat-label>
+
+        <input matInput formControlName="University" placeholder="Enter University" />
+
+        <mat-error *ngIf="educationForm.get('University')?.hasError('required')">
+          University is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Passing Year*</mat-label>
+
+        <input
+          matInput
+          type="number"
+          formControlName="PassingYear"
+          placeholder="Enter Passing Year"
+        />
+
+        <mat-error *ngIf="educationForm.get('PassingYear')?.hasError('required')">
+          Passing Year is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Percentage*</mat-label>
+
+        <input matInput type="number" formControlName="Percentage" placeholder="Enter Percentage" />
+
+        <mat-error *ngIf="educationForm.get('Percentage')?.hasError('required')">
+          Percentage is required
+        </mat-error>
+      </mat-form-field>
+
+      <div class="buttons">
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="addEducation()"
+          [disabled]="educationLoading"
+        >
+          {{ educationLoading ? 'Saving...' : 'Add Education' }}
+        </button>
+      </div>
+    </form>
+
+    <div *ngIf="educations.length > 0">
+      <h3>Added Education</h3>
+
+      <div *ngFor="let education of educations">
+        <strong>
+          {{ education.Degree }}
+        </strong>
+
+        -
+        {{ education.Institute }}
+
+        -
+        {{ education.PassingYear }}
+
+        -
+        {{ education.Percentage }}%
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- WORK EXPERIENCE -->
+  <!-- ================================================== -->
+
+  <div *ngIf="activeSection === 'work-experience'" class="card">
+    <h2>Work Experience</h2>
+
+    <form [formGroup]="workExperienceForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Company Name*</mat-label>
+
+        <input matInput formControlName="CompanyName" placeholder="Enter Company Name" />
+
+        <mat-error *ngIf="workExperienceForm.get('CompanyName')?.hasError('required')">
+          Company Name is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Designation*</mat-label>
+
+        <input matInput formControlName="Designation" placeholder="e.g. QA Tester" />
+
+        <mat-error *ngIf="workExperienceForm.get('Designation')?.hasError('required')">
+          Designation is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Start Date*</mat-label>
+
+        <input matInput [matDatepicker]="startPicker" formControlName="StartDate" />
+
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+
+        <mat-datepicker #startPicker></mat-datepicker>
+
+        <mat-error *ngIf="workExperienceForm.get('StartDate')?.hasError('required')">
+          Start Date is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>End Date</mat-label>
+
+        <input matInput [matDatepicker]="endPicker" formControlName="EndDate" />
+
+        <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-checkbox formControlName="CurrentlyWorking"> Currently Working </mat-checkbox>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Responsibilities</mat-label>
+
+        <textarea
+          matInput
+          rows="4"
+          formControlName="Responsibilities"
+          placeholder="Enter responsibilities"
+        ></textarea>
+      </mat-form-field>
+
+      <div class="buttons">
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="addWorkExperience()"
+          [disabled]="workExperienceLoading"
+        >
+          {{ workExperienceLoading ? 'Saving...' : 'Add Experience' }}
+        </button>
+      </div>
+    </form>
+
+    <div *ngIf="workExperiences.length > 0">
+      <h3>Added Work Experience</h3>
+
+      <div *ngFor="let experience of workExperiences">
+        <strong>
+          {{ experience.Designation }}
+        </strong>
+
+        -
+        {{ experience.CompanyName }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- DOCUMENTS -->
+  <!-- ================================================== -->
+
+  <div *ngIf="activeSection === 'documents'" class="card">
+    <h2>Applicant Documents</h2>
+
+    <form>
+      <mat-form-field appearance="outline">
+        <mat-label>Document Type*</mat-label>
+
+        <mat-select [(ngModel)]="documentType" [ngModelOptions]="{ standalone: true }">
+          <mat-option [value]=""> Select Document Type </mat-option>
+
+          <mat-option value="Resume"> Resume </mat-option>
+
+          <mat-option value="Aadhar Card"> Aadhar Card </mat-option>
+
+          <mat-option value="PAN Card"> PAN Card </mat-option>
+
+          <mat-option value="Marksheet"> Marksheet </mat-option>
+
+          <mat-option value="Certificate"> Certificate </mat-option>
+
+          <mat-option value="Other"> Other </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Selected File</mat-label>
+
+        <input matInput [value]="selectedFile?.name || ''" placeholder="Choose a file" readonly />
+      </mat-form-field>
+
+      <input type="file" #fileInput hidden (change)="onFileSelected($event)" />
+
+      <div class="buttons">
+        <button mat-raised-button color="primary" type="button" (click)="fileInput.click()">
+          Choose File
+        </button>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="uploadDocument()"
+          [disabled]="documentLoading"
+        >
+          {{ documentLoading ? 'Uploading...' : 'Upload Document' }}
+        </button>
+      </div>
+    </form>
+
+    <div *ngIf="documents.length > 0">
+      <h3>Uploaded Documents</h3>
+
+      <div *ngFor="let document of documents">
+        <strong>
+          {{ document.DocumentType }}
+        </strong>
+
+        <span *ngIf="document.FileName"> - {{ document.FileName }} </span>
+      </div>
+    </div>
   </div>
 </div>

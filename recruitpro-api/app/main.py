@@ -19,7 +19,8 @@ from app.routers import applicant
 from app.routers import application
 from app.routers import applicant_skill
 from app.routers import applicant_education
-
+from app.routers import applicant_work_experience
+from app.routers import applicant_document
 app = FastAPI(title="RecruitPro API")
 
 # CORS
@@ -51,6 +52,8 @@ app.include_router(applicant.router)
 app.include_router(application.router)
 app.include_router(applicant_skill.router)
 app.include_router(applicant_education.router)
+app.include_router(applicant_work_experience.router)
+app.include_router(applicant_document.router)
 
 @app.get("/")
 def home():
