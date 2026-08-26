@@ -34,7 +34,9 @@ class Applicant(Base):
         "ApplicantEducation", back_populates="applicant", cascade="all, delete-orphan"
     )
     work_experiences = relationship(
-        "ApplicantWorkExperience", back_populates="applicant"
+        "ApplicantWorkExperience",
+        back_populates="applicant",
+        cascade="all, delete-orphan",
     )
     documents = relationship(
         "ApplicantDocument", back_populates="applicant", cascade="all, delete-orphan"

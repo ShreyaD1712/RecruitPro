@@ -1,11 +1,13 @@
 import {
     Component,
     OnInit,
-    ChangeDetectorRef
+    ChangeDetectorRef,
+    NgZone
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +16,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ApplicantService } from '../../../services/applicant.service';
+import { ApplicantSkillService } from '../../../services/applicant-skill.service';
+import { ApplicantEducationService } from '../../../services/applicant-education.service';
+import { ApplicantWorkExperienceService } from '../../../services/applicant-work-experience.service';
+import { ApplicantDocumentService } from '../../../services/applicant-document.service';
 import { AuthService } from '../../../services/auth.service';
 @Component({
     selector: 'app-applicant-list',
@@ -29,19 +35,28 @@ import { AuthService } from '../../../services/auth.service';
         MatCardModule,
         MatTooltipModule
     ],
-    templateUrl: './applicant-list.component.html',
+    templateUrl:
+        './applicant-list.component.html'
 })
-export class ApplicantListComponent implements OnInit {
+export class ApplicantListComponent
+    implements OnInit {
     // ==================================================
     // APPLICANTS
     // ==================================================
     applicants: any[] = [];
     // ==================================================
     // SELECTED APPLICANT
-    // Used for custom popup
     // ==================================================
     selectedApplicant: any = null;
     showApplicantPopup = false;
+    // ==================================================
+    // POPUP DETAILS
+    // ==================================================
+    applicantSkills: any[] = [];
+    applicantEducations: any[] = [];
+    applicantWorkExperiences: any[] = [];
+    applicantDocuments: any[] = [];
+    popupLoading = false;
     // ==================================================
     // SEARCH
     // ==================================================
@@ -79,10 +94,24 @@ export class ApplicantListComponent implements OnInit {
     // CONSTRUCTOR
     // ==================================================
     constructor(
-        private applicantService: ApplicantService,
-        public authService: AuthService,
-        private router: Router,
-        private cdr: ChangeDetectorRef
+        private applicantService:
+            ApplicantService,
+        private applicantSkillService:
+            ApplicantSkillService,
+        private applicantEducationService:
+            ApplicantEducationService,
+        private applicantWorkExperienceService:
+            ApplicantWorkExperienceService,
+        private applicantDocumentService:
+            ApplicantDocumentService,
+        public authService:
+            AuthService,
+        private router:
+            Router,
+        private cdr:
+            ChangeDetectorRef,
+        private ngZone:
+            NgZone
     ) { }
     // ==================================================
     // ON INIT
@@ -105,15 +134,21 @@ export class ApplicantListComponent implements OnInit {
             )
             .subscribe({
                 next: (response: any) => {
+                    console.log(
+                        'Applicants Response:',
+                        response
+                    );
                     this.applicants =
-                        response.data || [];
+                        Array.isArray(response?.data)
+                            ? response.data
+                            : [];
                     this.totalRecords =
-                        response.total_records || 0;
+                        response?.total_records || 0;
                     this.loading = false;
                     this.cdr.detectChanges();
                 },
-                error: (err) => {
-                    console.log(
+                error: (err: any) => {
+                    console.error(
                         'Error loading applicants:',
                         err
                     );
@@ -134,8 +169,12 @@ export class ApplicantListComponent implements OnInit {
     // ==================================================
     // SORT
     // ==================================================
-    sort(column: string): void {
-        if (this.sortBy === column) {
+    sort(
+        column: string
+    ): void {
+        if (
+            this.sortBy === column
+        ) {
             this.order =
                 this.order === 'asc'
                     ? 'desc'
@@ -153,43 +192,432 @@ export class ApplicantListComponent implements OnInit {
         applicant: any,
         event?: Event
     ): void {
-        // Prevent any row click
-        // from affecting the popup
         if (event) {
             event.stopPropagation();
         }
-        this.selectedApplicant = applicant;
-        this.showApplicantPopup = true;
-        // Prevent background scrolling
-        document.body.style.overflow = 'hidden';
+        if (!applicant?.ApplicantId) {
+            alert(
+                'Applicant information not found.'
+            );
+            return;
+        }
+        // ==================================================
+        // OPEN POPUP IMMEDIATELY
+        // ==================================================
+        this.ngZone.run(() => {
+            this.selectedApplicant =
+                applicant;
+            this.showApplicantPopup =
+                true;
+            this.popupLoading =
+                true;
+            // Clear previous applicant
+            this.applicantSkills = [];
+            this.applicantEducations = [];
+            this.applicantWorkExperiences = [];
+            this.applicantDocuments = [];
+            document.body.style.overflow =
+                'hidden';
+            this.cdr.detectChanges();
+        });
+        const applicantId =
+            Number(
+                applicant.ApplicantId
+            );
+        console.log(
+            'Loading complete details for ApplicantId:',
+            applicantId
+        );
+        // ==================================================
+        // LOAD COMPLETE APPLICANT DETAILS
+        // ==================================================
+        forkJoin({
+            applicant:
+                this.applicantService
+                    .getApplicantById(
+                        applicantId
+                    ),
+            // IMPORTANT:
+            // Skills are loaded from ApplicantSkills API
+            skills:
+                this.applicantSkillService
+                    .getApplicantSkills(
+                        applicantId
+                    ),
+            educations:
+                this.applicantEducationService
+                    .getEducations(
+                        applicantId
+                    ),
+            workExperiences:
+                this.applicantWorkExperienceService
+                    .getWorkExperiences(
+                        applicantId
+                    ),
+            documents:
+                this.applicantDocumentService
+                    .getApplicantDocuments(
+                        applicantId
+                    )
+        })
+            .subscribe({
+                next: (response: any) => {
+                    console.log(
+                        '================================'
+                    );
+                    console.log(
+                        'FULL POPUP RESPONSE:',
+                        response
+                    );
+                    console.log(
+                        'APPLICANT RESPONSE:',
+                        response.applicant
+                    );
+                    console.log(
+                        'APPLICANT SKILLS RESPONSE:',
+                        response.skills
+                    );
+                    console.log(
+                        'EDUCATION RESPONSE:',
+                        response.educations
+                    );
+                    console.log(
+                        'WORK EXPERIENCE RESPONSE:',
+                        response.workExperiences
+                    );
+                    console.log(
+                        'DOCUMENT RESPONSE:',
+                        response.documents
+                    );
+                    console.log(
+                        '================================'
+                    );
+                    this.ngZone.run(() => {
+                        // ==================================================
+                        // APPLICANT
+                        // ==================================================
+                        this.selectedApplicant =
+                            response.applicant?.data ||
+                            response.applicant ||
+                            applicant;
+                        // ==================================================
+                        // APPLICANT SKILLS
+                        // ==================================================
+                        if (
+                            Array.isArray(
+                                response.skills?.data
+                            )
+                        ) {
+                            this.applicantSkills =
+                                response.skills.data;
+                        } else if (
+                            Array.isArray(
+                                response.skills
+                            )
+                        ) {
+                            this.applicantSkills =
+                                response.skills;
+                        } else {
+                            this.applicantSkills =
+                                [];
+                        }
+                        console.log(
+                            'FINAL APPLICANT SKILLS:',
+                            this.applicantSkills
+                        );
+                        // ==================================================
+                        // EDUCATION
+                        // ==================================================
+                        if (
+                            Array.isArray(
+                                response.educations?.data
+                            )
+                        ) {
+                            this.applicantEducations =
+                                response.educations.data;
+                        } else if (
+                            Array.isArray(
+                                response.educations
+                            )
+                        ) {
+                            this.applicantEducations =
+                                response.educations;
+                        } else {
+                            this.applicantEducations =
+                                [];
+                        }
+                        // ==================================================
+                        // WORK EXPERIENCE
+                        // ==================================================
+                        if (
+                            Array.isArray(
+                                response.workExperiences?.data
+                            )
+                        ) {
+                            this.applicantWorkExperiences =
+                                response.workExperiences.data;
+                        } else if (
+                            Array.isArray(
+                                response.workExperiences
+                            )
+                        ) {
+                            this.applicantWorkExperiences =
+                                response.workExperiences;
+                        } else {
+                            this.applicantWorkExperiences =
+                                [];
+                        }
+                        // ==================================================
+                        // DOCUMENTS
+                        // ==================================================
+                        if (
+                            Array.isArray(
+                                response.documents?.data
+                            )
+                        ) {
+                            this.applicantDocuments =
+                                response.documents.data;
+                        } else if (
+                            Array.isArray(
+                                response.documents
+                            )
+                        ) {
+                            this.applicantDocuments =
+                                response.documents;
+                        } else {
+                            this.applicantDocuments =
+                                [];
+                        }
+                        console.log(
+                            'FINAL DOCUMENTS:',
+                            this.applicantDocuments
+                        );
+                        // ==================================================
+                        // STOP LOADING
+                        // ==================================================
+                        this.popupLoading =
+                            false;
+                        this.cdr.detectChanges();
+                    });
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error loading applicant details:',
+                        err
+                    );
+                    this.ngZone.run(() => {
+                        this.popupLoading =
+                            false;
+                        this.cdr.detectChanges();
+                        alert(
+                            err?.error?.detail ||
+                            'Unable to load complete applicant details.'
+                        );
+                    });
+                }
+            });
     }
     // ==================================================
     // CLOSE APPLICANT POPUP
     // ==================================================
     closeApplicantPopup(): void {
-        this.selectedApplicant = null;
-        this.showApplicantPopup = false;
-        // Restore scrolling
-        document.body.style.overflow = '';
+        this.ngZone.run(() => {
+            this.selectedApplicant =
+                null;
+            this.applicantSkills =
+                [];
+            this.applicantEducations =
+                [];
+            this.applicantWorkExperiences =
+                [];
+            this.applicantDocuments =
+                [];
+            this.showApplicantPopup =
+                false;
+            this.popupLoading =
+                false;
+            document.body.style.overflow =
+                '';
+            this.cdr.detectChanges();
+        });
     }
     // ==================================================
-    // CLOSE POPUP WHEN CLICKING BACKDROP
+    // CLOSE POPUP ON BACKDROP
     // ==================================================
     closePopupOnBackdrop(
         event: MouseEvent
     ): void {
         if (
-            event.target === event.currentTarget
+            event.target ===
+            event.currentTarget
         ) {
             this.closeApplicantPopup();
         }
     }
     // ==================================================
+    // GET APPLICANT SKILL NAME
+    // ==================================================
+    getApplicantSkillName(
+        skill: any
+    ): string {
+        if (!skill) {
+            return '-';
+        }
+        // ApplicantSkills API directly returns SkillName
+        if (skill.SkillName) {
+            return skill.SkillName;
+        }
+        // In case backend returns nested Skill
+        if (skill.skill?.SkillName) {
+            return skill.skill.SkillName;
+        }
+        if (skill.Skill?.SkillName) {
+            return skill.Skill.SkillName;
+        }
+        return '-';
+    }
+    // ==================================================
+    // GET DOCUMENT NAME
+    // ==================================================
+    getDocumentName(
+        document: any
+    ): string {
+        return (
+            document?.FileName ||
+            document?.DocumentName ||
+            document?.OriginalFileName ||
+            document?.OriginalName ||
+            'View Document'
+        );
+    }
+    // ==================================================
+    // CHECK PDF
+    // ==================================================
+    isPdf(
+        document: any
+    ): boolean {
+        const fileName =
+            this.getDocumentName(
+                document
+            )
+                .toLowerCase();
+        return fileName
+            .endsWith('.pdf');
+    }
+    // ==================================================
+    // GET DOCUMENT URL
+    // ==================================================
+    getDocumentUrl(
+        document: any
+    ): string {
+        console.log(
+            'Building URL for document:',
+            document
+        );
+        let filePath =
+            document?.FileUrl ||
+            document?.FileURL ||
+            document?.FilePath ||
+            document?.DocumentPath ||
+            document?.Path ||
+            document?.StoredFilePath ||
+            '';
+        if (!filePath) {
+            console.error(
+                'No file path found in document:',
+                document
+            );
+            return '';
+        }
+        // ==================================================
+        // WINDOWS PATH FIX
+        // ==================================================
+        filePath =
+            String(filePath)
+                .replace(
+                    /\\/g,
+                    '/'
+                );
+        console.log(
+            'Document File Path:',
+            filePath
+        );
+        // ==================================================
+        // FULL HTTP URL
+        // ==================================================
+        if (
+            filePath.startsWith('http://') ||
+            filePath.startsWith('https://')
+        ) {
+            return encodeURI(
+                filePath
+            );
+        }
+        // ==================================================
+        // PATH STARTS WITH /
+        // Example:
+        // /uploads/applicant_documents/resume.pdf
+        // ==================================================
+        if (
+            filePath.startsWith('/')
+        ) {
+            return encodeURI(
+                'http://127.0.0.1:8000' +
+                filePath
+            );
+        }
+        // ==================================================
+        // RELATIVE PATH
+        // Example:
+        // uploads/applicant_documents/resume.pdf
+        // ==================================================
+        return encodeURI(
+            'http://127.0.0.1:8000/' +
+            filePath
+        );
+    }
+    // ==================================================
+    // OPEN DOCUMENT
+    // ==================================================
+    openDocument(
+        document: any
+    ): void {
+        console.log(
+            'Opening Document:',
+            document
+        );
+        const url =
+            this.getDocumentUrl(
+                document
+            );
+        console.log(
+            'FINAL DOCUMENT URL:',
+            url
+        );
+        if (!url) {
+            alert(
+                'Document file path not found.'
+            );
+            return;
+        }
+        window.open(
+            url,
+            '_blank',
+            'noopener,noreferrer'
+        );
+    }
+    // ==================================================
     // ADD APPLICANT
     // ==================================================
     addApplicant(): void {
-        if (!this.authService.hasPermission('CREATE_APPLICANT')) {
-            alert('You are not authorized to create applicants.')
+        if (
+            !this.authService.hasPermission(
+                'CREATE_APPLICANT'
+            )
+        ) {
+            alert(
+                'You are not authorized to create applicants.'
+            );
             return;
         }
         this.router.navigate([
@@ -203,7 +631,6 @@ export class ApplicantListComponent implements OnInit {
         id: number,
         event?: Event
     ): void {
-        // Prevent popup
         if (event) {
             event.stopPropagation();
         }
@@ -219,7 +646,6 @@ export class ApplicantListComponent implements OnInit {
         id: number,
         event?: Event
     ): void {
-        // Prevent popup
         if (event) {
             event.stopPropagation();
         }
@@ -231,14 +657,14 @@ export class ApplicantListComponent implements OnInit {
             return;
         }
         this.applicantService
-            .deleteApplicant(id)
+            .deleteApplicant(
+                id
+            )
             .subscribe({
                 next: () => {
                     alert(
                         'Applicant Deleted Successfully'
                     );
-                    // If last record of page
-                    // was deleted
                     if (
                         this.applicants.length === 1 &&
                         this.page > 1
@@ -247,13 +673,13 @@ export class ApplicantListComponent implements OnInit {
                     }
                     this.loadApplicants();
                 },
-                error: (err) => {
-                    console.log(
+                error: (err: any) => {
+                    console.error(
                         'Error deleting applicant:',
                         err
                     );
                     alert(
-                        err.error?.detail ||
+                        err?.error?.detail ||
                         'Unable to delete applicant'
                     );
                 }
@@ -263,7 +689,9 @@ export class ApplicantListComponent implements OnInit {
     // PREVIOUS PAGE
     // ==================================================
     previousPage(): void {
-        if (this.page > 1) {
+        if (
+            this.page > 1
+        ) {
             this.page--;
             this.loadApplicants();
         }
