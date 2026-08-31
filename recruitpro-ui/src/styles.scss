@@ -191,6 +191,25 @@ button[mat-raised-button] {
   color: #c53030;
 }
 /* ==================================================
+   INTERVIEW STATUS
+================================================== */
+.scheduled {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+.completed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.cancelled {
+  background: #ffebee;
+  color: #c62828;
+}
+.rescheduled {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+/* ==================================================
    ACTION BUTTONS
 ================================================== */
 .list-table button {

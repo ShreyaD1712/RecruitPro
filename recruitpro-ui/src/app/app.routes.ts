@@ -61,7 +61,11 @@ import { ApplicantEditComponent } from './components/applicant/applicant-edit/ap
 // Applications Component
 import { ApplicationListComponent } from './components/application/application-list/application-list.component';
 import { ApplicationAddComponent } from './components/application/application-add/application-add.component';
-import { ApplicationEditComponent } from './components/application/application-edit/application-edit.component';
+// Referrals
+import { ReferralListComponent } from './components/referral/referral-list/referral-list.component';
+// Interviews 
+import { InterviewAddComponent } from './components/interview/interview-add/interview-add.component';
+import { InterviewListComponent } from './components/interview/interview-list/interview-list.component';
 export const routes: Routes = [
   // Login Page
   {
@@ -261,7 +265,25 @@ export const routes: Routes = [
       },
       {
         path: 'application/edit/:id',
-        component: ApplicationEditComponent
+        component: ApplicationAddComponent
+      },
+      // Referral
+      {
+        path: 'referral',
+        component: ReferralListComponent
+      },
+      // Interview
+      {
+        path: 'interview',
+        component: InterviewListComponent
+      },
+      {
+        path: 'interview/add',
+        component: InterviewAddComponent
+      },
+      {
+        path: 'interview/edit/:id',
+        component: InterviewAddComponent
       },
       // Default Route
       {

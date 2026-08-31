@@ -36,6 +36,12 @@ class Application(Base):
         return self.job_opening.JobTitle if self.job_opening else None
 
     @property
+    def DepartmentId(self):
+        if self.job_opening:
+            return self.job_opening.DepartmentId
+        return None
+
+    @property
     def DepartmentName(self):
         if self.job_opening and self.job_opening.department:
             return self.job_opening.department.DepartmentName

@@ -1,14 +1,24 @@
 <div class="page">
   <div class="card">
-    <h2>Add Application</h2>
+    <!-- ================================================== -->
+    <!-- TITLE -->
+    <!-- ================================================== -->
+
+    <h2>
+      {{ isEditMode ? 'Edit Application' : 'Add Application' }}
+    </h2>
+
     <form [formGroup]="applicationForm" (ngSubmit)="saveApplication()">
       <!-- ================================================== -->
       <!-- APPLICANT -->
       <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Applicant*</mat-label>
+
         <mat-select formControlName="ApplicantId">
           <mat-option [value]="null"> Select Applicant </mat-option>
+
           <mat-option *ngFor="let applicant of applicants" [value]="applicant.ApplicantId">
             {{ applicant.FirstName }}
             {{ applicant.LastName }}
@@ -16,30 +26,39 @@
             {{ applicant.Email }}
           </mat-option>
         </mat-select>
+
         <mat-error *ngIf="applicationForm.get('ApplicantId')?.hasError('required')">
           Applicant is required
         </mat-error>
       </mat-form-field>
+
       <!-- ================================================== -->
       <!-- DEPARTMENT -->
       <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Department*</mat-label>
+
         <mat-select formControlName="DepartmentId" (selectionChange)="onDepartmentChange()">
           <mat-option [value]="null"> Select Department </mat-option>
+
           <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
             {{ department.DepartmentName }}
           </mat-option>
         </mat-select>
+
         <mat-error *ngIf="applicationForm.get('DepartmentId')?.hasError('required')">
           Department is required
         </mat-error>
       </mat-form-field>
+
       <!-- ================================================== -->
       <!-- JOB OPENING -->
       <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Job Opening*</mat-label>
+
         <mat-select
           formControlName="JobOpeningId"
           [disabled]="!applicationForm.get('DepartmentId')?.value || loadingJobOpenings"
@@ -47,59 +66,151 @@
           <mat-option [value]="null">
             {{ loadingJobOpenings ? 'Loading Job Openings...' : 'Select Job Opening' }}
           </mat-option>
+
           <mat-option *ngFor="let job of jobOpenings" [value]="job.JobOpeningId">
             {{ job.JobTitle }}
           </mat-option>
         </mat-select>
+
         <mat-hint *ngIf="!applicationForm.get('DepartmentId')?.value">
           Select a department first
         </mat-hint>
+
         <mat-error *ngIf="applicationForm.get('JobOpeningId')?.hasError('required')">
           Job Opening is required
         </mat-error>
       </mat-form-field>
+
       <!-- ================================================== -->
       <!-- CURRENT STATUS -->
       <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
         <mat-label>Application Status*</mat-label>
+
         <mat-select formControlName="CurrentStatus">
           <mat-option [value]="null"> Select Status </mat-option>
+
           <mat-option *ngFor="let status of applicationStatuses" [value]="status">
             {{ status }}
           </mat-option>
         </mat-select>
+
         <mat-error *ngIf="applicationForm.get('CurrentStatus')?.hasError('required')">
           Application Status is required
         </mat-error>
       </mat-form-field>
+
       <!-- ================================================== -->
-      <!-- REMARKS -->
+      <!-- APPLICATION REMARKS -->
       <!-- ================================================== -->
+
       <mat-form-field appearance="outline">
-        <mat-label>Remarks</mat-label>
+        <mat-label>Application Remarks</mat-label>
+
         <textarea
           matInput
           rows="4"
           formControlName="Remarks"
           placeholder="Enter application remarks"
         ></textarea>
+
+        <mat-error *ngIf="applicationForm.get('Remarks')?.hasError('maxlength')">
+          Remarks cannot exceed 5000 characters
+        </mat-error>
       </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- REFERRAL -->
+      <!-- ================================================== -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Is Referral?*</mat-label>
+
+        <mat-select formControlName="IsReferral">
+          <mat-option [value]="true"> Yes </mat-option>
+
+          <mat-option [value]="false"> No </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="applicationForm.get('IsReferral')?.hasError('required')">
+          Please select referral status
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- REFERRAL DETAILS -->
+      <!-- ONLY SHOW WHEN YES -->
+      <!-- ================================================== -->
+
+      <ng-container *ngIf="applicationForm.get('IsReferral')?.value === true">
+        <!-- ================================================== -->
+        <!-- REFERRER USER -->
+        <!-- ================================================== -->
+        <mat-form-field appearance="outline">
+          <mat-label>Referrer User*</mat-label>
+
+          <mat-select formControlName="ReferrerUserId" [disabled]="loadingReferrerUsers">
+            <mat-option [value]="null">
+              {{ loadingReferrerUsers ? 'Loading Users...' : 'Select Referrer' }}
+            </mat-option>
+
+            <mat-option *ngFor="let user of referrerUsers" [value]="user.UserId">
+              {{ user.FirstName }}
+              {{ user.LastName }}
+            </mat-option>
+          </mat-select>
+
+          <mat-error *ngIf="applicationForm.get('ReferrerUserId')?.hasError('required')">
+            Referrer User is required
+          </mat-error>
+        </mat-form-field>
+        <!-- ================================================== -->
+        <!-- REFERRAL REMARKS -->
+        <!-- ================================================== -->
+
+        <mat-form-field appearance="outline">
+          <mat-label>Referral Remarks</mat-label>
+
+          <textarea
+            matInput
+            rows="4"
+            formControlName="ReferralRemarks"
+            placeholder="Enter referral remarks"
+          ></textarea>
+
+          <mat-error *ngIf="applicationForm.get('ReferralRemarks')?.hasError('maxlength')">
+            Referral remarks cannot exceed 500 characters
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
       <!-- ================================================== -->
       <!-- BUTTONS -->
       <!-- ================================================== -->
+
       <div class="buttons">
-        <!-- SAVE -->
+        <!-- ================================================== -->
+        <!-- SAVE / UPDATE -->
+        <!-- ================================================== -->
+
         <button
-          *ngIf="authService.hasPermission('CREATE_APPLICATION')"
+          *ngIf="
+            (!isEditMode && authService.hasPermission('CREATE_APPLICATION')) ||
+            (isEditMode && authService.hasPermission('UPDATE_APPLICATION'))
+          "
           mat-raised-button
           color="primary"
           type="submit"
           [disabled]="loading"
         >
-          {{ loading ? 'Saving...' : 'Save' }}
+          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
+
+        <!-- ================================================== -->
         <!-- CANCEL -->
+        <!-- ================================================== -->
+
         <button
           mat-raised-button
           color="warn"

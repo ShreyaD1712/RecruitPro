@@ -21,8 +21,11 @@ from app.routers import applicant_skill
 from app.routers import applicant_education
 from app.routers import applicant_work_experience
 from app.routers import applicant_document
-app = FastAPI(title="RecruitPro API")
+from app.routers import referral
+from app.routers import interview
+from fastapi.staticfiles import StaticFiles
 
+app = FastAPI(title="RecruitPro API")
 # CORS
 app.add_middleware(
     CORSMiddleware,
@@ -33,7 +36,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # Routers
 app.include_router(auth_router)
 app.include_router(company_router)
@@ -54,6 +56,10 @@ app.include_router(applicant_skill.router)
 app.include_router(applicant_education.router)
 app.include_router(applicant_work_experience.router)
 app.include_router(applicant_document.router)
+app.include_router(referral.router)
+app.include_router(interview.router)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 
 @app.get("/")
 def home():
@@ -65,5 +71,4 @@ def db_test():
     with engine.connect() as connection:
         result = connection.execute(text("SELECT DB_NAME()"))
         db_name = result.scalar()
-
     return {"status": "Connected Successfully", "database": db_name}

@@ -1,0 +1,241 @@
+<div class="application-page">
+  <div class="list-container">
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
+    <div class="header">
+      <div>
+        <h2>Interview Management</h2>
+        <p>Manage scheduled applicant interviews</p>
+      </div>
+
+      <!-- ADD INTERVIEW -->
+      <button
+        *ngIf="authService.hasPermission('CREATE_INTERVIEW')"
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="addInterview()"
+      >
+        <mat-icon>add</mat-icon>
+        Schedule Interview
+      </button>
+    </div>
+
+    <!-- ==================================================
+         SEARCH
+    ================================================== -->
+    <mat-form-field appearance="outline" class="search-box">
+      <mat-label>Search Interview</mat-label>
+
+      <input
+        matInput
+        [(ngModel)]="search"
+        placeholder="Applicant, Job Opening, Interviewer or Round"
+        (keyup.enter)="searchInterviews()"
+      />
+
+      <button mat-icon-button matSuffix type="button" (click)="searchInterviews()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- ==================================================
+         FILTERS
+    ================================================== -->
+    <div class="filters">
+      <!-- STATUS -->
+      <mat-form-field appearance="outline" class="filter-box">
+        <mat-label>Status</mat-label>
+
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onStatusChange()">
+          <mat-option *ngFor="let status of statuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- ==================================================
+         TABLE
+    ================================================== -->
+    <div class="table-container">
+      <table mat-table [dataSource]="interviews" class="list-table">
+        <!-- ==================================================
+             APPLICANT NAME
+        ================================================== -->
+        <ng-container matColumnDef="ApplicantName">
+          <th mat-header-cell *matHeaderCellDef>Applicant Name</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.ApplicantName || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             JOB OPENING
+        ================================================== -->
+        <ng-container matColumnDef="JobTitle">
+          <th mat-header-cell *matHeaderCellDef>Job Opening</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.JobTitle || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             INTERVIEW ROUND
+        ================================================== -->
+        <ng-container matColumnDef="InterviewRoundName">
+          <th mat-header-cell *matHeaderCellDef>Interview Round</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.InterviewRoundName || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             INTERVIEW DATE
+        ================================================== -->
+        <ng-container matColumnDef="InterviewDate">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('InterviewDate')">Interview Date</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.InterviewDate | date: 'dd-MM-yyyy hh:mm a' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             INTERVIEW MODE
+        ================================================== -->
+        <ng-container matColumnDef="InterviewMode">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('InterviewMode')">Mode</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.InterviewMode || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             INTERVIEWER
+        ================================================== -->
+        <ng-container matColumnDef="InterviewerName">
+          <th mat-header-cell *matHeaderCellDef>Interviewer</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.InterviewerName || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             STATUS
+        ================================================== -->
+        <ng-container matColumnDef="Status">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('Status')">Status</th>
+
+          <td mat-cell *matCellDef="let row">
+            <span class="badge" [ngClass]="getStatusClass(row.Status)">
+              {{ row.Status || '-' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             ACTIONS
+        ================================================== -->
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+
+          <td mat-cell *matCellDef="let row">
+            <!-- EDIT -->
+            <button
+              *ngIf="authService.hasPermission('UPDATE_INTERVIEW')"
+              mat-icon-button
+              color="primary"
+              type="button"
+              matTooltip="Edit Interview"
+              (click)="editInterview(row.InterviewId, $event)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <!-- CANCEL -->
+            <button
+              *ngIf="
+                authService.hasPermission('UPDATE_INTERVIEW') &&
+                row.Status !== 'Cancelled' &&
+                row.Status !== 'Completed'
+              "
+              mat-icon-button
+              color="warn"
+              type="button"
+              matTooltip="Cancel Interview"
+              (click)="cancelInterview(row.InterviewId, $event)"
+            >
+              <mat-icon>cancel</mat-icon>
+            </button>
+
+            <!-- DELETE -->
+            <button
+              *ngIf="authService.hasPermission('DELETE_INTERVIEW')"
+              mat-icon-button
+              color="warn"
+              type="button"
+              matTooltip="Delete Interview"
+              (click)="deleteInterview(row.InterviewId, $event)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             HEADER ROW
+        ================================================== -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+        <!-- ==================================================
+             DATA ROW
+        ================================================== -->
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <!-- ==================================================
+         LOADING
+    ================================================== -->
+    <div class="loading" *ngIf="loading">Loading Interviews...</div>
+
+    <!-- ==================================================
+         NO DATA
+    ================================================== -->
+    <div class="no-data" *ngIf="!loading && interviews.length === 0">No Interviews Found</div>
+
+    <!-- ==================================================
+         PAGINATION
+    ================================================== -->
+    <div class="pagination">
+      <!-- PREVIOUS -->
+      <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+        Previous
+      </button>
+
+      <!-- PAGE -->
+      <span>
+        Page {{ page }}
+        of
+        {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+      </span>
+
+      <!-- NEXT -->
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page * pageSize >= totalRecords"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>

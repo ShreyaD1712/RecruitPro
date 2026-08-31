@@ -100,6 +100,16 @@
     <mat-icon>assignment</mat-icon>
     <span>Applications</span>
   </a>
+  <!-- Referrals -->
+  <a *ngIf="hasPermission('VIEW_REFERRAL')" routerLink="/referral" routerLinkActive="active">
+    <mat-icon>people_alt</mat-icon>
+    <span>Referrals</span>
+  </a>
+  <!-- Interviews -->
+  <a *ngIf="hasPermission('VIEW_INTERVIEW')" routerLink="/interview" routerLinkActive="active">
+    <mat-icon>event</mat-icon>
+    <span>Interviews</span>
+  </a>
   <!-- Reports -->
   <a *ngIf="hasPermission('VIEW_REPORT')" routerLink="/report" routerLinkActive="active">
     <mat-icon>assessment</mat-icon>

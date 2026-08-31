@@ -1,9 +1,4 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectorRef,
-    NgZone
-} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -22,8 +17,7 @@ import { ApplicantWorkExperienceService } from '../../../services/applicant-work
 import { ApplicantDocumentService } from '../../../services/applicant-document.service';
 import { AuthService } from '../../../services/auth.service';
 @Component({
-    selector: 'app-applicant-list',
-    standalone: true,
+    selector: 'app-applicant-list', standalone: true,
     imports: [
         CommonModule,
         FormsModule,
@@ -35,51 +29,27 @@ import { AuthService } from '../../../services/auth.service';
         MatCardModule,
         MatTooltipModule
     ],
-    templateUrl:
-        './applicant-list.component.html'
+    templateUrl: './applicant-list.component.html'
 })
 export class ApplicantListComponent
     implements OnInit {
-    // ==================================================
-    // APPLICANTS
-    // ==================================================
     applicants: any[] = [];
-    // ==================================================
-    // SELECTED APPLICANT
-    // ==================================================
     selectedApplicant: any = null;
     showApplicantPopup = false;
-    // ==================================================
     // POPUP DETAILS
-    // ==================================================
     applicantSkills: any[] = [];
     applicantEducations: any[] = [];
     applicantWorkExperiences: any[] = [];
     applicantDocuments: any[] = [];
     popupLoading = false;
-    // ==================================================
-    // SEARCH
-    // ==================================================
     search = '';
-    // ==================================================
-    // SORTING
-    // ==================================================
     sortBy = 'CreatedOn';
     order = 'desc';
-    // ==================================================
-    // PAGINATION
-    // ==================================================
     page = 1;
     pageSize = 10;
     totalRecords = 0;
     Math = Math;
-    // ==================================================
-    // LOADING
-    // ==================================================
     loading = false;
-    // ==================================================
-    // TABLE COLUMNS
-    // ==================================================
     displayedColumns = [
         'Name',
         'Email',
@@ -90,68 +60,35 @@ export class ApplicantListComponent
         'NoticePeriod',
         'Actions'
     ];
-    // ==================================================
     // CONSTRUCTOR
-    // ==================================================
-    constructor(
-        private applicantService:
-            ApplicantService,
-        private applicantSkillService:
-            ApplicantSkillService,
-        private applicantEducationService:
-            ApplicantEducationService,
-        private applicantWorkExperienceService:
-            ApplicantWorkExperienceService,
-        private applicantDocumentService:
-            ApplicantDocumentService,
-        public authService:
-            AuthService,
-        private router:
-            Router,
-        private cdr:
-            ChangeDetectorRef,
-        private ngZone:
-            NgZone
-    ) { }
-    // ==================================================
+    constructor(private applicantService: ApplicantService,
+        private applicantSkillService: ApplicantSkillService,
+        private applicantEducationService: ApplicantEducationService,
+        private applicantWorkExperienceService: ApplicantWorkExperienceService,
+        private applicantDocumentService: ApplicantDocumentService,
+        public authService: AuthService,
+        private router: Router,
+        private cdr: ChangeDetectorRef,
+        private ngZone: NgZone) { }
     // ON INIT
-    // ==================================================
     ngOnInit(): void {
         this.loadApplicants();
     }
-    // ==================================================
     // LOAD APPLICANTS
-    // ==================================================
     loadApplicants(): void {
         this.loading = true;
         this.applicantService
-            .getApplicants(
-                this.search,
-                this.sortBy,
-                this.order,
-                this.page,
-                this.pageSize
-            )
+            .getApplicants(this.search, this.sortBy, this.order, this.page, this.pageSize)
             .subscribe({
                 next: (response: any) => {
-                    console.log(
-                        'Applicants Response:',
-                        response
-                    );
-                    this.applicants =
-                        Array.isArray(response?.data)
-                            ? response.data
-                            : [];
-                    this.totalRecords =
-                        response?.total_records || 0;
+                    console.log('Applicants Response:', response);
+                    this.applicants = Array.isArray(response?.data) ? response.data : [];
+                    this.totalRecords = response?.total_records || 0;
                     this.loading = false;
                     this.cdr.detectChanges();
                 },
                 error: (err: any) => {
-                    console.error(
-                        'Error loading applicants:',
-                        err
-                    );
+                    console.error('Error loading applicants:', err);
                     this.applicants = [];
                     this.totalRecords = 0;
                     this.loading = false;
@@ -159,75 +96,47 @@ export class ApplicantListComponent
                 }
             });
     }
-    // ==================================================
     // SEARCH
-    // ==================================================
     searchApplicants(): void {
         this.page = 1;
         this.loadApplicants();
     }
-    // ==================================================
     // SORT
-    // ==================================================
-    sort(
-        column: string
-    ): void {
-        if (
-            this.sortBy === column
-        ) {
+    sort(column: string): void {
+        if (this.sortBy === column) {
             this.order =
-                this.order === 'asc'
-                    ? 'desc'
-                    : 'asc';
+                this.order === 'asc' ? 'desc' : 'asc';
         } else {
             this.sortBy = column;
             this.order = 'asc';
         }
         this.loadApplicants();
     }
-    // ==================================================
     // OPEN APPLICANT POPUP
-    // ==================================================
     openApplicantPopup(
-        applicant: any,
-        event?: Event
+        applicant: any, event?: Event
     ): void {
-        if (event) {
-            event.stopPropagation();
-        }
+        if (event) { event.stopPropagation(); }
         if (!applicant?.ApplicantId) {
-            alert(
-                'Applicant information not found.'
-            );
+            alert('Applicant information not found.');
             return;
         }
-        // ==================================================
         // OPEN POPUP IMMEDIATELY
-        // ==================================================
         this.ngZone.run(() => {
-            this.selectedApplicant =
-                applicant;
-            this.showApplicantPopup =
-                true;
-            this.popupLoading =
-                true;
+            this.selectedApplicant = applicant;
+            this.showApplicantPopup = true;
+            this.popupLoading = true;
             // Clear previous applicant
             this.applicantSkills = [];
             this.applicantEducations = [];
             this.applicantWorkExperiences = [];
             this.applicantDocuments = [];
-            document.body.style.overflow =
-                'hidden';
+            document.body.style.overflow = 'hidden';
             this.cdr.detectChanges();
         });
         const applicantId =
-            Number(
-                applicant.ApplicantId
-            );
-        console.log(
-            'Loading complete details for ApplicantId:',
-            applicantId
-        );
+            Number(applicant.ApplicantId);
+        console.log('Loading complete details for ApplicantId:', applicantId);
         // ==================================================
         // LOAD COMPLETE APPLICANT DETAILS
         // ==================================================
@@ -579,31 +488,28 @@ export class ApplicantListComponent
     // ==================================================
     // OPEN DOCUMENT
     // ==================================================
-    openDocument(
-        document: any
-    ): void {
-        console.log(
-            'Opening Document:',
-            document
-        );
-        const url =
-            this.getDocumentUrl(
-                document
-            );
-        console.log(
-            'FINAL DOCUMENT URL:',
-            url
-        );
-        if (!url) {
-            alert(
-                'Document file path not found.'
-            );
+    openDocument(document: any): void {
+        if (!document?.FilePath) {
+            alert('Document path not found.');
             return;
         }
+
+        let filePath =
+            document.FilePath.replace(/\\/g, '/');
+
+        if (filePath.startsWith('uploads/')) {
+            filePath =
+                filePath.substring('uploads/'.length);
+        }
+
+        const fileUrl =
+            `http://127.0.0.1:8000/uploads/${filePath}`;
+
+        console.log('Opening document:', fileUrl);
+
         window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
+            fileUrl,
+            '_blank'
         );
     }
     // ==================================================
@@ -701,8 +607,7 @@ export class ApplicantListComponent
     // ==================================================
     nextPage(): void {
         if (
-            this.page * this.pageSize <
-            this.totalRecords
+            this.page * this.pageSize < this.totalRecords
         ) {
             this.page++;
             this.loadApplicants();

@@ -4,39 +4,46 @@ from datetime import datetime
 
 
 # ==================================================
-# CREATE APPLICATION
+# CREATE INTERVIEW
 # ==================================================
-class ApplicationCreate(BaseModel):
-    ApplicantId: int = Field(..., gt=0)
-    JobOpeningId: int = Field(..., gt=0)
-    CurrentStatus: str = Field(default="Applied", min_length=1, max_length=50)
-    Remarks: Optional[str] = None
+class InterviewCreate(BaseModel):
+    ApplicationId: int = Field(..., gt=0)
+    InterviewRoundId: int = Field(..., gt=0)
+    InterviewerId: int = Field(..., gt=0)
+    InterviewDate: datetime
+    InterviewMode: Optional[str] = Field(default=None, max_length=50)
+    Status: Optional[str] = Field(default="Scheduled", max_length=50)
 
 
 # ==================================================
-# UPDATE APPLICATION
+# UPDATE INTERVIEW
 # ==================================================
-class ApplicationUpdate(BaseModel):
-    ApplicantId: int = Field(..., gt=0)
-    JobOpeningId: int = Field(..., gt=0)
-    CurrentStatus: str = Field(..., min_length=1, max_length=50)
-    Remarks: Optional[str] = None
+class InterviewUpdate(BaseModel):
+    ApplicationId: int = Field(..., gt=0)
+    InterviewRoundId: int = Field(..., gt=0)
+    InterviewerId: int = Field(..., gt=0)
+    InterviewDate: datetime
+    InterviewMode: Optional[str] = Field(default=None, max_length=50)
+    Status: Optional[str] = Field(default=None, max_length=50)
 
 
 # ==================================================
-# APPLICATION RESPONSE
+# INTERVIEW RESPONSE
 # ==================================================
-class ApplicationResponse(BaseModel):
-    ApplicationId: int
+class InterviewResponse(BaseModel):
+    InterviewId: int
     CompanyId: int
+
     # --------------------------------------------------
-    # APPLICATION INFORMATION
+    # INTERVIEW INFORMATION
     # --------------------------------------------------
-    ApplicantId: int
-    JobOpeningId: int
-    AppliedDate: datetime
-    CurrentStatus: str
-    Remarks: Optional[str] = None
+    ApplicationId: int
+    InterviewRoundId: int
+    InterviewerId: int
+    InterviewDate: datetime
+    InterviewMode: Optional[str] = None
+    Status: Optional[str] = None
+
     # --------------------------------------------------
     # AUDIT INFORMATION
     # --------------------------------------------------
@@ -44,28 +51,25 @@ class ApplicationResponse(BaseModel):
     CreatedBy: Optional[int] = None
     UpdatedOn: Optional[datetime] = None
     UpdatedBy: Optional[int] = None
+
     # --------------------------------------------------
-    # APPLICANT DISPLAY INFORMATION
+    # DISPLAY INFORMATION
     # --------------------------------------------------
     ApplicantName: Optional[str] = None
-    ApplicantEmail: Optional[str] = None
-    ApplicantMobile: Optional[str] = None
-    # --------------------------------------------------
-    # JOB OPENING DISPLAY INFORMATION
-    # --------------------------------------------------
     JobTitle: Optional[str] = None
-    DepartmentId: Optional[int] = None
     DepartmentName: Optional[str] = None
+    InterviewRoundName: Optional[str] = None
+    InterviewerName: Optional[str] = None
 
     class Config:
         from_attributes = True
 
 
 # ==================================================
-# APPLICATION LIST RESPONSE
+# INTERVIEW LIST RESPONSE
 # ==================================================
-class ApplicationListResponse(BaseModel):
+class InterviewListResponse(BaseModel):
     total_records: int
     page: int
     page_size: int
-    data: list[ApplicationResponse]
+    data: list[InterviewResponse]

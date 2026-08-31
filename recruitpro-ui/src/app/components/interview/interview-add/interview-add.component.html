@@ -1,0 +1,176 @@
+<div class="page">
+  <div class="card">
+    <!-- ================================================== -->
+    <!-- TITLE -->
+    <!-- ================================================== -->
+    <h2>
+      {{ isEditMode ? 'Edit Interview' : 'Schedule Interview' }}
+    </h2>
+
+    <form [formGroup]="interviewForm" (ngSubmit)="saveInterview()">
+      <!-- ================================================== -->
+      <!-- APPLICATION -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Application*</mat-label>
+
+        <mat-select formControlName="ApplicationId" [disabled]="loadingApplications">
+          <mat-option [value]="null">
+            {{ loadingApplications ? 'Loading Applications...' : 'Select Application' }}
+          </mat-option>
+
+          <mat-option *ngFor="let application of applications" [value]="application.ApplicationId">
+            {{ application.ApplicantName }}
+            -
+            {{ application.JobTitle }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="interviewForm.get('ApplicationId')?.hasError('required')">
+          Application is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- INTERVIEW ROUND -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Interview Round*</mat-label>
+
+        <mat-select formControlName="InterviewRoundId" [disabled]="loadingInterviewRounds">
+          <mat-option [value]="null">
+            {{ loadingInterviewRounds ? 'Loading Interview Rounds...' : 'Select Interview Round' }}
+          </mat-option>
+
+          <mat-option *ngFor="let round of interviewRounds" [value]="round.InterviewRoundId">
+            {{ round.RoundName }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="interviewForm.get('InterviewRoundId')?.hasError('required')">
+          Interview Round is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- INTERVIEWER -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Interviewer*</mat-label>
+
+        <mat-select formControlName="InterviewerId" [disabled]="loadingInterviewers">
+          <mat-option [value]="null">
+            {{ loadingInterviewers ? 'Loading Users...' : 'Select Interviewer' }}
+          </mat-option>
+
+          <mat-option *ngFor="let user of interviewers" [value]="user.UserId">
+            {{ user.FirstName }}
+            {{ user.LastName }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="interviewForm.get('InterviewerId')?.hasError('required')">
+          Interviewer is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- INTERVIEW DATE -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Interview Date*</mat-label>
+
+        <input matInput [matDatepicker]="interviewDatePicker" formControlName="InterviewDate" />
+
+        <mat-datepicker-toggle matIconSuffix [for]="interviewDatePicker"></mat-datepicker-toggle>
+
+        <mat-datepicker #interviewDatePicker></mat-datepicker>
+
+        <mat-error *ngIf="interviewForm.get('InterviewDate')?.hasError('required')">
+          Interview Date is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- INTERVIEW TIME -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Interview Time*</mat-label>
+
+        <input matInput type="time" formControlName="InterviewTime" />
+
+        <mat-error *ngIf="interviewForm.get('InterviewTime')?.hasError('required')">
+          Interview Time is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- INTERVIEW MODE -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Interview Mode*</mat-label>
+
+        <mat-select formControlName="InterviewMode">
+          <mat-option [value]="null"> Select Interview Mode </mat-option>
+
+          <mat-option *ngFor="let mode of interviewModes" [value]="mode">
+            {{ mode }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="interviewForm.get('InterviewMode')?.hasError('required')">
+          Interview Mode is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- STATUS -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Status*</mat-label>
+
+        <mat-select formControlName="Status">
+          <mat-option [value]="null"> Select Status </mat-option>
+
+          <mat-option *ngFor="let status of interviewStatuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error *ngIf="interviewForm.get('Status')?.hasError('required')">
+          Status is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- BUTTONS -->
+      <!-- ================================================== -->
+      <div class="buttons">
+        <!-- SAVE / UPDATE -->
+        <button
+          *ngIf="
+            (!isEditMode && authService.hasPermission('CREATE_INTERVIEW')) ||
+            (isEditMode && authService.hasPermission('UPDATE_INTERVIEW'))
+          "
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Schedule' }}
+        </button>
+
+        <!-- CANCEL -->
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

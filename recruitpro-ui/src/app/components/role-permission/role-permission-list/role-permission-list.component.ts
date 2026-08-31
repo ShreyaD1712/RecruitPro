@@ -147,8 +147,17 @@ export class RolePermissionListComponent
         'VIEW_APPLICATION',
         'CREATE_APPLICATION',
         'UPDATE_APPLICATION',
-        'DELETE_APPLICATION'
-
+        'DELETE_APPLICATION',
+        // Referrals
+        'VIEW_REFERRAL',
+        'CREATE_REFERRAL',
+        'UPDATE_REFERRAL',
+        'DELETE_REFERRAL',
+        // Interviews
+        'VIEW_INTERVIEW',
+        'CREATE_INTERVIEW',
+        'UPDATE_INTERVIEW',
+        'DELETE_INTERVIEW'
     ];
     selectedPermissions:
         string[] = [];

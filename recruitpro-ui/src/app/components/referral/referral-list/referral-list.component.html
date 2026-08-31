@@ -1,0 +1,142 @@
+<div class="application-page">
+  <div class="list-container">
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
+    <div class="header">
+      <div>
+        <h2>Referral Management</h2>
+        <p>View referred applicants</p>
+      </div>
+    </div>
+
+    <!-- ==================================================
+         SEARCH
+    ================================================== -->
+    <mat-form-field appearance="outline" class="search-box">
+      <mat-label>Search Referral</mat-label>
+
+      <input
+        matInput
+        [(ngModel)]="search"
+        placeholder="Applicant Name or Referrer Name"
+        (keyup.enter)="searchReferrals()"
+      />
+
+      <button mat-icon-button matSuffix type="button" (click)="searchReferrals()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- ==================================================
+         TABLE
+    ================================================== -->
+    <div class="table-container">
+      <table mat-table [dataSource]="referrals" class="list-table">
+        <!-- ==================================================
+             APPLICANT NAME
+        ================================================== -->
+        <ng-container matColumnDef="ApplicantName">
+          <th mat-header-cell *matHeaderCellDef>Applicant Name</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.ApplicantName || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             JOB OPENING
+        ================================================== -->
+        <ng-container matColumnDef="JobTitle">
+          <th mat-header-cell *matHeaderCellDef>Job Opening</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.JobTitle || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             REFERRER NAME
+        ================================================== -->
+        <ng-container matColumnDef="ReferrerName">
+          <th mat-header-cell *matHeaderCellDef>Referrer Name</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.ReferrerName || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             REFERRAL DATE
+        ================================================== -->
+        <ng-container matColumnDef="ReferralDate">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('ReferralDate')">Referral Date</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.ReferralDate ? (row.ReferralDate | date: 'dd-MM-yyyy') : '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             REMARKS
+        ================================================== -->
+        <ng-container matColumnDef="Remarks">
+          <th mat-header-cell *matHeaderCellDef>Remarks</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.Remarks || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- ==================================================
+             HEADER ROW
+        ================================================== -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+        <!-- ==================================================
+             DATA ROW
+        ================================================== -->
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <!-- ==================================================
+         LOADING
+    ================================================== -->
+    <div class="loading" *ngIf="loading">Loading Referrals...</div>
+
+    <!-- ==================================================
+         NO DATA
+    ================================================== -->
+    <div class="no-data" *ngIf="!loading && referrals.length === 0">
+      No Referred Applicants Found
+    </div>
+
+    <!-- ==================================================
+         PAGINATION
+    ================================================== -->
+    <div class="pagination">
+      <!-- PREVIOUS -->
+      <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+        Previous
+      </button>
+
+      <!-- PAGE -->
+      <span>
+        Page {{ page }}
+        of
+        {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+      </span>
+
+      <!-- NEXT -->
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page * pageSize >= totalRecords"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>
