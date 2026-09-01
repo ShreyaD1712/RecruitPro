@@ -1,4 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ChangeDetectorRef
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
     FormBuilder,
@@ -7,8 +11,11 @@ import {
     ReactiveFormsModule,
     FormsModule
 } from '@angular/forms';
+import {
+    ActivatedRoute,
+    Router
+} from '@angular/router';
 import { forkJoin } from 'rxjs';
-import { Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -44,19 +51,32 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class ApplicantAddComponent implements OnInit {
     // ==================================================
+    // MODE
+    // ==================================================
+    isEditMode = false;
+    // ==================================================
     // APPLICANT
     // ==================================================
     applicantForm!: FormGroup;
     applicantId: number | null = null;
     companyId: number | null = null;
+    applicantCreated = false;
+    loading = false;
+    pageLoading = false;
     genders = [
         'Male',
         'Female',
         'Other'
     ];
-    loading = false;
-    applicantCreated = false;
-    activeSection = '';
+    // ==================================================
+    // ACTIVE SECTION
+    // ==================================================
+    activeSection:
+        '' |
+        'skills' |
+        'education' |
+        'work-experience' |
+        'documents' = '';
     // ==================================================
     // SKILLS
     // ==================================================
@@ -64,7 +84,6 @@ export class ApplicantAddComponent implements OnInit {
     skills: any[] = [];
     selectedSkillIds: number[] = [];
     skillsLoading = false;
-    skillsLoaded = false;
     skillLoading = false;
     // ==================================================
     // EDUCATION
@@ -72,14 +91,16 @@ export class ApplicantAddComponent implements OnInit {
     educationForm!: FormGroup;
     educations: any[] = [];
     educationLoading = false;
+    editingEducationId: number | null = null;
     // ==================================================
     // WORK EXPERIENCE
     // ==================================================
     workExperienceForm!: FormGroup;
     workExperiences: any[] = [];
     workExperienceLoading = false;
+    editingWorkExperienceId: number | null = null;
     // ==================================================
-    // DOCUMENT
+    // DOCUMENTS
     // ==================================================
     selectedFile: File | null = null;
     documentType = '';
@@ -93,12 +114,11 @@ export class ApplicantAddComponent implements OnInit {
         private applicantService: ApplicantService,
         private applicantSkillService: ApplicantSkillService,
         private applicantEducationService: ApplicantEducationService,
-        private applicantWorkExperienceService:
-            ApplicantWorkExperienceService,
-        private applicantDocumentService:
-            ApplicantDocumentService,
+        private applicantWorkExperienceService: ApplicantWorkExperienceService,
+        private applicantDocumentService: ApplicantDocumentService,
         private skillService: SkillService,
         public authService: AuthService,
+        private route: ActivatedRoute,
         private router: Router,
         private cdr: ChangeDetectorRef
     ) { }
@@ -106,16 +126,38 @@ export class ApplicantAddComponent implements OnInit {
     // INIT
     // ==================================================
     ngOnInit(): void {
+        const id =
+            this.route.snapshot.paramMap.get('id');
+        if (id) {
+            this.isEditMode = true;
+            this.applicantId = Number(id);
+            this.applicantCreated = true;
+        }
         // ==================================================
-        // PERMISSION
+        // PERMISSION CHECK
         // ==================================================
         if (
+            !this.isEditMode &&
             !this.authService.hasPermission(
                 'CREATE_APPLICANT'
             )
         ) {
             alert(
                 'You are not authorized to create applicants.'
+            );
+            this.router.navigate([
+                '/applicant'
+            ]);
+            return;
+        }
+        if (
+            this.isEditMode &&
+            !this.authService.hasPermission(
+                'UPDATE_APPLICANT'
+            )
+        ) {
+            alert(
+                'You are not authorized to update applicants.'
             );
             this.router.navigate([
                 '/applicant'
@@ -137,114 +179,139 @@ export class ApplicantAddComponent implements OnInit {
             return;
         }
         // ==================================================
-        // APPLICANT FORM
+        // INITIALIZE FORMS
         // ==================================================
-        this.applicantForm = this.fb.group({
-            FirstName: [
-                '',
-                [
-                    Validators.required,
+        this.initializeApplicantForm();
+        this.initializeEducationForm();
+        this.initializeWorkExperienceForm();
+        // ==================================================
+        // EDIT MODE
+        // ==================================================
+        if (
+            this.isEditMode &&
+            this.applicantId
+        ) {
+            this.activeSection = 'skills';
+            this.loadApplicant();
+            this.loadSkills();
+        }
+    }
+    // ==================================================
+    // INITIALIZE APPLICANT FORM
+    // ==================================================
+    initializeApplicantForm(): void {
+        this.applicantForm =
+            this.fb.group({
+                FirstName: [
+                    '',
+                    [
+                        Validators.required,
+                        Validators.maxLength(100)
+                    ]
+                ],
+                LastName: [
+                    '',
+                    [
+                        Validators.required,
+                        Validators.maxLength(100)
+                    ]
+                ],
+                Email: [
+                    '',
+                    [
+                        Validators.required,
+                        Validators.email,
+                        Validators.maxLength(150)
+                    ]
+                ],
+                MobileNo: [
+                    '',
+                    [
+                        Validators.required,
+                        Validators.maxLength(20)
+                    ]
+                ],
+                DOB: [
+                    null
+                ],
+                Gender: [
+                    null
+                ],
+                CurrentCity: [
+                    '',
                     Validators.maxLength(100)
-                ]
-            ],
-            LastName: [
-                '',
-                [
-                    Validators.required,
-                    Validators.maxLength(100)
-                ]
-            ],
-            Email: [
-                '',
-                [
-                    Validators.required,
-                    Validators.email,
+                ],
+                CurrentCompany: [
+                    '',
                     Validators.maxLength(150)
+                ],
+                CurrentCTC: [
+                    null,
+                    Validators.min(0)
+                ],
+                ExpectedCTC: [
+                    null,
+                    Validators.min(0)
+                ],
+                NoticePeriod: [
+                    '',
+                    Validators.maxLength(50)
+                ],
+                LinkedInUrl: [
+                    '',
+                    Validators.maxLength(255)
                 ]
-            ],
-            MobileNo: [
-                '',
-                [
-                    Validators.required,
-                    Validators.maxLength(20)
+            });
+    }
+    // ==================================================
+    // INITIALIZE EDUCATION FORM
+    // ==================================================
+    initializeEducationForm(): void {
+        this.educationForm =
+            this.fb.group({
+                Degree: [
+                    '',
+                    [
+                        Validators.required,
+                        Validators.maxLength(100)
+                    ]
+                ],
+                Institute: [
+                    '',
+                    [
+                        Validators.required,
+                        Validators.maxLength(150)
+                    ]
+                ],
+                University: [
+                    '',
+                    [
+                        Validators.required,
+                        Validators.maxLength(150)
+                    ]
+                ],
+                PassingYear: [
+                    null,
+                    [
+                        Validators.required,
+                        Validators.min(1900),
+                        Validators.max(2100)
+                    ]
+                ],
+                Percentage: [
+                    null,
+                    [
+                        Validators.required,
+                        Validators.min(0),
+                        Validators.max(100)
+                    ]
                 ]
-            ],
-            DOB: [
-                null
-            ],
-            Gender: [
-                null
-            ],
-            CurrentCity: [
-                '',
-                Validators.maxLength(100)
-            ],
-            CurrentCompany: [
-                '',
-                Validators.maxLength(150)
-            ],
-            CurrentCTC: [
-                null,
-                Validators.min(0)
-            ],
-            ExpectedCTC: [
-                null,
-                Validators.min(0)
-            ],
-            NoticePeriod: [
-                '',
-                Validators.maxLength(50)
-            ],
-            LinkedInUrl: [
-                '',
-                Validators.maxLength(255)
-            ]
-        });
-        // ==================================================
-        // EDUCATION FORM
-        // ==================================================
-        this.educationForm = this.fb.group({
-            Degree: [
-                '',
-                [
-                    Validators.required,
-                    Validators.maxLength(100)
-                ]
-            ],
-            Institute: [
-                '',
-                [
-                    Validators.required,
-                    Validators.maxLength(150)
-                ]
-            ],
-            University: [
-                '',
-                [
-                    Validators.required,
-                    Validators.maxLength(150)
-                ]
-            ],
-            PassingYear: [
-                null,
-                [
-                    Validators.required,
-                    Validators.min(1900),
-                    Validators.max(2100)
-                ]
-            ],
-            Percentage: [
-                null,
-                [
-                    Validators.required,
-                    Validators.min(0),
-                    Validators.max(100)
-                ]
-            ]
-        });
-        // ==================================================
-        // WORK EXPERIENCE FORM
-        // ==================================================
+            });
+    }
+    // ==================================================
+    // INITIALIZE WORK EXPERIENCE FORM
+    // ==================================================
+    initializeWorkExperienceForm(): void {
         this.workExperienceForm =
             this.fb.group({
                 CompanyName: [
@@ -277,7 +344,7 @@ export class ApplicantAddComponent implements OnInit {
             });
     }
     // ==================================================
-    // PERMISSION
+    // PERMISSION CHECK
     // ==================================================
     hasPermission(
         permission: string
@@ -287,68 +354,137 @@ export class ApplicantAddComponent implements OnInit {
         );
     }
     // ==================================================
+    // LOAD APPLICANT
+    // ==================================================
+    loadApplicant(): void {
+        if (!this.applicantId) {
+            return;
+        }
+        this.pageLoading = true;
+        this.applicantService
+            .getApplicantById(
+                this.applicantId
+            )
+            .subscribe({
+                next: (response: any) => {
+                    const applicant =
+                        response?.data ||
+                        response;
+                    this.applicantForm.patchValue({
+                        FirstName:
+                            applicant.FirstName,
+                        LastName:
+                            applicant.LastName,
+                        Email:
+                            applicant.Email,
+                        MobileNo:
+                            applicant.MobileNo,
+                        DOB:
+                            applicant.DOB
+                                ? new Date(
+                                    applicant.DOB
+                                )
+                                : null,
+                        Gender:
+                            applicant.Gender,
+                        CurrentCity:
+                            applicant.CurrentCity,
+                        CurrentCompany:
+                            applicant.CurrentCompany,
+                        CurrentCTC:
+                            applicant.CurrentCTC,
+                        ExpectedCTC:
+                            applicant.ExpectedCTC,
+                        NoticePeriod:
+                            applicant.NoticePeriod,
+                        LinkedInUrl:
+                            applicant.LinkedInUrl
+                    });
+                    this.pageLoading = false;
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error loading applicant:',
+                        err
+                    );
+                    this.pageLoading = false;
+                    alert(
+                        err?.error?.detail ||
+                        'Unable to load applicant.'
+                    );
+                    this.router.navigate([
+                        '/applicant'
+                    ]);
+                }
+            });
+    }
+    // ==================================================
     // SAVE APPLICANT
     // ==================================================
     saveApplicant(): void {
+        const requiredPermission =
+            this.isEditMode
+                ? 'UPDATE_APPLICANT'
+                : 'CREATE_APPLICANT';
         if (
             !this.authService.hasPermission(
-                'CREATE_APPLICANT'
+                requiredPermission
             )
         ) {
             alert(
-                'You do not have permission to create applicants.'
+                'You do not have permission to perform this action.'
             );
             return;
         }
         if (
             this.applicantForm.invalid
         ) {
-            this.applicantForm.markAllAsTouched();
+            this.applicantForm
+                .markAllAsTouched();
             return;
         }
-        const companyId =
-            this.authService.getCompanyId();
-        if (!companyId) {
-            alert(
-                'Company information not found.'
-            );
-            return;
-        }
-        this.loading = true;
         const data =
-            this.applicantForm.getRawValue();
+            this.applicantForm
+                .getRawValue();
         // ==================================================
         // FORMAT DOB
         // ==================================================
         if (data.DOB) {
-            const date =
-                new Date(data.DOB);
-            const year =
-                date.getFullYear();
-            const month =
-                String(
-                    date.getMonth() + 1
-                ).padStart(2, '0');
-            const day =
-                String(
-                    date.getDate()
-                ).padStart(2, '0');
             data.DOB =
-                `${year}-${month}-${day}`;
+                this.formatDate(
+                    new Date(
+                        data.DOB
+                    )
+                );
         }
         delete data.CompanyId;
-        // ==================================================
-        // CREATE APPLICANT
-        // ==================================================
+        this.loading = true;
+        if (
+            this.isEditMode &&
+            this.applicantId
+        ) {
+            this.updateApplicant(
+                data
+            );
+        } else {
+            this.createApplicant(
+                data
+            );
+        }
+    }
+    // ==================================================
+    // CREATE APPLICANT
+    // ==================================================
+    createApplicant(
+        data: any
+    ): void {
         this.applicantService
-            .addApplicant(data)
+            .addApplicant(
+                data
+            )
             .subscribe({
                 next: (response: any) => {
                     this.loading = false;
-                    console.log(
-                        'Applicant created:',
-                        response
-                    );
                     this.applicantId =
                         response.ApplicantId;
                     if (!this.applicantId) {
@@ -357,17 +493,15 @@ export class ApplicantAddComponent implements OnInit {
                         );
                         return;
                     }
-                    this.applicantCreated = true;
-                    this.applicantForm.disable();
-                    // Open Skills
+                    this.applicantCreated =
+                        true;
+                    this.applicantForm
+                        .disable();
                     this.activeSection =
                         'skills';
-                    // Reset skill state
                     this.availableSkills = [];
                     this.skills = [];
                     this.selectedSkillIds = [];
-                    this.skillsLoaded = false;
-                    // Load company skills
                     this.loadSkills();
                     alert(
                         'Applicant created successfully.'
@@ -387,10 +521,48 @@ export class ApplicantAddComponent implements OnInit {
             });
     }
     // ==================================================
+    // UPDATE APPLICANT
+    // ==================================================
+    updateApplicant(
+        data: any
+    ): void {
+        if (!this.applicantId) {
+            return;
+        }
+        this.applicantService
+            .updateApplicant(
+                this.applicantId,
+                data
+            )
+            .subscribe({
+                next: () => {
+                    this.loading = false;
+                    alert(
+                        'Applicant updated successfully.'
+                    );
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error updating applicant:',
+                        err
+                    );
+                    this.loading = false;
+                    alert(
+                        err?.error?.detail ||
+                        'Unable to update applicant.'
+                    );
+                }
+            });
+    }
+    // ==================================================
     // SHOW SECTION
     // ==================================================
     showSection(
-        section: string
+        section:
+            'skills' |
+            'education' |
+            'work-experience' |
+            'documents'
     ): void {
         if (!this.applicantId) {
             alert(
@@ -400,33 +572,21 @@ export class ApplicantAddComponent implements OnInit {
         }
         this.activeSection =
             section;
-        // ==================================================
-        // SKILLS
-        // ==================================================
         if (
             section === 'skills'
         ) {
             this.loadSkills();
         }
-        // ==================================================
-        // EDUCATION
-        // ==================================================
         if (
             section === 'education'
         ) {
             this.loadEducation();
         }
-        // ==================================================
-        // WORK EXPERIENCE
-        // ==================================================
         if (
             section === 'work-experience'
         ) {
             this.loadWorkExperience();
         }
-        // ==================================================
-        // DOCUMENTS
-        // ==================================================
         if (
             section === 'documents'
         ) {
@@ -434,50 +594,44 @@ export class ApplicantAddComponent implements OnInit {
         }
     }
     // ==================================================
-    // LOAD COMPANY SKILLS
+    // LOAD MASTER SKILLS
     // ==================================================
     loadSkills(): void {
-        if (!this.companyId) {
-            console.error('CompanyId missing');
+        if (
+            !this.companyId ||
+            !this.applicantId
+        ) {
             return;
         }
-
-        console.log('loadSkills CALLED');
         this.skillsLoading = true;
-
         this.skillService
-            .getSkills('', this.companyId, 'SkillName', 'asc', 1, 1000)
+            .getSkills(
+                '',
+                this.companyId,
+                'SkillName',
+                'asc',
+                1,
+                1000
+            )
             .subscribe({
                 next: (response: any) => {
-                    console.log('FULL SKILLS RESPONSE:', response);
-
-                    this.availableSkills = Array.isArray(response?.data)
-                        ? response.data
-                        : [];
-
-                    console.log('AVAILABLE SKILLS:', this.availableSkills);
-                    console.log('SKILL COUNT:', this.availableSkills.length);
-
-                    this.skillsLoading = false;
-
-                    console.log(
-                        'FINAL SkillsLoading:',
-                        this.skillsLoading
-                    );
-
+                    this.availableSkills =
+                        Array.isArray(
+                            response?.data
+                        )
+                            ? response.data
+                            : [];
+                    this.skillsLoading =
+                        false;
                     this.loadApplicantSkills();
                 },
-
                 error: (err: any) => {
-                    console.error('Error loading master skills:', err);
-
+                    console.error(
+                        'Error loading skills:',
+                        err
+                    );
                     this.availableSkills = [];
                     this.skillsLoading = false;
-
-                    console.log(
-                        'skillsLoading AFTER ERROR:',
-                        this.skillsLoading
-                    );
                 }
             });
     }
@@ -488,34 +642,18 @@ export class ApplicantAddComponent implements OnInit {
         if (!this.applicantId) {
             return;
         }
-        console.log(
-            'Loading Applicant Skills for Applicant:',
-            this.applicantId
-        );
         this.applicantSkillService
             .getApplicantSkills(
                 this.applicantId
             )
             .subscribe({
                 next: (response: any) => {
-                    console.log(
-                        'Applicant Skills response:',
-                        response
-                    );
-                    if (
+                    this.skills =
                         Array.isArray(
                             response?.data
                         )
-                    ) {
-                        this.skills =
-                            response.data;
-                    } else {
-                        this.skills = [];
-                    }
-                    console.log(
-                        'Applicant Skills:',
-                        this.skills
-                    );
+                            ? response.data
+                            : [];
                     this.cdr.detectChanges();
                 },
                 error: (err: any) => {
@@ -523,7 +661,6 @@ export class ApplicantAddComponent implements OnInit {
                         'Error loading applicant skills:',
                         err
                     );
-                    // New applicant normally has no skills
                     this.skills = [];
                     this.cdr.detectChanges();
                 }
@@ -540,7 +677,10 @@ export class ApplicantAddComponent implements OnInit {
                 skill =>
                     Number(
                         skill.SkillId
-                    ) === Number(skillId)
+                    ) ===
+                    Number(
+                        skillId
+                    )
             );
         if (masterSkill) {
             return masterSkill.SkillName;
@@ -550,211 +690,161 @@ export class ApplicantAddComponent implements OnInit {
                 skill =>
                     Number(
                         skill.SkillId
-                    ) === Number(skillId)
+                    ) ===
+                    Number(
+                        skillId
+                    )
             );
         return applicantSkill
             ? applicantSkill.SkillName
             : '';
     }
     // ==================================================
-    // GET ONLY UNASSIGNED SKILLS
+    // SELECTABLE SKILLS
     // ==================================================
     getSelectableSkills(): any[] {
         const assignedSkillIds =
             this.skills.map(
                 skill =>
-                    Number(skill.SkillId)
+                    Number(
+                        skill.SkillId
+                    )
             );
-        return this.availableSkills.filter(
-            skill =>
-                !assignedSkillIds.includes(
-                    Number(skill.SkillId)
-                )
-        );
+        return this.availableSkills
+            .filter(
+                skill =>
+                    !assignedSkillIds.includes(
+                        Number(
+                            skill.SkillId
+                        )
+                    )
+            );
     }
     // ==================================================
-    // ADD MULTIPLE SKILLS
+    // ADD SKILLS
     // ==================================================
     addSkill(): void {
-
         if (!this.applicantId) {
-            alert('Please save the applicant first.');
             return;
         }
-
         if (this.skillLoading) {
             return;
         }
-
         if (
             !this.selectedSkillIds ||
             this.selectedSkillIds.length === 0
         ) {
-            alert('Please select at least one skill.');
+            alert(
+                'Please select at least one skill.'
+            );
             return;
         }
-
-        // --------------------------------------------------
-        // SAVE CURRENT SELECTION
-        // --------------------------------------------------
-
         const selectedIds = [
             ...this.selectedSkillIds
         ];
-
-        console.log(
-            'Selected Skills:',
-            selectedIds
-        );
-
-        console.log(
-            'Applicant ID:',
-            this.applicantId
-        );
-
-        // --------------------------------------------------
-        // START LOADING
-        // --------------------------------------------------
-
         this.skillLoading = true;
-
-        this.cdr.detectChanges();
-
-        // --------------------------------------------------
-        // CREATE REQUESTS
-        // --------------------------------------------------
-
-        const requests = selectedIds.map(
-            (skillId: number) => {
-
-                const data = {
-                    ApplicantId: Number(this.applicantId),
-                    SkillId: Number(skillId)
-                };
-
-                console.log(
-                    'Adding Applicant Skill:',
-                    data
-                );
-
-                return this.applicantSkillService
-                    .addApplicantSkill(data);
-            }
-        );
-
-        // --------------------------------------------------
-        // SAVE ALL SELECTED SKILLS
-        // --------------------------------------------------
-
-        forkJoin(requests).subscribe({
-
-            next: (responses: any[]) => {
-
-                console.log(
-                    'All Applicant Skills Added:',
-                    responses
-                );
-
-                // --------------------------------------------------
-                // ADD SKILLS TO UI IMMEDIATELY
-                // --------------------------------------------------
-
-                selectedIds.forEach(
-                    (skillId: number) => {
-
-                        const masterSkill =
-                            this.availableSkills.find(
-                                skill =>
-                                    Number(skill.SkillId) ===
-                                    Number(skillId)
-                            );
-
-                        if (!masterSkill) {
-                            return;
-                        }
-
-                        // Prevent duplicate display
-                        const alreadyExists =
-                            this.skills.some(
-                                skill =>
-                                    Number(skill.SkillId) ===
-                                    Number(skillId)
-                            );
-
-                        if (!alreadyExists) {
-
-                            this.skills = [
-                                ...this.skills,
-                                {
-                                    SkillId:
-                                        masterSkill.SkillId,
-
-                                    SkillName:
-                                        masterSkill.SkillName
-                                }
-                            ];
-                        }
-                    }
-                );
-
-                // --------------------------------------------------
-                // CLEAR DROPDOWN
-                // --------------------------------------------------
-
-                this.selectedSkillIds = [];
-
-                // --------------------------------------------------
-                // STOP SAVING
-                // --------------------------------------------------
-
-                this.skillLoading = false;
-
-                // --------------------------------------------------
-                // FORCE UI UPDATE
-                // --------------------------------------------------
-
-                this.cdr.detectChanges();
-
-                console.log(
-                    'Displayed Applicant Skills:',
-                    this.skills
-                );
-
-                // --------------------------------------------------
-                // LOAD FROM BACKEND
-                // --------------------------------------------------
-
-                this.loadApplicantSkills();
-
-                alert(
-                    'Skills added successfully.'
-                );
-            },
-
-            error: (err: any) => {
-
-                console.error(
-                    'Error adding applicant skills:',
-                    err
-                );
-
-                // IMPORTANT
-                // Always stop Saving state
-
-                this.skillLoading = false;
-
-                this.cdr.detectChanges();
-
-                alert(
-                    err?.error?.detail ||
-                    err?.error?.message ||
-                    'Unable to add skills.'
-                );
-            }
-        });
+        const requests =
+            selectedIds.map(
+                (skillId: number) =>
+                    this.applicantSkillService
+                        .addApplicantSkill({
+                            ApplicantId:
+                                Number(
+                                    this.applicantId
+                                ),
+                            SkillId:
+                                Number(
+                                    skillId
+                                )
+                        })
+            );
+        forkJoin(
+            requests
+        )
+            .subscribe({
+                next: () => {
+                    this.selectedSkillIds = [];
+                    this.skillLoading = false;
+                    this.loadApplicantSkills();
+                    this.cdr.detectChanges();
+                    alert(
+                        'Skills added successfully.'
+                    );
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error adding skills:',
+                        err
+                    );
+                    this.skillLoading = false;
+                    this.cdr.detectChanges();
+                    alert(
+                        err?.error?.detail ||
+                        'Unable to add skills.'
+                    );
+                }
+            });
     }
     // ==================================================
-    // EDUCATION
+    // REMOVE SKILL
+    // ==================================================
+    removeSkill(
+        skill: any
+    ): void {
+        const applicantSkillId =
+            skill.ApplicantSkillId;
+        if (!applicantSkillId) {
+            alert(
+                'Unable to identify applicant skill.'
+            );
+            return;
+        }
+        if (
+            !confirm(
+                `Remove ${skill.SkillName ||
+                this.getSkillName(
+                    skill.SkillId
+                )
+                } from this applicant?`
+            )
+        ) {
+            return;
+        }
+        this.applicantSkillService
+            .deleteApplicantSkill(
+                applicantSkillId
+            )
+            .subscribe({
+                next: () => {
+                    this.skills =
+                        this.skills.filter(
+                            item =>
+                                Number(
+                                    item.ApplicantSkillId
+                                ) !==
+                                Number(
+                                    applicantSkillId
+                                )
+                        );
+                    this.cdr.detectChanges();
+                    alert(
+                        'Skill removed successfully.'
+                    );
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error removing skill:',
+                        err
+                    );
+                    alert(
+                        err?.error?.detail ||
+                        'Unable to remove skill.'
+                    );
+                }
+            });
+    }
+    // ==================================================
+    // LOAD EDUCATION
     // ==================================================
     loadEducation(): void {
         if (!this.applicantId) {
@@ -771,7 +861,12 @@ export class ApplicantAddComponent implements OnInit {
                             response?.data
                         )
                             ? response.data
-                            : response || [];
+                            : Array.isArray(
+                                response
+                            )
+                                ? response
+                                : [];
+                    this.cdr.detectChanges();
                 },
                 error: (err: any) => {
                     console.error(
@@ -779,13 +874,42 @@ export class ApplicantAddComponent implements OnInit {
                         err
                     );
                     this.educations = [];
+                    this.cdr.detectChanges();
                 }
             });
     }
     // ==================================================
-    // ADD EDUCATION
+    // EDIT EDUCATION
     // ==================================================
-    addEducation(): void {
+    editEducation(
+        education: any
+    ): void {
+        this.editingEducationId =
+            education.ApplicantEducationId ||
+            education.EducationId;
+        if (
+            !this.editingEducationId
+        ) {
+            return;
+        }
+        this.educationForm
+            .patchValue({
+                Degree:
+                    education.Degree,
+                Institute:
+                    education.Institute,
+                University:
+                    education.University,
+                PassingYear:
+                    education.PassingYear,
+                Percentage:
+                    education.Percentage
+            });
+    }
+    // ==================================================
+    // SAVE EDUCATION
+    // ==================================================
+    saveEducation(): void {
         if (!this.applicantId) {
             return;
         }
@@ -802,14 +926,56 @@ export class ApplicantAddComponent implements OnInit {
             ...this.educationForm
                 .getRawValue()
         };
-        this.educationLoading = true;
+        this.educationLoading =
+            true;
+        // ==================================================
+        // UPDATE
+        // ==================================================
+        if (
+            this.editingEducationId
+        ) {
+            this.applicantEducationService
+                .updateEducation(
+                    this.editingEducationId,
+                    data
+                )
+                .subscribe({
+                    next: () => {
+                        this.educationLoading =
+                            false;
+                        this.editingEducationId =
+                            null;
+                        this.educationForm
+                            .reset();
+                        this.loadEducation();
+                        alert(
+                            'Education updated successfully.'
+                        );
+                    },
+                    error: (err: any) => {
+                        this.educationLoading =
+                            false;
+                        alert(
+                            err?.error?.detail ||
+                            'Unable to update education.'
+                        );
+                    }
+                });
+            return;
+        }
+        // ==================================================
+        // ADD
+        // ==================================================
         this.applicantEducationService
-            .addEducation(data)
+            .addEducation(
+                data
+            )
             .subscribe({
                 next: () => {
                     this.educationLoading =
                         false;
-                    this.educationForm.reset();
+                    this.educationForm
+                        .reset();
                     this.loadEducation();
                     alert(
                         'Education added successfully.'
@@ -826,7 +992,16 @@ export class ApplicantAddComponent implements OnInit {
             });
     }
     // ==================================================
-    // WORK EXPERIENCE
+    // CANCEL EDUCATION EDIT
+    // ==================================================
+    cancelEducationEdit(): void {
+        this.editingEducationId =
+            null;
+        this.educationForm
+            .reset();
+    }
+    // ==================================================
+    // LOAD WORK EXPERIENCE
     // ==================================================
     loadWorkExperience(): void {
         if (!this.applicantId) {
@@ -843,7 +1018,12 @@ export class ApplicantAddComponent implements OnInit {
                             response?.data
                         )
                             ? response.data
-                            : response || [];
+                            : Array.isArray(
+                                response
+                            )
+                                ? response
+                                : [];
+                    this.cdr.detectChanges();
                 },
                 error: (err: any) => {
                     console.error(
@@ -851,13 +1031,51 @@ export class ApplicantAddComponent implements OnInit {
                         err
                     );
                     this.workExperiences = [];
+                    this.cdr.detectChanges();
                 }
             });
     }
     // ==================================================
-    // ADD WORK EXPERIENCE
+    // EDIT WORK EXPERIENCE
     // ==================================================
-    addWorkExperience(): void {
+    editWorkExperience(
+        experience: any
+    ): void {
+        this.editingWorkExperienceId =
+            experience.WorkExperienceId;
+        if (
+            !this.editingWorkExperienceId
+        ) {
+            return;
+        }
+        this.workExperienceForm
+            .patchValue({
+                CompanyName:
+                    experience.CompanyName,
+                Designation:
+                    experience.Designation,
+                StartDate:
+                    experience.StartDate
+                        ? new Date(
+                            experience.StartDate
+                        )
+                        : null,
+                EndDate:
+                    experience.EndDate
+                        ? new Date(
+                            experience.EndDate
+                        )
+                        : null,
+                CurrentlyWorking:
+                    experience.CurrentlyWorking,
+                Responsibilities:
+                    experience.Responsibilities
+            });
+    }
+    // ==================================================
+    // SAVE WORK EXPERIENCE
+    // ==================================================
+    saveWorkExperience(): void {
         if (!this.applicantId) {
             return;
         }
@@ -871,10 +1089,9 @@ export class ApplicantAddComponent implements OnInit {
         const data =
             this.workExperienceForm
                 .getRawValue();
-        // ==================================================
-        // START DATE
-        // ==================================================
-        if (data.StartDate) {
+        if (
+            data.StartDate
+        ) {
             data.StartDate =
                 this.formatDate(
                     new Date(
@@ -882,9 +1099,6 @@ export class ApplicantAddComponent implements OnInit {
                     )
                 );
         }
-        // ==================================================
-        // END DATE
-        // ==================================================
         if (
             data.EndDate &&
             !data.CurrentlyWorking
@@ -905,21 +1119,52 @@ export class ApplicantAddComponent implements OnInit {
             this.applicantId;
         this.workExperienceLoading =
             true;
+        // ==================================================
+        // UPDATE
+        // ==================================================
+        if (
+            this.editingWorkExperienceId
+        ) {
+            this.applicantWorkExperienceService
+                .updateWorkExperience(
+                    this.editingWorkExperienceId,
+                    data
+                )
+                .subscribe({
+                    next: () => {
+                        this.workExperienceLoading =
+                            false;
+                        this.editingWorkExperienceId =
+                            null;
+                        this.resetWorkExperienceForm();
+                        this.loadWorkExperience();
+                        alert(
+                            'Work experience updated successfully.'
+                        );
+                    },
+                    error: (err: any) => {
+                        this.workExperienceLoading =
+                            false;
+                        alert(
+                            err?.error?.detail ||
+                            'Unable to update work experience.'
+                        );
+                    }
+                });
+            return;
+        }
+        // ==================================================
+        // ADD
+        // ==================================================
         this.applicantWorkExperienceService
-            .addWorkExperience(data)
+            .addWorkExperience(
+                data
+            )
             .subscribe({
                 next: () => {
                     this.workExperienceLoading =
                         false;
-                    this.workExperienceForm
-                        .reset({
-                            CompanyName: '',
-                            Designation: '',
-                            StartDate: null,
-                            EndDate: null,
-                            CurrentlyWorking: false,
-                            Responsibilities: ''
-                        });
+                    this.resetWorkExperienceForm();
                     this.loadWorkExperience();
                     alert(
                         'Work experience added successfully.'
@@ -936,6 +1181,28 @@ export class ApplicantAddComponent implements OnInit {
             });
     }
     // ==================================================
+    // RESET WORK EXPERIENCE FORM
+    // ==================================================
+    resetWorkExperienceForm(): void {
+        this.workExperienceForm
+            .reset({
+                CompanyName: '',
+                Designation: '',
+                StartDate: null,
+                EndDate: null,
+                CurrentlyWorking: false,
+                Responsibilities: ''
+            });
+    }
+    // ==================================================
+    // CANCEL WORK EXPERIENCE EDIT
+    // ==================================================
+    cancelWorkExperienceEdit(): void {
+        this.editingWorkExperienceId =
+            null;
+        this.resetWorkExperienceForm();
+    }
+    // ==================================================
     // DATE FORMAT
     // ==================================================
     formatDate(
@@ -946,15 +1213,21 @@ export class ApplicantAddComponent implements OnInit {
         const month =
             String(
                 date.getMonth() + 1
-            ).padStart(2, '0');
+            ).padStart(
+                2,
+                '0'
+            );
         const day =
             String(
                 date.getDate()
-            ).padStart(2, '0');
+            ).padStart(
+                2,
+                '0'
+            );
         return `${year}-${month}-${day}`;
     }
     // ==================================================
-    // DOCUMENTS
+    // LOAD DOCUMENTS
     // ==================================================
     loadDocuments(): void {
         if (!this.applicantId) {
@@ -971,7 +1244,12 @@ export class ApplicantAddComponent implements OnInit {
                             response?.data
                         )
                             ? response.data
-                            : response || [];
+                            : Array.isArray(
+                                response
+                            )
+                                ? response
+                                : [];
+                    this.cdr.detectChanges();
                 },
                 error: (err: any) => {
                     console.error(
@@ -979,6 +1257,7 @@ export class ApplicantAddComponent implements OnInit {
                         err
                     );
                     this.documents = [];
+                    this.cdr.detectChanges();
                 }
             });
     }
@@ -1027,21 +1306,17 @@ export class ApplicantAddComponent implements OnInit {
                 this.documentType
             )
             .subscribe({
-                next: (response: any) => {
-                    console.log(
-                        'Document uploaded:',
-                        response
-                    );
+                next: () => {
                     this.documentLoading =
                         false;
-                    alert(
-                        'Document uploaded successfully.'
-                    );
                     this.selectedFile =
                         null;
                     this.documentType =
                         '';
                     this.loadDocuments();
+                    alert(
+                        'Document uploaded successfully.'
+                    );
                 },
                 error: (err: any) => {
                     console.error(
@@ -1066,7 +1341,7 @@ export class ApplicantAddComponent implements OnInit {
         ]);
     }
     // ==================================================
-    // FINISH APPLICANT
+    // FINISH
     // ==================================================
     finishApplicant(): void {
         if (!this.applicantId) {

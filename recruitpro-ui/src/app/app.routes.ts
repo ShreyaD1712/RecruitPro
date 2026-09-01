@@ -13,7 +13,6 @@ import { CompanyEditComponent } from './components/company/company-edit/company-
 // Department Components
 import { DepartmentListComponent } from './components/department/department-list/department-list.component';
 import { DepartmentAddComponent } from './components/department/department-add/department-add.component';
-import { DepartmentEditComponent } from './components/department/department-edit/department-edit.component';
 // Designation Components
 import { DesignationListComponent } from './components/designation/designation-list/designation-list.component';
 import { DesignationAddComponent } from './components/designation/designation-add/designation-add.component';
@@ -57,7 +56,6 @@ import { JobOpeningEditComponent } from './components/job-opening/job-opening-ed
 // Applicant Component
 import { ApplicantListComponent } from './components/applicant/applicant-list/applicant-list.component';
 import { ApplicantAddComponent } from './components/applicant/applicant-add/applicant-add.component';
-import { ApplicantEditComponent } from './components/applicant/applicant-edit/applicant-edit.component';
 // Applications Component
 import { ApplicationListComponent } from './components/application/application-list/application-list.component';
 import { ApplicationAddComponent } from './components/application/application-add/application-add.component';
@@ -66,6 +64,9 @@ import { ReferralListComponent } from './components/referral/referral-list/refer
 // Interviews 
 import { InterviewAddComponent } from './components/interview/interview-add/interview-add.component';
 import { InterviewListComponent } from './components/interview/interview-list/interview-list.component';
+// Interview Feedback
+import { InterviewFeedbackAddComponent } from './components/interview-feedback/interview-feedback-add/interview-feedback-add.component';
+import { InterviewFeedbackListComponent } from './components/interview-feedback/interview-feedback-list/interview-feedback-list.component';
 export const routes: Routes = [
   // Login Page
   {
@@ -111,7 +112,7 @@ export const routes: Routes = [
       },
       {
         path: 'department/edit/:id',
-        component: DepartmentEditComponent
+        component: DepartmentAddComponent
       },
 
       // Designation
@@ -252,7 +253,7 @@ export const routes: Routes = [
       },
       {
         path: 'applicant/edit/:id',
-        component: ApplicantEditComponent
+        component: ApplicantAddComponent
       },
       // Application
       {
@@ -284,6 +285,19 @@ export const routes: Routes = [
       {
         path: 'interview/edit/:id',
         component: InterviewAddComponent
+      },
+      // Interview Feedback
+      {
+        path: 'interview-feedback',
+        component: InterviewFeedbackListComponent
+      },
+      {
+        path: 'interview-feedback/add',
+        component: InterviewFeedbackAddComponent
+      },
+      {
+        path: 'interview-feedback/edit/:id',
+        component: InterviewFeedbackAddComponent
       },
       // Default Route
       {

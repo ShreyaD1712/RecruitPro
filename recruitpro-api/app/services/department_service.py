@@ -2,7 +2,10 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
 from app.repositories.department_repository import DepartmentRepository
-from app.schemas.department_schema import DepartmentCreate, DepartmentUpdate
+from app.schemas.department_schema import (
+    DepartmentCreate,
+    DepartmentUpdate,
+)
 
 
 class DepartmentService:
@@ -10,37 +13,57 @@ class DepartmentService:
     def __init__(self):
         self.repository = DepartmentRepository()
 
-    # -------------------------
-    # Get All Departments
-    # -------------------------
+    # ==================================================
+    # GET ALL DEPARTMENTS
+    # ==================================================
     def get_all_departments(
         self,
         db: Session,
-        current_user,
+        current_user: dict,
         search: str = "",
-        company_id: int = None,
+        company_id: int | None = None,
         sort_by: str = "DepartmentName",
         order: str = "asc",
         page: int = 1,
         page_size: int = 10,
     ):
-
         return self.repository.get_all(
-            db, current_user, search, company_id, sort_by, order, page, page_size
+            db=db,
+            current_user=current_user,
+            search=search,
+            company_id=company_id,
+            sort_by=sort_by,
+            order=order,
+            page=page,
+            page_size=page_size,
         )
 
-    # -------------------------
-    # Get Department By Id
-    # -------------------------
-    def get_department_by_id(self, db: Session, department_id: int, current_user):
-
-        department = self.repository.get_by_id(db, department_id)
+    # ==================================================
+    # GET DEPARTMENT BY ID
+    # ==================================================
+    def get_department_by_id(
+        self,
+        db: Session,
+        department_id: int,
+        current_user: dict,
+    ):
+        # ==================================================
+        # GET DEPARTMENT
+        # ==================================================
+        department = self.repository.get_by_id(
+            db=db,
+            department_id=department_id,
+        )
 
         if not department:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Department not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Department not found",
             )
-        # Company admin can access only their company department
+
+        # ==================================================
+        # COMPANY ACCESS CHECK
+        # ==================================================
         if (
             not current_user["is_super_admin"]
             and department.CompanyId != current_user["company_id"]
@@ -49,107 +72,213 @@ class DepartmentService:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You are not authorized to access this department",
             )
+
         return department
 
-    # -------------------------
-    # Create Department
-    # -------------------------
+    # ==================================================
+    # CREATE DEPARTMENT
+    # ==================================================
     def create_department(
-        self, db: Session, department: DepartmentCreate, current_user
+        self,
+        db: Session,
+        department: DepartmentCreate,
+        current_user: dict,
     ):
-        # Company admin can create department only for their company
+        # ==================================================
+        # COMPANY
+        # ==================================================
         if not current_user["is_super_admin"]:
             department.CompanyId = current_user["company_id"]
 
-        # Check duplicate department code in same company
+        # ==================================================
+        # COMPANY VALIDATION
+        # ==================================================
+        if not department.CompanyId:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Company is required",
+            )
+
+        # ==================================================
+        # DUPLICATE DEPARTMENT CODE
+        # ==================================================
         existing_code = self.repository.get_by_code(
-            db, department.DepartmentCode, department.CompanyId
+            db=db,
+            department_code=department.DepartmentCode,
+            company_id=department.CompanyId,
         )
 
         if existing_code:
             raise HTTPException(
-                status_code=400, detail="Department Code already exists in this company"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Department Code already exists in this company",
             )
 
-        # Check duplicate department name in same company
+        # ==================================================
+        # DUPLICATE DEPARTMENT NAME
+        # ==================================================
         existing_name = self.repository.get_by_name(
-            db, department.DepartmentName, department.CompanyId
+            db=db,
+            department_name=department.DepartmentName,
+            company_id=department.CompanyId,
         )
 
         if existing_name:
             raise HTTPException(
-                status_code=400, detail="Department Name already exists in this company"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Department Name already exists in this company",
             )
 
-        return self.repository.create(db, department)
+        # ==================================================
+        # CREATE
+        # ==================================================
+        return self.repository.create(
+            db=db,
+            department=department,
+        )
 
-    # -------------------------
-    # Update Department
-    # -------------------------
+    # ==================================================
+    # UPDATE DEPARTMENT
+    # ==================================================
     def update_department(
         self,
         db: Session,
         department_id: int,
         department: DepartmentUpdate,
-        current_user,
+        current_user: dict,
     ):
-
-        existing_department = self.repository.get_by_id(db, department_id)
+        # ==================================================
+        # GET EXISTING DEPARTMENT
+        # ==================================================
+        existing_department = self.repository.get_by_id(
+            db=db,
+            department_id=department_id,
+        )
 
         if not existing_department:
-            raise HTTPException(status_code=404, detail="Department not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Department not found",
+            )
 
-        # Company Admin can update only own company
+        # ==================================================
+        # COMPANY ACCESS CHECK
+        # ==================================================
         if (
             not current_user["is_super_admin"]
             and existing_department.CompanyId != current_user["company_id"]
         ):
             raise HTTPException(
-                status_code=403,
-                detail="You are not authorized to update this department.",
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You are not authorized to update this department",
             )
 
+        # ==================================================
+        # COMPANY
+        # ==================================================
         if not current_user["is_super_admin"]:
             department.CompanyId = current_user["company_id"]
-        # Duplicate Department Code
+
+        if not department.CompanyId:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Company is required",
+            )
+
+        # ==================================================
+        # DUPLICATE DEPARTMENT CODE
+        # ==================================================
         duplicate_code = self.repository.get_by_code(
-            db, department.DepartmentCode, department.CompanyId
+            db=db,
+            department_code=department.DepartmentCode,
+            company_id=department.CompanyId,
         )
 
         if duplicate_code and duplicate_code.DepartmentId != department_id:
             raise HTTPException(
-                status_code=400, detail="Department Code already exists in this company"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Department Code already exists in this company",
             )
 
-        # Duplicate Department Name
+        # ==================================================
+        # DUPLICATE DEPARTMENT NAME
+        # ==================================================
         duplicate_name = self.repository.get_by_name(
-            db, department.DepartmentName, department.CompanyId
+            db=db,
+            department_name=department.DepartmentName,
+            company_id=department.CompanyId,
         )
 
         if duplicate_name and duplicate_name.DepartmentId != department_id:
             raise HTTPException(
-                status_code=400, detail="Department Name already exists in this company"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Department Name already exists in this company",
             )
 
-        return self.repository.update(db, department_id, department)
+        # ==================================================
+        # UPDATE
+        # ==================================================
+        updated_department = self.repository.update(
+            db=db,
+            department_id=department_id,
+            department=department,
+        )
 
-    # -------------------------
-    # Delete Department
-    # -------------------------
-    def delete_department(self, db: Session, department_id: int, current_user):
-        department = self.repository.get_by_id(db, department_id)
+        if not updated_department:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Department not found",
+            )
+
+        return updated_department
+
+    # ==================================================
+    # DELETE DEPARTMENT
+    # ==================================================
+    def delete_department(
+        self,
+        db: Session,
+        department_id: int,
+        current_user: dict,
+    ):
+        # ==================================================
+        # GET DEPARTMENT
+        # ==================================================
+        department = self.repository.get_by_id(
+            db=db,
+            department_id=department_id,
+        )
+
         if not department:
-            raise HTTPException(status_code=404, detail="Department not found")
-        # Company Admin can delete only own company
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Department not found",
+            )
+
+        # ==================================================
+        # COMPANY ACCESS CHECK
+        # ==================================================
         if (
             not current_user["is_super_admin"]
             and department.CompanyId != current_user["company_id"]
         ):
             raise HTTPException(
-                status_code=403,
-                detail="You are not authorized to delete this department.",
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You are not authorized to delete this department",
             )
 
-        self.repository.delete(db, department_id)
+        # ==================================================
+        # DELETE
+        # ==================================================
+        deleted_department = self.repository.delete(
+            db=db,
+            department_id=department_id,
+        )
+
+        if not deleted_department:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Department not found",
+            )
 
         return {"message": "Department deleted successfully"}

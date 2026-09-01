@@ -1,0 +1,126 @@
+<div class="page">
+  <div class="card">
+    <!-- ================================================== -->
+    <!-- TITLE -->
+    <!-- ================================================== -->
+    <h2>
+      {{ isEditMode ? 'Edit Interview Feedback' : 'Add Interview Feedback' }}
+    </h2>
+
+    <!-- ================================================== -->
+    <!-- FEEDBACK FORM -->
+    <!-- ================================================== -->
+    <form [formGroup]="feedbackForm" (ngSubmit)="saveFeedback()">
+      <!-- ================================================== -->
+      <!-- RATING -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Rating</mat-label>
+
+        <mat-select formControlName="Rating">
+          <mat-option [value]="null"> Select Rating </mat-option>
+
+          <mat-option *ngFor="let rating of ratings" [value]="rating">
+            {{ rating }}
+          </mat-option>
+        </mat-select>
+
+        <mat-error
+          *ngIf="
+            feedbackForm.get('Rating')?.hasError('min') ||
+            feedbackForm.get('Rating')?.hasError('max')
+          "
+        >
+          Rating must be between 1 and 5
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- STRENGTHS -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Strengths</mat-label>
+
+        <textarea
+          matInput
+          rows="4"
+          formControlName="Strengths"
+          placeholder="Enter candidate strengths"
+        ></textarea>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- WEAKNESSES -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Weaknesses</mat-label>
+
+        <textarea
+          matInput
+          rows="4"
+          formControlName="Weaknesses"
+          placeholder="Enter candidate weaknesses"
+        ></textarea>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- RECOMMENDATION -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Recommendation</mat-label>
+
+        <mat-select formControlName="Recommendation">
+          <mat-option [value]="null"> Select Recommendation </mat-option>
+
+          <mat-option *ngFor="let recommendation of recommendations" [value]="recommendation">
+            {{ recommendation }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- COMMENTS -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Comments</mat-label>
+
+        <textarea
+          matInput
+          rows="4"
+          formControlName="Comments"
+          placeholder="Enter overall interview feedback"
+        ></textarea>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- BUTTONS -->
+      <!-- ================================================== -->
+      <div class="buttons">
+        <!-- SAVE / UPDATE -->
+        <button
+          *ngIf="
+            (!isEditMode && authService.hasPermission('CREATE_INTERVIEW_FEEDBACK')) ||
+            (isEditMode && authService.hasPermission('UPDATE_INTERVIEW_FEEDBACK'))
+          "
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
+        </button>
+
+        <!-- CANCEL -->
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -15,6 +15,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { InterviewService } from '../../../services/interview.service';
+import { InterviewFeedbackService } from '../../../services/interview-feedback.service';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -99,6 +100,7 @@ export class InterviewListComponent implements OnInit {
     // ==================================================
     constructor(
         private interviewService: InterviewService,
+        private interviewFeedbackService: InterviewFeedbackService,
         public authService: AuthService,
         private router: Router,
         private cdr: ChangeDetectorRef
@@ -136,7 +138,6 @@ export class InterviewListComponent implements OnInit {
                             (interview: any) => ({
                                 ...interview,
 
-                                // Applicant
                                 ApplicantName:
                                     interview.ApplicantName ||
                                     (
@@ -145,7 +146,6 @@ export class InterviewListComponent implements OnInit {
                                             : '-'
                                     ),
 
-                                // Job Opening
                                 JobTitle:
                                     interview.JobTitle ||
                                     interview.application
@@ -153,21 +153,23 @@ export class InterviewListComponent implements OnInit {
                                         ?.JobTitle ||
                                     '-',
 
-                                // Interview Round
                                 InterviewRoundName:
                                     interview.InterviewRoundName ||
                                     interview.interview_round
                                         ?.RoundName ||
                                     '-',
 
-                                // Interviewer
                                 InterviewerName:
                                     interview.InterviewerName ||
                                     (
                                         interview.interviewer
                                             ? `${interview.interviewer.FirstName || ''} ${interview.interviewer.LastName || ''}`.trim()
                                             : '-'
-                                    )
+                                    ),
+
+                                FeedbackExists: false,
+                                FeedbackId: null,
+                                FeedbackLoading: false
                             })
                         );
 
@@ -175,6 +177,8 @@ export class InterviewListComponent implements OnInit {
                         response.total_records || 0;
 
                     this.loading = false;
+
+                    this.loadFeedbackStatus();
 
                     this.cdr.detectChanges();
                 },
@@ -196,6 +200,60 @@ export class InterviewListComponent implements OnInit {
                     this.cdr.detectChanges();
                 }
             });
+    }
+
+    // ==================================================
+    // LOAD FEEDBACK STATUS
+    // ==================================================
+    loadFeedbackStatus(): void {
+        this.interviews.forEach(
+            (interview: any) => {
+                if (
+                    interview.Status !== 'Completed'
+                ) {
+                    return;
+                }
+
+                interview.FeedbackLoading = true;
+
+                this.interviewFeedbackService
+                    .getFeedbackByInterview(
+                        interview.InterviewId
+                    )
+                    .subscribe({
+                        next: (response: any) => {
+                            interview.FeedbackExists =
+                                response.exists === true;
+
+                            interview.FeedbackId =
+                                response.feedback
+                                    ?.FeedbackId || null;
+
+                            interview.FeedbackLoading =
+                                false;
+
+                            this.cdr.detectChanges();
+                        },
+                        error: (err: any) => {
+                            console.log(
+                                'Error checking feedback:',
+                                err
+                            );
+
+                            interview.FeedbackExists =
+                                false;
+
+                            interview.FeedbackId =
+                                null;
+
+                            interview.FeedbackLoading =
+                                false;
+
+                            this.cdr.detectChanges();
+                        }
+                    });
+            }
+        );
     }
 
     // ==================================================
@@ -231,7 +289,6 @@ export class InterviewListComponent implements OnInit {
         }
 
         this.page = 1;
-
         this.loadInterviews();
     }
 
@@ -399,6 +456,81 @@ export class InterviewListComponent implements OnInit {
     }
 
     // ==================================================
+    // OPEN INTERVIEW FEEDBACK
+    // ==================================================
+    openFeedback(
+        interview: any,
+        event?: Event
+    ): void {
+        if (event) {
+            event.stopPropagation();
+        }
+
+        // Feedback only for completed interview
+        if (
+            interview.Status !== 'Completed'
+        ) {
+            return;
+        }
+
+        if (interview.FeedbackLoading) {
+            return;
+        }
+
+        // ==================================================
+        // EDIT FEEDBACK
+        // ==================================================
+        if (
+            interview.FeedbackExists &&
+            interview.FeedbackId
+        ) {
+            if (
+                !this.authService.hasPermission(
+                    'UPDATE_INTERVIEW_FEEDBACK'
+                )
+            ) {
+                alert(
+                    'You are not authorized to update interview feedback.'
+                );
+                return;
+            }
+
+            this.router.navigate([
+                '/interview-feedback/edit',
+                interview.FeedbackId
+            ]);
+
+            return;
+        }
+
+        // ==================================================
+        // ADD FEEDBACK
+        // ==================================================
+        if (
+            !this.authService.hasPermission(
+                'CREATE_INTERVIEW_FEEDBACK'
+            )
+        ) {
+            alert(
+                'You are not authorized to add interview feedback.'
+            );
+            return;
+        }
+
+        this.router.navigate(
+            [
+                '/interview-feedback/add'
+            ],
+            {
+                queryParams: {
+                    interviewId:
+                        interview.InterviewId
+                }
+            }
+        );
+    }
+
+    // ==================================================
     // PREVIOUS PAGE
     // ==================================================
     previousPage(): void {
@@ -451,12 +583,16 @@ export class InterviewListComponent implements OnInit {
         switch (status) {
             case 'Scheduled':
                 return 'scheduled';
+
             case 'Completed':
                 return 'completed';
+
             case 'Cancelled':
                 return 'cancelled';
+
             case 'Rescheduled':
                 return 'rescheduled';
+
             default:
                 return '';
         }

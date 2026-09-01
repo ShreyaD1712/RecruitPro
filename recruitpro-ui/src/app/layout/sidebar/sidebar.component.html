@@ -110,6 +110,15 @@
     <mat-icon>event</mat-icon>
     <span>Interviews</span>
   </a>
+  <!-- Interview Feedback -->
+  <a
+    *ngIf="hasPermission('VIEW_INTERVIEW_FEEDBACK')"
+    routerLink="/interview-feedback"
+    routerLinkActive="active"
+  >
+    <mat-icon>feedback</mat-icon>
+    <span>Interview Feedback</span>
+  </a>
   <!-- Reports -->
   <a *ngIf="hasPermission('VIEW_REPORT')" routerLink="/report" routerLinkActive="active">
     <mat-icon>assessment</mat-icon>

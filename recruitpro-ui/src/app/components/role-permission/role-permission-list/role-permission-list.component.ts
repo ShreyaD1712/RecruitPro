@@ -157,7 +157,12 @@ export class RolePermissionListComponent
         'VIEW_INTERVIEW',
         'CREATE_INTERVIEW',
         'UPDATE_INTERVIEW',
-        'DELETE_INTERVIEW'
+        'DELETE_INTERVIEW',
+        // Interview Feedback
+        'VIEW_INTERVIEW_FEEDBACK',
+        'CREATE_INTERVIEW_FEEDBACK',
+        'UPDATE_INTERVIEW_FEEDBACK',
+        'DELETE_INTERVIEW_FEEDBACK'
     ];
     selectedPermissions:
         string[] = [];
