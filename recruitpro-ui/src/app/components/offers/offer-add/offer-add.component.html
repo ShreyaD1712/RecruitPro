@@ -1,0 +1,113 @@
+<div class="page">
+  <div class="card">
+    <!-- ================================================== -->
+    <!-- TITLE -->
+    <!-- ================================================== -->
+    <h2>
+      {{ isEditMode ? 'Edit Offer' : 'Add Offer' }}
+    </h2>
+
+    <!-- ================================================== -->
+    <!-- OFFER FORM -->
+    <!-- ================================================== -->
+    <form [formGroup]="offerForm" (ngSubmit)="saveOffer()">
+      <!-- ================================================== -->
+      <!-- OFFERED SALARY -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Offered Salary</mat-label>
+
+        <input
+          matInput
+          type="number"
+          min="0"
+          formControlName="OfferedSalary"
+          placeholder="Enter Offered Salary"
+        />
+
+        <mat-error *ngIf="offerForm.get('OfferedSalary')?.hasError('min')">
+          Offered Salary cannot be negative
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- OFFER DATE -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Offer Date</mat-label>
+
+        <input matInput type="date" formControlName="OfferDate" />
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- JOINING DATE -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Joining Date</mat-label>
+
+        <input matInput type="date" formControlName="JoiningDate" />
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- OFFER STATUS -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Offer Status</mat-label>
+
+        <mat-select formControlName="OfferStatus">
+          <mat-option [value]="null"> Select Offer Status </mat-option>
+
+          <mat-option *ngFor="let status of offerStatuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- REMARKS -->
+      <!-- ================================================== -->
+      <mat-form-field appearance="outline">
+        <mat-label>Remarks</mat-label>
+
+        <textarea
+          matInput
+          rows="4"
+          formControlName="Remarks"
+          placeholder="Enter Offer Remarks"
+        ></textarea>
+
+        <mat-error *ngIf="offerForm.get('Remarks')?.hasError('maxlength')">
+          Remarks cannot exceed 500 characters
+        </mat-error>
+      </mat-form-field>
+
+      <!-- ================================================== -->
+      <!-- BUTTONS -->
+      <!-- ================================================== -->
+      <div class="buttons">
+        <button
+          *ngIf="
+            (!isEditMode && authService.hasPermission('CREATE_OFFER')) ||
+            (isEditMode && authService.hasPermission('UPDATE_OFFER'))
+          "
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading"
+        >
+          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
+        </button>
+
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

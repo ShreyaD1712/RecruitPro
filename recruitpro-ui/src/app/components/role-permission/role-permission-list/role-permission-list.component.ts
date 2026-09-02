@@ -1,53 +1,20 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectorRef
-} from '@angular/core';
-import {
-    CommonModule
-} from '@angular/common';
-import {
-    FormsModule
-} from '@angular/forms';
-import {
-    Router
-} from '@angular/router';
-import {
-    MatCardModule
-} from '@angular/material/card';
-import {
-    MatFormFieldModule
-} from '@angular/material/form-field';
-import {
-    MatSelectModule
-} from '@angular/material/select';
-import {
-    MatInputModule
-} from '@angular/material/input';
-import {
-    MatCheckboxModule
-} from '@angular/material/checkbox';
-import {
-    MatButtonModule
-} from '@angular/material/button';
-import {
-    MatIconModule
-} from '@angular/material/icon';
-import {
-    MatTooltipModule
-} from '@angular/material/tooltip';
-import {
-    CompanyService
-} from '../../../services/company.service';
-import {
-    RoleService
-} from '../../../services/role.service';
-import {
-    RolePermissionService
-} from '../../../services/role-permission.service';
-import {
-    AuthService
-} from '../../../services/auth.service';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+import { CompanyService } from '../../../services/company.service';
+import { RoleService } from '../../../services/role.service';
+import { RolePermissionService } from '../../../services/role-permission.service';
+import { AuthService } from '../../../services/auth.service';
+
 @Component({
     selector: 'app-role-permission-list',
     standalone: true,
@@ -57,202 +24,107 @@ import {
         MatCardModule,
         MatFormFieldModule,
         MatSelectModule,
-        MatInputModule,
         MatCheckboxModule,
         MatButtonModule,
-        MatIconModule,
-        MatTooltipModule
+        MatIconModule
     ],
-    templateUrl:
-        './role-permission-list.component.html',
-    styleUrls:
-        ['./role-permission-list.component.css']
+    templateUrl: './role-permission-list.component.html',
+    styleUrls: ['./role-permission-list.component.css']
 })
-export class RolePermissionListComponent
-    implements OnInit {
+export class RolePermissionListComponent implements OnInit {
     // ==================================================
-    // DATA
+    // COMPANY / ROLE
     // ==================================================
     companies: any[] = [];
     roles: any[] = [];
-    selectedCompanyId:
-        number | null = null;
-    selectedRoleId:
-        number | null = null;
-    permissions: string[] = [
-        // Company
-        'VIEW_ALL_COMPANIES',
-        'CREATE_COMPANY',
-        'UPDATE_COMPANY',
-        'DELETE_COMPANY',
-        // Department
-        'VIEW_DEPARTMENT',
-        'CREATE_DEPARTMENT',
-        'UPDATE_DEPARTMENT',
-        'DELETE_DEPARTMENT',
-        // Designation
-        'VIEW_DESIGNATION',
-        'CREATE_DESIGNATION',
-        'UPDATE_DESIGNATION',
-        'DELETE_DESIGNATION',
-        // Role
-        'VIEW_ROLE',
-        'CREATE_ROLE',
-        'UPDATE_ROLE',
-        'DELETE_ROLE',
-        // User
-        'VIEW_USER',
-        'CREATE_USER',
-        'UPDATE_USER',
-        'DELETE_USER',
-        // Role Permissions
-        'VIEW_ROLE_PERMISSION',
-        'UPDATE_ROLE_PERMISSION',
-        // Skill
-        'VIEW_SKILL',
-        'CREATE_SKILL',
-        'UPDATE_SKILL',
-        'DELETE_SKILL',
-        // Job Category
-        'VIEW_JOB_CATEGORY',
-        'CREATE_JOB_CATEGORY',
-        'UPDATE_JOB_CATEGORY',
-        'DELETE_JOB_CATEGORY',
-        // Employment Type
-        'VIEW_EMPLOYMENT_TYPE',
-        'CREATE_EMPLOYMENT_TYPE',
-        'UPDATE_EMPLOYMENT_TYPE',
-        'DELETE_EMPLOYMENT_TYPE',
-        // Experience Level
-        'VIEW_EXPERIENCE_LEVEL',
-        'CREATE_EXPERIENCE_LEVEL',
-        'UPDATE_EXPERIENCE_LEVEL',
-        'DELETE_EXPERIENCE_LEVEL',
-        // Interview Round
-        'VIEW_INTERVIEW_ROUND',
-        'CREATE_INTERVIEW_ROUND',
-        'UPDATE_INTERVIEW_ROUND',
-        'DELETE_INTERVIEW_ROUND',
-        // Job Openings
-        'VIEW_JOB_OPENING',
-        'CREATE_JOB_OPENING',
-        'UPDATE_JOB_OPENING',
-        'DELETE_JOB_OPENING',
-        // Applicants
-        'VIEW_APPLICANT',
-        'CREATE_APPLICANT',
-        'UPDATE_APPLICANT',
-        'DELETE_APPLICANT',
-        // Applications
-        'VIEW_APPLICATION',
-        'CREATE_APPLICATION',
-        'UPDATE_APPLICATION',
-        'DELETE_APPLICATION',
-        // Referrals
-        'VIEW_REFERRAL',
-        'CREATE_REFERRAL',
-        'UPDATE_REFERRAL',
-        'DELETE_REFERRAL',
-        // Interviews
-        'VIEW_INTERVIEW',
-        'CREATE_INTERVIEW',
-        'UPDATE_INTERVIEW',
-        'DELETE_INTERVIEW',
-        // Interview Feedback
-        'VIEW_INTERVIEW_FEEDBACK',
-        'CREATE_INTERVIEW_FEEDBACK',
-        'UPDATE_INTERVIEW_FEEDBACK',
-        'DELETE_INTERVIEW_FEEDBACK'
+    selectedCompanyId: number | null = null;
+    selectedRoleId: number | null = null;
+    selectedRole: any = null;
+
+    // ==================================================
+    // MODULES
+    // ==================================================
+    permissionModules = [
+        { key: 'COMPANY', label: 'Company', icon: 'business' },
+        { key: 'DEPARTMENT', label: 'Department', icon: 'account_tree' },
+        { key: 'DESIGNATION', label: 'Designation', icon: 'badge' },
+        { key: 'ROLE', label: 'Role', icon: 'admin_panel_settings' },
+        { key: 'USER', label: 'User', icon: 'person' },
+        { key: 'ROLE_PERMISSION', label: 'Role Permission', icon: 'security' },
+        { key: 'SKILL', label: 'Skill', icon: 'psychology' },
+        { key: 'JOB_CATEGORY', label: 'Job Category', icon: 'category' },
+        { key: 'EMPLOYMENT_TYPE', label: 'Employment Type', icon: 'work_outline' },
+        { key: 'EXPERIENCE_LEVEL', label: 'Experience Level', icon: 'workspace_premium' },
+        { key: 'INTERVIEW_ROUND', label: 'Interview Round', icon: 'format_list_numbered' },
+        { key: 'JOB_OPENING', label: 'Job Opening', icon: 'work' },
+        { key: 'APPLICANT', label: 'Applicant', icon: 'person_search' },
+        { key: 'APPLICATION', label: 'Application', icon: 'description' },
+        { key: 'REFERRAL', label: 'Referral', icon: 'people_alt' },
+        { key: 'INTERVIEW', label: 'Interview', icon: 'record_voice_over' },
+        { key: 'INTERVIEW_FEEDBACK', label: 'Interview Feedback', icon: 'rate_review' },
+        { key: 'OFFER', label: 'Offer', icon: 'request_quote' }
     ];
-    selectedPermissions:
-        string[] = [];
+
+    // ==================================================
+    // PERMISSIONS
+    // ==================================================
+    selectedModule: any = null;
+    currentModulePermissions: any[] = [];
+    selectedPermissions: string[] = [];
+
     // ==================================================
     // LOADING
     // ==================================================
     loadingCompanies = false;
     loadingRoles = false;
     loadingPermissions = false;
+    loadingModulePermissions = false;
     saving = false;
+
     constructor(
-        private companyService:
-            CompanyService,
-        private roleService:
-            RoleService,
-        private rolePermissionService:
-            RolePermissionService,
-        public authService:
-            AuthService,
-        private router:
-            Router,
-        private cdr:
-            ChangeDetectorRef
+        private companyService: CompanyService,
+        private roleService: RoleService,
+        private rolePermissionService: RolePermissionService,
+        public authService: AuthService,
+        private router: Router,
+        private cdr: ChangeDetectorRef
     ) { }
+
     // ==================================================
     // INIT
     // ==================================================
     ngOnInit(): void {
-        /*
-         * Permission page itself should be
-         * accessible only to users who have
-         * permission to manage role permissions.
-         */
-        if (
-            !this.hasPermission(
-                'UPDATE_ROLE_PERMISSION'
-            )
-        ) {
-            alert(
-                'You are not authorized to access this page.'
-            );
+        if (!this.hasPermission('UPDATE_ROLE_PERMISSION')) {
+            alert('You are not authorized to access this page.');
             this.router.navigate(['/dashboard']);
             return;
         }
+
         this.loadCompanies();
     }
+
     // ==================================================
     // PERMISSION CHECK
     // ==================================================
-    hasPermission(
-        permission: string
-    ): boolean {
-        return this.authService.hasPermission(
-            permission
-        );
+    hasPermission(permission: string): boolean {
+        return this.authService.hasPermission(permission);
     }
+
     // ==================================================
     // LOAD COMPANIES
     // ==================================================
     loadCompanies(): void {
         this.loadingCompanies = true;
-        /*
-         * Super Admin / users with
-         * VIEW_ALL_COMPANIES
-         *
-         * can select any company.
-         */
-        if (
-            this.authService.hasPermission(
-                'VIEW_ALL_COMPANIES'
-            )
-        ) {
-            this.companyService.getCompanies(
-                '',
-                'CompanyName',
-                'asc',
-                1,
-                1000
-            ).subscribe({
+
+        if (this.hasPermission('VIEW_ALL_COMPANIES')) {
+            this.companyService.getCompanies('', 'CompanyName', 'asc', 1, 1000).subscribe({
                 next: (response: any) => {
-                    this.companies =
-                        response.data || [];
+                    this.companies = response.data || [];
                     this.loadingCompanies = false;
                     this.cdr.detectChanges();
                 },
-                error: (err) => {
-                    console.log(
-                        'Error loading companies:',
-                        err
-                    );
+                error: (err: any) => {
+                    console.error('Error loading companies:', err);
                     this.companies = [];
                     this.loadingCompanies = false;
                     this.cdr.detectChanges();
@@ -260,236 +132,302 @@ export class RolePermissionListComponent
             });
             return;
         }
-        /*
-         * Company user
-         *
-         * Load only their company.
-         */
-        const companyId =
-            this.authService.getCompanyId();
+
+        const companyId = this.authService.getCompanyId();
+
         if (!companyId) {
             this.companies = [];
             this.loadingCompanies = false;
             return;
         }
-        this.companyService
-            .getCompany(companyId)
-            .subscribe({
-                next: (company: any) => {
-                    this.companies = [
-                        company
-                    ];
-                    this.selectedCompanyId =
-                        company.CompanyId;
-                    this.loadingCompanies = false;
-                    /*
-                     * Automatically load roles
-                     * for their company.
-                     */
-                    if (this.selectedCompanyId !== null) {
-                        this.loadRoles(this.selectedCompanyId);
-                    }
-                    this.cdr.detectChanges();
-                },
-                error: (err) => {
-                    console.log(
-                        'Error loading company:',
-                        err
-                    );
-                    this.companies = [];
-                    this.loadingCompanies = false;
-                }
-            });
+
+        this.companyService.getCompany(companyId).subscribe({
+            next: (company: any) => {
+                this.companies = [company];
+                this.selectedCompanyId = company.CompanyId;
+                this.loadingCompanies = false;
+                this.loadRoles(company.CompanyId);
+                this.cdr.detectChanges();
+            },
+            error: (err: any) => {
+                console.error('Error loading company:', err);
+                this.companies = [];
+                this.loadingCompanies = false;
+                this.cdr.detectChanges();
+            }
+        });
     }
+
     // ==================================================
     // COMPANY CHANGE
     // ==================================================
     companyChanged(): void {
         this.selectedRoleId = null;
+        this.selectedRole = null;
         this.roles = [];
         this.selectedPermissions = [];
-        if (
-            this.selectedCompanyId === null
-        ) {
-            return;
-        }
-        this.loadRoles(
-            this.selectedCompanyId
-        );
+        this.currentModulePermissions = [];
+        this.selectedModule = null;
+
+        if (this.selectedCompanyId === null) return;
+
+        this.loadRoles(this.selectedCompanyId);
     }
+
     // ==================================================
     // LOAD ROLES
     // ==================================================
-    loadRoles(
-        companyId: number
-    ): void {
+    loadRoles(companyId: number): void {
         this.loadingRoles = true;
-        this.roleService.getRoles(
-            '',
-            'RoleName',
-            'asc',
-            1,
-            1000,
-            companyId
-        ).subscribe({
+
+        this.roleService.getRoles('', 'RoleName', 'asc', 1, 1000, companyId).subscribe({
             next: (response: any) => {
-                this.roles =
-                    response.data || [];
+                this.roles = response.data || [];
                 this.loadingRoles = false;
                 this.cdr.detectChanges();
             },
-            error: (err) => {
-                console.log(
-                    'Error loading roles:',
-                    err
-                );
+            error: (err: any) => {
+                console.error('Error loading roles:', err);
                 this.roles = [];
                 this.loadingRoles = false;
                 this.cdr.detectChanges();
             }
         });
     }
+
     // ==================================================
     // ROLE CHANGE
     // ==================================================
     roleChanged(): void {
         this.selectedPermissions = [];
-        if (
-            !this.selectedRoleId
-        ) {
-            return;
+        this.currentModulePermissions = [];
+        this.selectedModule = null;
+
+        this.selectedRole = this.roles.find(
+            role => Number(role.RoleId) === Number(this.selectedRoleId)
+        ) || null;
+
+        if (!this.selectedRoleId) return;
+
+        this.loadRolePermissions(this.selectedRoleId);
+    }
+
+    // ==================================================
+    // VISIBLE MODULES
+    // ==================================================
+    getVisibleModules(): any[] {
+        if (this.selectedRole?.RoleName === 'Super Admin') {
+            return this.permissionModules;
         }
-        this.loadPermissions(
-            this.selectedRoleId
+
+        return this.permissionModules.filter(
+            module => module.key !== 'COMPANY'
         );
     }
+
     // ==================================================
     // LOAD ROLE PERMISSIONS
     // ==================================================
-    loadPermissions(
-        roleId: number
-    ): void {
+    loadRolePermissions(roleId: number): void {
         this.loadingPermissions = true;
+
+        this.rolePermissionService.getPermissions(roleId).subscribe({
+            next: (response: any) => {
+                this.selectedPermissions = response.Permissions || [];
+                this.loadingPermissions = false;
+                this.cdr.detectChanges();
+            },
+            error: (err: any) => {
+                console.error('Error loading role permissions:', err);
+                this.selectedPermissions = [];
+                this.loadingPermissions = false;
+                this.cdr.detectChanges();
+            }
+        });
+    }
+
+    // ==================================================
+    // SELECT MODULE
+    // ==================================================
+    selectModule(module: any): void {
+        if (!this.selectedRoleId) return;
+
+        if (module.key === 'COMPANY' && this.selectedRole?.RoleName !== 'Super Admin') {
+            return;
+        }
+
+        this.selectedModule = module;
+        this.loadModulePermissions(module.key);
+    }
+
+    // ==================================================
+    // LOAD MODULE PERMISSIONS
+    // ==================================================
+    loadModulePermissions(moduleKey: string): void {
+        if (!this.selectedRoleId) return;
+
+        if (moduleKey === 'COMPANY' && this.selectedRole?.RoleName !== 'Super Admin') {
+            this.currentModulePermissions = [];
+            return;
+        }
+
+        this.loadingModulePermissions = true;
+        this.currentModulePermissions = [];
+
         this.rolePermissionService
-            .getPermissions(roleId)
+            .getModulePermissions(this.selectedRoleId, moduleKey)
             .subscribe({
                 next: (response: any) => {
-                    this.selectedPermissions =
-                        response.Permissions || [];
-                    this.loadingPermissions = false;
+                    this.currentModulePermissions = response.permissions || [];
+                    this.loadingModulePermissions = false;
                     this.cdr.detectChanges();
                 },
-                error: (err) => {
-                    console.log(
-                        'Error loading permissions:',
-                        err
-                    );
-                    this.selectedPermissions = [];
-                    this.loadingPermissions = false;
+                error: (err: any) => {
+                    console.error('Error loading module permissions:', err);
+                    this.currentModulePermissions = [];
+                    this.loadingModulePermissions = false;
                     this.cdr.detectChanges();
                 }
             });
     }
-    // ==================================================
-    // CHECK PERMISSION
-    // ==================================================
-    isPermissionSelected(
-        permission: string
-    ): boolean {
-        return this.selectedPermissions
-            .includes(permission);
-    }
+
     // ==================================================
     // TOGGLE PERMISSION
     // ==================================================
-    togglePermission(
-        permission: string,
-        checked: boolean
-    ): void {
+    togglePermission(permission: any, checked: boolean): void {
+        permission.Assigned = checked;
+        const permissionName = permission.PermissionName;
+
         if (checked) {
-            if (
-                !this.selectedPermissions
-                    .includes(permission)
-            ) {
-                this.selectedPermissions.push(
-                    permission
-                );
+            if (!this.selectedPermissions.includes(permissionName)) {
+                this.selectedPermissions = [...this.selectedPermissions, permissionName];
             }
-        }
-        else {
-            this.selectedPermissions =
-                this.selectedPermissions.filter(
-                    p => p !== permission
-                );
+        } else {
+            this.selectedPermissions = this.selectedPermissions.filter(
+                p => p !== permissionName
+            );
         }
     }
+
     // ==================================================
-    // SELECT ALL
+    // SELECT ALL CURRENT MODULE
     // ==================================================
     selectAll(): void {
+        this.currentModulePermissions = this.currentModulePermissions.map(
+            permission => ({ ...permission, Assigned: true })
+        );
+
+        const permissionsToAdd = this.currentModulePermissions
+            .map(permission => permission.PermissionName)
+            .filter(permission => !this.selectedPermissions.includes(permission));
+
         this.selectedPermissions = [
-            ...this.permissions
+            ...this.selectedPermissions,
+            ...permissionsToAdd
         ];
     }
+
     // ==================================================
-    // CLEAR ALL
+    // CLEAR CURRENT MODULE
     // ==================================================
     clearAll(): void {
-        this.selectedPermissions = [];
+        const currentNames = this.currentModulePermissions.map(
+            permission => permission.PermissionName
+        );
+
+        this.currentModulePermissions = this.currentModulePermissions.map(
+            permission => ({ ...permission, Assigned: false })
+        );
+
+        this.selectedPermissions = this.selectedPermissions.filter(
+            permission => !currentNames.includes(permission)
+        );
     }
+
     // ==================================================
-    // SAVE
+    // FRIENDLY LABEL
+    // ==================================================
+    getPermissionLabel(permission: string): string {
+        if (permission === 'VIEW_ALL_COMPANIES') return 'View All Companies';
+        if (permission.startsWith('VIEW_')) return 'View';
+        if (permission.startsWith('CREATE_')) return 'Create';
+        if (permission.startsWith('UPDATE_')) return 'Update';
+        if (permission.startsWith('DELETE_')) return 'Delete';
+        return permission.replace(/_/g, ' ');
+    }
+
+    // ==================================================
+    // MODULE SELECTED COUNT
+    // ==================================================
+    getModuleSelectedCount(module: any): number {
+        if (module.key === 'COMPANY') {
+            return this.selectedPermissions.filter(permission =>
+                permission === 'VIEW_ALL_COMPANIES' ||
+                permission === 'CREATE_COMPANY' ||
+                permission === 'UPDATE_COMPANY' ||
+                permission === 'DELETE_COMPANY'
+            ).length;
+        }
+
+        return this.selectedPermissions.filter(
+            permission => permission.endsWith(`_${module.key}`)
+        ).length;
+    }
+
+    // ==================================================
+    // SAVE PERMISSIONS
     // ==================================================
     savePermissions(): void {
         if (!this.selectedRoleId) {
-            alert(
-                'Please select a role.'
-            );
+            alert('Please select a role.');
             return;
         }
-        if (
-            !this.hasPermission(
-                'UPDATE_ROLE_PERMISSION'
-            )
-        ) {
-            alert(
-                'You do not have permission to update role permissions.'
-            );
+
+        if (!this.hasPermission('UPDATE_ROLE_PERMISSION')) {
+            alert('You do not have permission to update role permissions.');
             return;
         }
+
+        // Extra frontend protection
+        if (this.selectedRole?.RoleName !== 'Super Admin') {
+            const companyPermissions = [
+                'VIEW_ALL_COMPANIES',
+                'CREATE_COMPANY',
+                'UPDATE_COMPANY',
+                'DELETE_COMPANY'
+            ];
+
+            this.selectedPermissions = this.selectedPermissions.filter(
+                permission => !companyPermissions.includes(permission)
+            );
+        }
+
         this.saving = true;
+
         this.rolePermissionService
-            .savePermissions(
-                this.selectedRoleId,
-                this.selectedPermissions
-            )
+            .savePermissions(this.selectedRoleId, this.selectedPermissions)
             .subscribe({
                 next: () => {
                     this.saving = false;
-                    alert(
-                        'Permissions saved successfully.'
-                    );
-                    this.router.navigate(['/role-permission']);
+                    alert('Permissions saved successfully.');
+                    this.loadRolePermissions(this.selectedRoleId!);
+
+                    if (this.selectedModule) {
+                        this.loadModulePermissions(this.selectedModule.key);
+                    }
                 },
-                error: (err) => {
+                error: (err: any) => {
+                    console.error('Error saving permissions:', err);
                     this.saving = false;
-                    console.log(
-                        'Error saving permissions:',
-                        err
-                    );
-                    alert(
-                        err?.error?.detail ||
-                        'Failed to save permissions.'
-                    );
+                    alert(err?.error?.detail || 'Failed to save permissions.');
                 }
             });
     }
+
     // ==================================================
     // CANCEL
     // ==================================================
     cancel(): void {
-        this.router.navigate([
-            '/role-permission'
-        ]);
+        this.router.navigate(['/role-permission']);
     }
 }

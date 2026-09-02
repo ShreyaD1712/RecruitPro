@@ -1,10 +1,13 @@
 <div class="page">
   <div class="card">
-    <h2>Add User</h2>
+    <h2>
+      {{ isEditMode ? 'Edit User' : 'Add User' }}
+    </h2>
 
     <form [formGroup]="userForm" (ngSubmit)="saveUser()">
-      <!-- First Name -->
-
+      <!-- ================================================== -->
+      <!-- FIRST NAME -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>First Name*</mat-label>
 
@@ -15,8 +18,9 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Last Name -->
-
+      <!-- ================================================== -->
+      <!-- LAST NAME -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Last Name*</mat-label>
 
@@ -27,8 +31,9 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Email -->
-
+      <!-- ================================================== -->
+      <!-- EMAIL -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Email*</mat-label>
 
@@ -43,9 +48,11 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Password -->
-
-      <mat-form-field appearance="outline">
+      <!-- ================================================== -->
+      <!-- PASSWORD -->
+      <!-- ONLY FOR ADD MODE -->
+      <!-- ================================================== -->
+      <mat-form-field *ngIf="!isEditMode" appearance="outline">
         <mat-label>Password*</mat-label>
 
         <input matInput type="password" formControlName="Password" />
@@ -55,24 +62,30 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Phone Number -->
-
+      <!-- ================================================== -->
+      <!-- MOBILE -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
-        <mat-label>MobileNo</mat-label>
+        <mat-label>Mobile Number*</mat-label>
 
         <input matInput type="tel" formControlName="MobileNo" />
+
+        <mat-error *ngIf="userForm.get('MobileNo')?.hasError('required')">
+          Mobile Number is required
+        </mat-error>
       </mat-form-field>
 
-      <!-- Company -->
-
+      <!-- ================================================== -->
+      <!-- COMPANY -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Company*</mat-label>
 
-        <mat-select
-          formControlName="CompanyId"
-          [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
-          (selectionChange)="companyChanged()"
-        >
+        <mat-select formControlName="CompanyId" (selectionChange)="companyChanged()">
+          <mat-option *ngIf="authService.hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
+            Select Company
+          </mat-option>
+
           <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
             {{ company.CompanyName }}
           </mat-option>
@@ -83,12 +96,17 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Department -->
-
+      <!-- ================================================== -->
+      <!-- DEPARTMENT -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Department*</mat-label>
 
         <mat-select formControlName="DepartmentId">
+          <mat-option [value]="null">
+            {{ loadingDepartments ? 'Loading Departments...' : 'Select Department' }}
+          </mat-option>
+
           <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
             {{ department.DepartmentName }}
           </mat-option>
@@ -99,12 +117,17 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Role -->
-
+      <!-- ================================================== -->
+      <!-- ROLE -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Role*</mat-label>
 
         <mat-select formControlName="RoleId">
+          <mat-option [value]="null">
+            {{ loadingRoles ? 'Loading Roles...' : 'Select Role' }}
+          </mat-option>
+
           <mat-option *ngFor="let role of roles" [value]="role.RoleId">
             {{ role.RoleName }}
           </mat-option>
@@ -115,24 +138,37 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Active Status -->
-
+      <!-- ================================================== -->
+      <!-- STATUS -->
+      <!-- ================================================== -->
       <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
-      <!-- Buttons -->
-
+      <!-- ================================================== -->
+      <!-- BUTTONS -->
+      <!-- ================================================== -->
       <div class="buttons">
         <button
-          *ngIf="authService.hasPermission('CREATE_USER')"
+          *ngIf="
+            (!isEditMode && authService.hasPermission('CREATE_USER')) ||
+            (isEditMode && authService.hasPermission('UPDATE_USER'))
+          "
           mat-raised-button
           color="primary"
           type="submit"
-          [disabled]="loading"
+          [disabled]="loading || loadingUser"
         >
-          {{ loading ? 'Saving...' : 'Save' }}
+          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
-        <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   </div>

@@ -6,7 +6,10 @@ import {
     Validators,
     ReactiveFormsModule
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import {
+    ActivatedRoute,
+    Router
+} from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -31,15 +34,35 @@ import { AuthService } from '../../../services/auth.service';
         MatSlideToggleModule,
         MatSelectModule
     ],
-    templateUrl: './user-add.component.html',
-    
+    templateUrl: './user-add.component.html'
 })
 export class UserAddComponent implements OnInit {
+    // ==================================================
+    // FORM
+    // ==================================================
     userForm!: FormGroup;
+    // ==================================================
+    // MODE
+    // ==================================================
+    isEditMode = false;
+    userId: number | null = null;
+    // ==================================================
+    // DATA
+    // ==================================================
     companies: any[] = [];
     departments: any[] = [];
     roles: any[] = [];
+    // ==================================================
+    // LOADING
+    // ==================================================
     loading = false;
+    loadingCompanies = false;
+    loadingDepartments = false;
+    loadingRoles = false;
+    loadingUser = false;
+    // ==================================================
+    // CONSTRUCTOR
+    // ==================================================
     constructor(
         private fb: FormBuilder,
         private userService: UserService,
@@ -47,147 +70,327 @@ export class UserAddComponent implements OnInit {
         private departmentService: DepartmentService,
         private roleService: RoleService,
         public authService: AuthService,
+        private route: ActivatedRoute,
         private router: Router
     ) { }
+    // ==================================================
+    // INIT
+    // ==================================================
     ngOnInit(): void {
-        this.userForm = this.fb.group({
-            FirstName: ['', Validators.required],
-            LastName: ['', Validators.required],
-            Email: [
-                '',
-                [
-                    Validators.required,
-                    Validators.email
+        const id =
+            this.route.snapshot.paramMap.get('id');
+        if (id) {
+            this.isEditMode = true;
+            this.userId = Number(id);
+        }
+        // ==================================================
+        // PERMISSION CHECK
+        // ==================================================
+        if (
+            !this.isEditMode &&
+            !this.hasPermission('CREATE_USER')
+        ) {
+            alert(
+                'You are not authorized to create users.'
+            );
+            this.router.navigate([
+                '/user'
+            ]);
+            return;
+        }
+        if (
+            this.isEditMode &&
+            !this.hasPermission('UPDATE_USER')
+        ) {
+            alert(
+                'You are not authorized to update users.'
+            );
+            this.router.navigate([
+                '/user'
+            ]);
+            return;
+        }
+        // ==================================================
+        // FORM
+        // ==================================================
+        this.userForm =
+            this.fb.group({
+                FirstName: [
+                    '',
+                    Validators.required
+                ],
+                LastName: [
+                    '',
+                    Validators.required
+                ],
+                Email: [
+                    '',
+                    [
+                        Validators.required,
+                        Validators.email
+                    ]
+                ],
+                Password: [
+                    ''
+                ],
+                MobileNo: [
+                    '',
+                    Validators.required
+                ],
+                CompanyId: [
+                    null,
+                    Validators.required
+                ],
+                DepartmentId: [
+                    null,
+                    Validators.required
+                ],
+                RoleId: [
+                    null,
+                    Validators.required
+                ],
+                IsActive: [
+                    true
                 ]
-            ],
-            Password: ['', Validators.required],
-            MobileNo: ['', Validators.required],
-            CompanyId: [
-                null,
-                Validators.required
-            ],
-            DepartmentId: [
-                null,
-                Validators.required
-            ],
-            RoleId: [
-                null,
-                Validators.required
-            ],
-            IsActive: [true]
-        });
+            });
+        // ==================================================
+        // PASSWORD REQUIRED ONLY IN ADD MODE
+        // ==================================================
+        if (!this.isEditMode) {
+            this.userForm
+                .get('Password')
+                ?.setValidators(
+                    Validators.required
+                );
+            this.userForm
+                .get('Password')
+                ?.updateValueAndValidity();
+        }
+        // ==================================================
+        // LOAD COMPANIES
+        // ==================================================
         this.loadCompanies();
+    }
+    // ==================================================
+    // PERMISSION
+    // ==================================================
+    hasPermission(
+        permission: string
+    ): boolean {
+        return this.authService.hasPermission(
+            permission
+        );
     }
     // ==================================================
     // LOAD COMPANIES
     // ==================================================
     loadCompanies(): void {
-        /*
-         * User can view all companies
-         */
+        const companyId =
+            this.authService.getCompanyId();
+        this.loadingCompanies = true;
+        // ==================================================
+        // USER CAN VIEW ALL COMPANIES
+        // ==================================================
         if (
-            this.authService.hasPermission(
+            this.hasPermission(
                 'VIEW_ALL_COMPANIES'
             )
         ) {
-            this.companyService.getCompanies(
-                '',
-                'CompanyName',
-                'asc',
-                1,
-                1000
-            ).subscribe({
-                next: (response: any) => {
-                    this.companies =
-                        response.data || [];
-                    /*
-                     * Do not select a company automatically
-                     * for users who can view all companies.
-                     */
-                    this.userForm.patchValue({
-                        CompanyId: null
-                    });
-                    this.departments = [];
-                    this.roles = [];
-                },
-                error: (err) => {
-                    console.log(
-                        'Error loading companies:',
-                        err
-                    );
-                }
-            });
-        }
-        /*
-         * User can only view their company
-         */
-        else {
-            const companyId =
-                this.authService.getCompanyId();
             this.companyService
-                .getCompany(companyId)
+                .getCompanies(
+                    '',
+                    'CompanyName',
+                    'asc',
+                    1,
+                    1000
+                )
                 .subscribe({
-                    next: (company: any) => {
-                        /*
-                         * Show the actual company
-                         * in the dropdown.
-                         */
-                        this.companies = [
-                            company
-                        ];
-                        /*
-                         * Automatically select
-                         * their company.
-                         */
-                        this.userForm.patchValue({
+                    next: (response: any) => {
+                        this.companies =
+                            response.data || [];
+                        this.loadingCompanies =
+                            false;
+                        if (
+                            this.isEditMode &&
+                            this.userId
+                        ) {
+                            this.loadUser();
+                        }
+                    },
+                    error: (err: any) => {
+                        console.error(
+                            'Error loading companies:',
+                            err
+                        );
+                        this.companies = [];
+                        this.loadingCompanies =
+                            false;
+                    }
+                });
+            return;
+        }
+        // ==================================================
+        // COMPANY-SCOPED USER
+        // ==================================================
+        if (!companyId) {
+            this.loadingCompanies = false;
+            alert(
+                'Company information not found.'
+            );
+            return;
+        }
+        this.companyService
+            .getCompany(
+                companyId
+            )
+            .subscribe({
+                next: (company: any) => {
+                    this.companies = [
+                        company
+                    ];
+                    this.userForm
+                        .patchValue({
                             CompanyId:
                                 company.CompanyId
                         });
-                        /*
-                         * Disable company selection.
-                         */
-                        this.userForm
-                            .get('CompanyId')
-                            ?.disable();
-                        /*
-                         * Automatically load
-                         * company departments and roles.
-                         */
+                    // Company visible but disabled
+                    this.userForm
+                        .get('CompanyId')
+                        ?.disable();
+                    this.loadingCompanies =
+                        false;
+                    // ==================================================
+                    // EDIT MODE
+                    // ==================================================
+                    if (
+                        this.isEditMode &&
+                        this.userId
+                    ) {
+                        this.loadUser();
+                    }
+                    // ==================================================
+                    // ADD MODE
+                    // ==================================================
+                    else {
                         this.loadDepartments(
                             company.CompanyId
                         );
                         this.loadRoles(
                             company.CompanyId
                         );
-                    },
-                    error: (err) => {
-                        console.log(
-                            'Error loading company:',
-                            err
+                    }
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error loading company:',
+                        err
+                    );
+                    this.companies = [];
+                    this.loadingCompanies =
+                        false;
+                }
+            });
+    }
+    // ==================================================
+    // LOAD USER
+    // ==================================================
+    loadUser(): void {
+        if (!this.userId) {
+            return;
+        }
+        this.loadingUser = true;
+        this.userService
+            .getUserById(
+                this.userId
+            )
+            .subscribe({
+                next: (response: any) => {
+                    console.log(
+                        'User Edit Response:',
+                        response
+                    );
+                    const user =
+                        response?.data ||
+                        response;
+                    this.userForm
+                        .patchValue({
+                            FirstName:
+                                user.FirstName,
+                            LastName:
+                                user.LastName,
+                            Email:
+                                user.Email,
+                            MobileNo:
+                                user.MobileNo,
+                            CompanyId:
+                                user.CompanyId,
+                            IsActive:
+                                user.IsActive
+                        });
+                    // ==================================================
+                    // LOAD DEPARTMENT + ROLE OPTIONS
+                    // AND RESTORE SELECTED VALUES
+                    // ==================================================
+                    if (
+                        user.CompanyId
+                    ) {
+                        this.loadDepartments(
+                            user.CompanyId,
+                            user.DepartmentId
+                        );
+                        this.loadRoles(
+                            user.CompanyId,
+                            user.RoleId
                         );
                     }
-                });
-        }
+                    // Company-scoped user cannot change company
+                    if (
+                        !this.hasPermission(
+                            'VIEW_ALL_COMPANIES'
+                        )
+                    ) {
+                        this.userForm
+                            .get('CompanyId')
+                            ?.disable();
+                    }
+                    this.loadingUser =
+                        false;
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error loading user:',
+                        err
+                    );
+                    this.loadingUser =
+                        false;
+                    alert(
+                        err?.error?.detail ||
+                        'User not found.'
+                    );
+                    this.router.navigate([
+                        '/user'
+                    ]);
+                }
+            });
     }
     // ==================================================
     // COMPANY CHANGE
     // ==================================================
     companyChanged(): void {
         const companyId =
-            this.userForm.get('CompanyId')?.value;
-        if (!companyId) {
-            this.departments = [];
-            this.roles = [];
-            this.userForm.patchValue({
+            this.userForm
+                .get('CompanyId')
+                ?.value;
+        this.userForm
+            .patchValue({
                 DepartmentId: null,
                 RoleId: null
             });
+        this.departments = [];
+        this.roles = [];
+        if (!companyId) {
             return;
         }
-        /*
-         * When company changes,
-         * reload departments and roles.
-         */
         this.loadDepartments(
             companyId
         );
@@ -199,91 +402,160 @@ export class UserAddComponent implements OnInit {
     // LOAD DEPARTMENTS
     // ==================================================
     loadDepartments(
-        companyId: number
+        companyId: number,
+        selectedDepartmentId: number | null = null
     ): void {
-        this.departmentService.getDepartments(
-            '',
-            companyId,
-            'DepartmentName',
-            'asc',
-            1,
-            1000,
-        ).subscribe({
-            next: (response: any) => {
-                this.departments =
-                    response.data || [];
-                /*
-                 * Reset department whenever
-                 * company changes.
-                 */
-                this.userForm.patchValue({
-                    DepartmentId: null
-                });
-            },
-            error: (err) => {
-                console.log(
-                    'Error loading departments:',
-                    err
-                );
-                this.departments = [];
-            }
-        });
+        this.loadingDepartments = true;
+        this.departmentService
+            .getDepartments(
+                '',
+                companyId,
+                'DepartmentName',
+                'asc',
+                1,
+                1000
+            )
+            .subscribe({
+                next: (response: any) => {
+                    this.departments =
+                        response.data || [];
+                    this.loadingDepartments =
+                        false;
+                    if (
+                        selectedDepartmentId
+                    ) {
+                        this.userForm
+                            .patchValue({
+                                DepartmentId:
+                                    selectedDepartmentId
+                            });
+                    }
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error loading departments:',
+                        err
+                    );
+                    this.departments = [];
+                    this.loadingDepartments =
+                        false;
+                }
+            });
     }
     // ==================================================
     // LOAD ROLES
     // ==================================================
     loadRoles(
-        companyId: number
+        companyId: number,
+        selectedRoleId: number | null = null
     ): void {
-        this.roleService.getRoles(
-            '',
-            'RoleName',
-            'asc',
-            1,
-            1000,
-            companyId
-        ).subscribe({
-            next: (response: any) => {
-                this.roles =
-                    response.data || [];
-                /*
-                 * Reset role whenever
-                 * company changes.
-                 */
-                this.userForm.patchValue({
-                    RoleId: null
-                });
-            },
-            error: (err) => {
-                console.log(
-                    'Error loading roles:',
-                    err
-                );
-                this.roles = [];
-            }
-        });
+        this.loadingRoles = true;
+        this.roleService
+            .getRoles(
+                '',
+                'RoleName',
+                'asc',
+                1,
+                1000,
+                companyId
+            )
+            .subscribe({
+                next: (response: any) => {
+                    this.roles =
+                        response.data || [];
+                    this.loadingRoles =
+                        false;
+                    if (
+                        selectedRoleId
+                    ) {
+                        this.userForm
+                            .patchValue({
+                                RoleId:
+                                    selectedRoleId
+                            });
+                    }
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error loading roles:',
+                        err
+                    );
+                    this.roles = [];
+                    this.loadingRoles =
+                        false;
+                }
+            });
     }
     // ==================================================
     // SAVE USER
     // ==================================================
     saveUser(): void {
+        const requiredPermission =
+            this.isEditMode
+                ? 'UPDATE_USER'
+                : 'CREATE_USER';
+        if (
+            !this.hasPermission(
+                requiredPermission
+            )
+        ) {
+            alert(
+                'You do not have permission to perform this action.'
+            );
+            return;
+        }
         if (
             this.userForm.invalid
         ) {
-            this.userForm.markAllAsTouched();
+            this.userForm
+                .markAllAsTouched();
             return;
         }
-        this.loading = true;
-        /*
-         * getRawValue() is important because
-         * CompanyId is disabled for restricted users.
-         */
         const data =
-            this.userForm.getRawValue();
+            this.userForm
+                .getRawValue();
+        // ==================================================
+        // REMOVE PASSWORD IN EDIT MODE
+        // ==================================================
+        if (
+            this.isEditMode
+        ) {
+            delete data.Password;
+        }
+        this.loading = true;
+        // ==================================================
+        // EDIT
+        // ==================================================
+        if (
+            this.isEditMode &&
+            this.userId
+        ) {
+            this.updateUser(
+                data
+            );
+        }
+        // ==================================================
+        // ADD
+        // ==================================================
+        else {
+            this.createUser(
+                data
+            );
+        }
+    }
+    // ==================================================
+    // CREATE USER
+    // ==================================================
+    createUser(
+        data: any
+    ): void {
         this.userService
-            .addUser(data)
+            .addUser(
+                data
+            )
             .subscribe({
                 next: () => {
+                    this.loading = false;
                     alert(
                         'User Added Successfully'
                     );
@@ -291,13 +563,53 @@ export class UserAddComponent implements OnInit {
                         '/user'
                     ]);
                 },
-                error: (err) => {
-                    console.log(err);
-                    alert(
-                        err.error?.detail ||
-                        'Unable to add user'
+                error: (err: any) => {
+                    console.error(
+                        'Error adding user:',
+                        err
                     );
                     this.loading = false;
+                    alert(
+                        err?.error?.detail ||
+                        'Unable to add user'
+                    );
+                }
+            });
+    }
+    // ==================================================
+    // UPDATE USER
+    // ==================================================
+    updateUser(
+        data: any
+    ): void {
+        if (!this.userId) {
+            return;
+        }
+        this.userService
+            .updateUser(
+                this.userId,
+                data
+            )
+            .subscribe({
+                next: () => {
+                    this.loading = false;
+                    alert(
+                        'User Updated Successfully'
+                    );
+                    this.router.navigate([
+                        '/user'
+                    ]);
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error updating user:',
+                        err
+                    );
+                    this.loading = false;
+                    alert(
+                        err?.error?.detail ||
+                        'Failed to update user.'
+                    );
                 }
             });
     }

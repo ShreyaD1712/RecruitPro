@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import {
     FormBuilder,
     FormGroup,
     Validators,
     ReactiveFormsModule
 } from '@angular/forms';
-
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,7 +22,6 @@ import { AuthService } from '../../../services/auth.service';
 @Component({
     selector: 'app-employment-type-add',
     standalone: true,
-
     imports: [
         CommonModule,
         ReactiveFormsModule,
@@ -35,310 +32,241 @@ import { AuthService } from '../../../services/auth.service';
         MatSlideToggleModule,
         MatSelectModule
     ],
-
-    templateUrl: './employment-type-add.component.html',
-   
+    templateUrl: './employment-type-add.component.html'
 })
 export class EmploymentTypeAddComponent implements OnInit {
-
     // ==================================================
-    // FORM
+    // FORM / MODE
     // ==================================================
-
     employmentTypeForm!: FormGroup;
+    isEditMode = false;
+    employmentTypeId: number | null = null;
 
     // ==================================================
-    // COMPANY DATA
+    // DATA / LOADING
     // ==================================================
-
     companies: any[] = [];
-
-    // ==================================================
-    // LOADING
-    // ==================================================
-
     loading = false;
+    loadingEmploymentType = false;
 
     constructor(
         private fb: FormBuilder,
         private employmentTypeService: EmploymentTypeService,
         private companyService: CompanyService,
         public authService: AuthService,
+        private route: ActivatedRoute,
         private router: Router
     ) { }
 
     // ==================================================
     // INIT
     // ==================================================
-
     ngOnInit(): void {
+        const id = this.route.snapshot.paramMap.get('id');
 
-        // ----------------------------------------------
-        // Permission Check
-        // ----------------------------------------------
+        if (id) {
+            this.isEditMode = true;
+            this.employmentTypeId = Number(id);
+        }
 
-        if (
-            !this.authService.hasPermission(
-                'CREATE_EMPLOYMENT_TYPE'
-            )
-        ) {
+        const requiredPermission = this.isEditMode
+            ? 'UPDATE_EMPLOYMENT_TYPE'
+            : 'CREATE_EMPLOYMENT_TYPE';
 
-            alert(
-                'You are not authorized to create employment types.'
-            );
-
-            this.router.navigate([
-                '/employment-type'
-            ]);
-
+        if (!this.hasPermission(requiredPermission)) {
+            alert('You are not authorized to access this page.');
+            this.router.navigate(['/employment-type']);
             return;
         }
 
-        // ----------------------------------------------
-        // Create Form
-        // ----------------------------------------------
-
         this.employmentTypeForm = this.fb.group({
-
-            EmploymentTypeName: [
-                '',
-                Validators.required
-            ],
-
-            Description: [
-                ''
-            ],
-
-            CompanyId: [
-                null,
-                Validators.required
-            ],
-
-            IsActive: [
-                true
-            ]
-
+            EmploymentTypeName: ['', Validators.required],
+            Description: [''],
+            CompanyId: [null, Validators.required],
+            IsActive: [true]
         });
 
-        // ----------------------------------------------
-        // Load Company
-        // ----------------------------------------------
-
-        this.loadCompany();
+        this.loadCompanies();
     }
 
     // ==================================================
     // PERMISSION CHECK
     // ==================================================
-
     hasPermission(permission: string): boolean {
-
-        return this.authService.hasPermission(
-            permission
-        );
+        return this.authService.hasPermission(permission);
     }
 
     // ==================================================
-    // LOAD LOGGED-IN USER COMPANY
+    // LOAD COMPANIES
     // ==================================================
+    loadCompanies(): void {
+        if (this.hasPermission('VIEW_ALL_COMPANIES')) {
+            this.companyService.getCompanies('', 'CompanyName', 'asc', 1, 1000).subscribe({
+                next: (response: any) => {
+                    this.companies = response.data || [];
 
-    loadCompany(): void {
-
-        const companyId =
-            this.authService.getCompanyId();
-
-        // ----------------------------------------------
-        // Company ID Check
-        // ----------------------------------------------
-
-        if (!companyId) {
-
-            alert(
-                'Company information not found.'
-            );
-
-            this.router.navigate([
-                '/employment-type'
-            ]);
+                    if (this.isEditMode) {
+                        this.loadEmploymentType();
+                    } else {
+                        this.employmentTypeForm.patchValue({ CompanyId: null });
+                    }
+                },
+                error: (err: any) => {
+                    console.error('Error loading companies:', err);
+                    this.companies = [];
+                }
+            });
 
             return;
         }
 
-        // ----------------------------------------------
-        // Get Company
-        // ----------------------------------------------
+        const companyId = this.authService.getCompanyId();
 
-        this.companyService
-            .getCompany(companyId)
-            .subscribe({
+        if (!companyId) {
+            alert('Company information not found.');
+            this.router.navigate(['/employment-type']);
+            return;
+        }
 
-                next: (company: any) => {
+        this.companyService.getCompany(companyId).subscribe({
+            next: (company: any) => {
+                this.companies = [company];
 
-                    // ----------------------------------------
-                    // Show only logged-in user's company
-                    // ----------------------------------------
-
-                    this.companies = [
-                        company
-                    ];
-
-                    // ----------------------------------------
-                    // Automatically select company
-                    // ----------------------------------------
-
+                if (this.isEditMode) {
+                    this.loadEmploymentType();
+                } else {
                     this.employmentTypeForm.patchValue({
-
-                        CompanyId:
-                            company.CompanyId
-
+                        CompanyId: company.CompanyId
                     });
 
-                    // ----------------------------------------
-                    // Disable Company dropdown
-                    // ----------------------------------------
-
-                    this.employmentTypeForm
-                        .get('CompanyId')
-                        ?.disable();
-
-                },
-
-                error: (err: any) => {
-
-                    console.log(
-                        'Error loading company:',
-                        err
-                    );
-
-                    alert(
-                        'Unable to load company.'
-                    );
-
-                    this.router.navigate([
-                        '/employment-type'
-                    ]);
-
+                    this.employmentTypeForm.get('CompanyId')?.disable();
                 }
+            },
+            error: (err: any) => {
+                console.error('Error loading company:', err);
+                alert('Unable to load company.');
+                this.router.navigate(['/employment-type']);
+            }
+        });
+    }
 
+    // ==================================================
+    // LOAD EMPLOYMENT TYPE
+    // ==================================================
+    loadEmploymentType(): void {
+        if (!this.employmentTypeId) return;
+
+        this.loadingEmploymentType = true;
+
+        this.employmentTypeService
+            .getEmploymentTypeById(this.employmentTypeId)
+            .subscribe({
+                next: (response: any) => {
+                    const employmentType = response?.data || response;
+
+                    if (
+                        !this.hasPermission('VIEW_ALL_COMPANIES') &&
+                        Number(employmentType.CompanyId) !== Number(this.authService.getCompanyId())
+                    ) {
+                        alert('You are not authorized to edit this employment type.');
+                        this.router.navigate(['/employment-type']);
+                        return;
+                    }
+
+                    this.employmentTypeForm.patchValue({
+                        EmploymentTypeName: employmentType.EmploymentTypeName,
+                        Description: employmentType.Description || '',
+                        CompanyId: employmentType.CompanyId,
+                        IsActive: employmentType.IsActive
+                    });
+
+                    if (!this.hasPermission('VIEW_ALL_COMPANIES')) {
+                        this.employmentTypeForm.get('CompanyId')?.disable();
+                    }
+
+                    this.loadingEmploymentType = false;
+                },
+                error: (err: any) => {
+                    console.error('Error loading employment type:', err);
+                    this.loadingEmploymentType = false;
+                    alert(err?.error?.detail || 'Employment Type not found.');
+                    this.router.navigate(['/employment-type']);
+                }
             });
     }
 
     // ==================================================
     // SAVE EMPLOYMENT TYPE
     // ==================================================
-
     saveEmploymentType(): void {
+        const requiredPermission = this.isEditMode
+            ? 'UPDATE_EMPLOYMENT_TYPE'
+            : 'CREATE_EMPLOYMENT_TYPE';
 
-        // ----------------------------------------------
-        // Permission Check
-        // ----------------------------------------------
-
-        if (
-            !this.authService.hasPermission(
-                'CREATE_EMPLOYMENT_TYPE'
-            )
-        ) {
-
-            alert(
-                'You do not have permission to create employment types.'
-            );
-
+        if (!this.hasPermission(requiredPermission)) {
+            alert('You do not have permission to perform this action.');
             return;
         }
 
-        // ----------------------------------------------
-        // Form Validation
-        // ----------------------------------------------
-
-        if (
-            this.employmentTypeForm.invalid
-        ) {
-
+        if (this.employmentTypeForm.invalid) {
             this.employmentTypeForm.markAllAsTouched();
-
             return;
         }
 
-        // ----------------------------------------------
-        // Company Check
-        // ----------------------------------------------
-
-        const companyId =
-            this.authService.getCompanyId();
-
-        if (!companyId) {
-
-            alert(
-                'Company information not found.'
-            );
-
-            return;
-        }
-
-        // ----------------------------------------------
-        // Loading
-        // ----------------------------------------------
-
+        const data = this.employmentTypeForm.getRawValue();
         this.loading = true;
 
-        // ----------------------------------------------
-        // getRawValue()
-        //
-        // Important because CompanyId is disabled.
-        // getRawValue() includes disabled fields.
-        // ----------------------------------------------
+        if (this.isEditMode && this.employmentTypeId) {
+            this.updateEmploymentType(data);
+        } else {
+            this.createEmploymentType(data);
+        }
+    }
 
-        const data =
-            this.employmentTypeForm.getRawValue();
+    // ==================================================
+    // CREATE EMPLOYMENT TYPE
+    // ==================================================
+    createEmploymentType(data: any): void {
+        this.employmentTypeService.addEmploymentType(data).subscribe({
+            next: () => {
+                this.loading = false;
+                alert('Employment Type Added Successfully');
+                this.router.navigate(['/employment-type']);
+            },
+            error: (err: any) => {
+                console.error('Error adding employment type:', err);
+                this.loading = false;
+                alert(err?.error?.detail || 'Unable to add employment type');
+            }
+        });
+    }
 
-        // ----------------------------------------------
-        // Add Employment Type
-        // ----------------------------------------------
+    // ==================================================
+    // UPDATE EMPLOYMENT TYPE
+    // ==================================================
+    updateEmploymentType(data: any): void {
+        if (!this.employmentTypeId) return;
 
         this.employmentTypeService
-            .addEmploymentType(data)
+            .updateEmploymentType(this.employmentTypeId, data)
             .subscribe({
-
                 next: () => {
-
                     this.loading = false;
-
-                    alert(
-                        'Employment Type Added Successfully'
-                    );
-
-                    this.router.navigate([
-                        '/employment-type'
-                    ]);
-
+                    alert('Employment Type Updated Successfully');
+                    this.router.navigate(['/employment-type']);
                 },
-
                 error: (err: any) => {
-
-                    console.log(err);
-
+                    console.error('Error updating employment type:', err);
                     this.loading = false;
-
-                    alert(
-                        err?.error?.detail ||
-                        'Unable to add employment type'
-                    );
-
+                    alert(err?.error?.detail || 'Failed to update employment type.');
                 }
-
             });
     }
 
     // ==================================================
     // CANCEL
     // ==================================================
-
     cancel(): void {
-
-        this.router.navigate([
-            '/employment-type'
-        ]);
-
+        this.router.navigate(['/employment-type']);
     }
-
 }

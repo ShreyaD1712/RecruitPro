@@ -1,111 +1,41 @@
 import { Injectable } from '@angular/core';
-
-import {
-    HttpClient
-} from '@angular/common/http';
-
-import {
-    Observable,
-    catchError,
-    throwError,
-    tap
-} from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
 })
 export class RolePermissionService {
+    private apiUrl = 'http://127.0.0.1:8000/role-permissions';
 
-    private apiUrl =
-        'http://127.0.0.1:8000/role-permissions';
+    constructor(private http: HttpClient) { }
 
-    constructor(
-        private http: HttpClient
-    ) { }
+    // ==================================================
+    // GET ROLE PERMISSIONS
+    // ==================================================
+    getPermissions(roleId: number): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/${roleId}`);
+    }
 
-    // ==========================
-    // Get Permissions By Role
-    // ==========================
-
-    getPermissions(
-        roleId: number
-    ): Observable<any> {
-
+    // ==================================================
+    // GET MODULE PERMISSIONS
+    // ==================================================
+    getModulePermissions(roleId: number, moduleKey: string): Observable<any> {
         return this.http.get<any>(
-            `${this.apiUrl}/${roleId}`
-        ).pipe(
-
-            tap(response => {
-
-                console.log(
-                    'Permissions loaded:',
-                    response
-                );
-
-            }),
-
-            catchError(error => {
-
-                console.error(
-                    'Error loading permissions:',
-                    error
-                );
-
-                return throwError(
-                    () => error
-                );
-
-            })
-
+            `${this.apiUrl}/${roleId}/module/${moduleKey}`
         );
     }
 
-    // ==========================
-    // Save Permissions
-    // ==========================
-
-    savePermissions(
-        roleId: number,
-        permissions: string[]
-    ): Observable<any> {
-
-        const data = {
-            RoleId: roleId,
-            Permissions: permissions
-        };
-
-        console.log(
-            'Saving permissions:',
-            data
-        );
-
+    // ==================================================
+    // SAVE PERMISSIONS
+    // ==================================================
+    savePermissions(roleId: number, permissions: string[]): Observable<any> {
         return this.http.post<any>(
             `${this.apiUrl}/`,
-            data
-        ).pipe(
-
-            tap(response => {
-
-                console.log(
-                    'Save permissions response:',
-                    response
-                );
-
-            }),
-
-            catchError(error => {
-
-                console.error(
-                    'Save permissions error:',
-                    error
-                );
-
-                return throwError(
-                    () => error
-                );
-
-            })
-
+            {
+                RoleId: roleId,
+                Permissions: permissions
+            }
         );
     }
 }

@@ -9,22 +9,18 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 // Company Components
 import { CompanyListComponent } from './components/company/company-list/company-list.component';
 import { CompanyAddComponent } from './components/company/company-add/company-add.component';
-import { CompanyEditComponent } from './components/company/company-edit/company-edit.component';
 // Department Components
 import { DepartmentListComponent } from './components/department/department-list/department-list.component';
 import { DepartmentAddComponent } from './components/department/department-add/department-add.component';
 // Designation Components
 import { DesignationListComponent } from './components/designation/designation-list/designation-list.component';
 import { DesignationAddComponent } from './components/designation/designation-add/designation-add.component';
-import { DesignationEditComponent } from './components/designation/designation-edit/designation-edit.component';
 // Role Components
 import { RoleListComponent } from './components/role/role-list/role-list.component';
 import { RoleAddComponent } from './components/role/role-add/role-add.component';
-import { RoleEditComponent } from './components/role/role-edit/role-edit.component';
 // User Components
 import { UserListComponent } from './components/user/user-list/user-list.component';
 import { UserAddComponent } from './components/user/user-add/user-add.component';
-import { UserEditComponent } from './components/user/user-edit/user-edit.component';
 
 import { ProfileComponent } from './components/profile/profile.component';
 // Role Permission Components
@@ -32,27 +28,21 @@ import { RolePermissionListComponent } from './components/role-permission/role-p
 // Skill Components
 import { SkillListComponent } from './components/skill/skill-list/skill-list.component';
 import { SkillAddComponent } from './components/skill/skill-add/skill-add.component';
-import { SkillEditComponent } from './components/skill/skill-edit/skill-edit.component';
 // Job Category Components
 import { JobCategoryListComponent } from './components/job-category/job-category-list/job-category-list.component';
 import { JobCategoryAddComponent } from './components/job-category/job-category-add/job-category-add.component';
-import { JobCategoryEditComponent } from './components/job-category/job-category-edit/job-category-edit.component';
 // Employment Type Components
 import { EmploymentTypeListComponent } from './components/employment-type/employment-type-list/employment-type-list.component';
 import { EmploymentTypeAddComponent } from './components/employment-type/employment-type-add/employment-type-add.component';
-import { EmploymentTypeEditComponent } from './components/employment-type/employment-type-edit/employment-type-edit.component';
 // Experience Level Components
 import { ExperienceLevelListComponent } from './components/experience-level/experience-level-list/experience-level-list.component';
 import { ExperienceLevelAddComponent } from './components/experience-level/experience-level-add/experience-level-add.component';
-import { ExperienceLevelEditComponent } from './components/experience-level/experience-level-edit/experience-level-edit.component';
 // Interview Round Components
 import { InterviewRoundListComponent } from './components/interview-round/interview-round-list/interview-round-list.component';
 import { InterviewRoundAddComponent } from './components/interview-round/interview-round-add/interview-round-add.component';
-import { InterviewRoundEditComponent } from './components/interview-round/interview-round-edit/interview-round-edit.component';
 // Job Opening Component
 import { JobOpeningListComponent } from './components/job-opening/job-opening-list/job-opening-list.component';
 import { JobOpeningAddComponent } from './components/job-opening/job-opening-add/job-opening-add.component';
-import { JobOpeningEditComponent } from './components/job-opening/job-opening-edit/job-opening-edit.component';
 // Applicant Component
 import { ApplicantListComponent } from './components/applicant/applicant-list/applicant-list.component';
 import { ApplicantAddComponent } from './components/applicant/applicant-add/applicant-add.component';
@@ -67,6 +57,9 @@ import { InterviewListComponent } from './components/interview/interview-list/in
 // Interview Feedback
 import { InterviewFeedbackAddComponent } from './components/interview-feedback/interview-feedback-add/interview-feedback-add.component';
 import { InterviewFeedbackListComponent } from './components/interview-feedback/interview-feedback-list/interview-feedback-list.component';
+// Offer
+import { OfferListComponent } from './components/offers/offer-list/offer-list.component';
+import { OfferAddComponent } from './components/offers/offer-add/offer-add.component';
 export const routes: Routes = [
   // Login Page
   {
@@ -98,7 +91,7 @@ export const routes: Routes = [
       },
       {
         path: 'company/edit/:id',
-        component: CompanyEditComponent
+        component: CompanyAddComponent
       },
 
       // Department
@@ -126,7 +119,7 @@ export const routes: Routes = [
       },
       {
         path: 'designation/edit/:id',
-        component: DesignationEditComponent
+        component: DesignationAddComponent
       },
       // Role
       {
@@ -139,7 +132,7 @@ export const routes: Routes = [
       },
       {
         path: 'role/edit/:id',
-        component: RoleEditComponent
+        component: RoleAddComponent
       },
       // User
       {
@@ -152,7 +145,7 @@ export const routes: Routes = [
       },
       {
         path: 'user/edit/:id',
-        component: UserEditComponent
+        component: UserAddComponent
       },
       // Profile
       {
@@ -175,7 +168,7 @@ export const routes: Routes = [
       },
       {
         path: 'skill/edit/:id',
-        component: SkillEditComponent
+        component: SkillAddComponent
       },
       // Job Category
       {
@@ -188,7 +181,7 @@ export const routes: Routes = [
       },
       {
         path: 'job-category/edit/:id',
-        component: JobCategoryEditComponent
+        component: JobCategoryAddComponent
       },
       // Employment Type
       {
@@ -201,7 +194,7 @@ export const routes: Routes = [
       },
       {
         path: 'employment-type/edit/:id',
-        component: EmploymentTypeEditComponent
+        component: EmploymentTypeAddComponent
       },
       // Experience Level
       {
@@ -214,7 +207,7 @@ export const routes: Routes = [
       },
       {
         path: 'experience-level/edit/:id',
-        component: ExperienceLevelEditComponent
+        component: ExperienceLevelAddComponent
       },
       // Interview Round
       {
@@ -227,7 +220,7 @@ export const routes: Routes = [
       },
       {
         path: 'interview-round/edit/:id',
-        component: InterviewRoundEditComponent
+        component: InterviewRoundAddComponent
       },
       // Job Opening
       {
@@ -240,7 +233,7 @@ export const routes: Routes = [
       },
       {
         path: 'job-opening/edit/:id',
-        component: JobOpeningEditComponent
+        component: JobOpeningAddComponent
       },
       // Applicant
       {
@@ -298,6 +291,19 @@ export const routes: Routes = [
       {
         path: 'interview-feedback/edit/:id',
         component: InterviewFeedbackAddComponent
+      },
+      // Offer
+      {
+        path: 'offer',
+        component: OfferListComponent
+      },
+      {
+        path: 'offer/add',
+        component: OfferAddComponent
+      },
+      {
+        path: 'offer/edit/:id',
+        component: OfferAddComponent
       },
       // Default Route
       {

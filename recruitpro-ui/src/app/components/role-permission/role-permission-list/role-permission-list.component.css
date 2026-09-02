@@ -1,21 +1,19 @@
-/* ==========================
+/* ==================================================
    PAGE
-========================== */
+================================================== */
 
 .permission-container {
   padding: 30px;
   background: #f4f7fc;
   min-height: 100vh;
+  box-sizing: border-box;
 }
 
-/* ==========================
+/* ==================================================
    HEADER
-========================== */
+================================================== */
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 25px;
 }
 
@@ -28,13 +26,14 @@
 
 .header p {
   margin-top: 5px;
+  margin-bottom: 0;
   color: #777;
   font-size: 14px;
 }
 
-/* ==========================
+/* ==================================================
    SELECTION CARD
-========================== */
+================================================== */
 
 .selection-card {
   padding: 25px;
@@ -43,47 +42,207 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
-.full-width {
-  width: 100%;
-  margin-bottom: 8px;
+/* ==================================================
+   COMPANY + ROLE
+================================================== */
+
+.selection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
-/* ==========================
+.selection-field {
+  width: 100%;
+}
+
+/* ==================================================
    PERMISSION CARD
-========================== */
+================================================== */
 
 .permission-card {
-  padding: 30px;
+  padding: 0;
+  overflow: hidden;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
-/* ==========================
-   PERMISSION HEADER
-========================== */
+/* ==================================================
+   TWO PANEL LAYOUT
+================================================== */
 
-.permission-header {
+.permission-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  min-height: 560px;
+}
+
+/* ==================================================
+   MODULE PANEL
+================================================== */
+
+.module-panel {
+  background: #f8faff;
+  border-right: 1px solid #e2e8f0;
+}
+
+/* ==================================================
+   MODULE HEADER
+================================================== */
+
+.panel-heading {
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.panel-heading h3 {
+  margin: 0;
+  color: #1f3fbf;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.panel-heading p {
+  margin: 5px 0 0;
+  color: #777;
+  font-size: 14px;
+}
+
+/* ==================================================
+   MODULE LIST
+================================================== */
+
+.module-list {
+  max-height: 560px;
+  overflow-y: auto;
+}
+
+/* ==================================================
+   MODULE ITEM
+================================================== */
+
+.module-item {
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+
+  border: none;
+  border-bottom: 1px solid #edf1f7;
+
+  background: transparent;
+
+  color: #374151;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition: 0.2s;
 }
 
-.permission-header h3 {
-  margin: 0;
+.module-item:hover {
+  background: #eef4ff;
+}
+
+/* ==================================================
+   ACTIVE MODULE
+================================================== */
+
+.module-item.active-module {
+  background: #eef4ff;
   color: #1f3fbf;
+
+  border-left: 4px solid #2563eb;
+
+  padding-left: 14px;
+}
+
+/* ==================================================
+   MODULE INFO
+================================================== */
+
+.module-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.module-info mat-icon {
+  color: #2563eb;
+}
+
+/* ==================================================
+   COUNT
+================================================== */
+
+.permission-count {
+  min-width: 26px;
+  padding: 4px 8px;
+
+  background: #eaf2ff;
+
+  color: #1f3fbf;
+
+  border-radius: 12px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  text-align: center;
+}
+
+/* ==================================================
+   RIGHT PANEL
+================================================== */
+
+.permission-panel {
+  padding: 30px;
+  background: #ffffff;
+}
+
+/* ==================================================
+   PERMISSION HEADER
+================================================== */
+
+.permission-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 20px;
+
+  padding-bottom: 22px;
+  margin-bottom: 25px;
+
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.permission-panel-header h3 {
+  margin: 0;
+
+  color: #1f3fbf;
+
   font-size: 22px;
   font-weight: 700;
 }
 
-.permission-header p {
-  margin-top: 5px;
+.permission-panel-header p {
+  margin: 5px 0 0;
+
   color: #777;
+
+  font-size: 14px;
 }
 
-/* ==========================
+/* ==================================================
    PERMISSION ACTIONS
-========================== */
+================================================== */
 
 .permission-actions {
   display: flex;
@@ -94,26 +253,22 @@
   border-radius: 8px;
 }
 
-/* ==========================
-   PERMISSION GRID
-========================== */
+/* ==================================================
+   PERMISSION LIST
+================================================== */
 
-.permission-grid {
+.current-permission-list {
   display: grid;
-
-  grid-template-columns: repeat(3, 1fr);
-
+  grid-template-columns: repeat(2, 1fr);
   gap: 15px;
-
-  margin-top: 20px;
 }
 
-/* ==========================
+/* ==================================================
    PERMISSION ITEM
-========================== */
+================================================== */
 
 .permission-item {
-  padding: 16px;
+  padding: 17px;
 
   background: #f8faff;
 
@@ -132,31 +287,107 @@
   transform: translateY(-2px);
 }
 
-/* ==========================
-   CHECKBOX
-========================== */
-
 .permission-item mat-checkbox {
   width: 100%;
 }
 
-/* ==========================
+/* ==================================================
+   PERMISSION CONTENT
+================================================== */
+
+.permission-content {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  padding-left: 4px;
+}
+
+.permission-name {
+  color: #374151;
+
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.permission-code {
+  color: #777;
+
+  font-size: 11px;
+}
+
+/* ==================================================
+   MODULE EMPTY
+================================================== */
+
+.module-empty {
+  height: 100%;
+
+  min-height: 420px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+
+  color: #777;
+}
+
+.module-empty mat-icon {
+  width: 50px;
+  height: 50px;
+
+  font-size: 50px;
+
+  color: #2563eb;
+
+  margin-bottom: 15px;
+}
+
+.module-empty h3 {
+  margin: 0;
+
+  color: #1f3fbf;
+
+  font-size: 22px;
+}
+
+.module-empty p {
+  margin-top: 8px;
+}
+
+/* ==================================================
+   NO PERMISSIONS
+================================================== */
+
+.no-permissions {
+  padding: 40px;
+
+  text-align: center;
+
+  color: #777;
+}
+
+/* ==================================================
    BUTTONS
-========================== */
+================================================== */
 
 .buttons {
   display: flex;
-
-  gap: 15px;
-
-  margin-top: 30px;
-
   justify-content: flex-end;
+
+  padding: 22px 30px;
+
+  border-top: 1px solid #e2e8f0;
+
+  background: #ffffff;
 }
 
 .buttons button {
-  min-width: 150px;
-
+  min-width: 180px;
   height: 45px;
 
   border-radius: 10px;
@@ -164,23 +395,23 @@
   font-weight: 600;
 }
 
-/* ==========================
+/* ==================================================
    LOADING
-========================== */
+================================================== */
 
 .loading {
-  text-align: center;
+  padding: 45px;
 
-  padding: 40px;
+  text-align: center;
 
   color: #777;
 
   font-size: 16px;
 }
 
-/* ==========================
-   EMPTY CARD
-========================== */
+/* ==================================================
+   EMPTY ROLE
+================================================== */
 
 .empty-card {
   padding: 50px;
@@ -195,11 +426,10 @@
 }
 
 .empty-card mat-icon {
-  font-size: 50px;
-
   width: 50px;
-
   height: 50px;
+
+  font-size: 50px;
 
   color: #2563eb;
 
@@ -218,39 +448,49 @@
   margin: 5px 0;
 }
 
-/* ==========================
-   CARD HOVER
-========================== */
+/* ==================================================
+   SCROLLBAR
+================================================== */
 
-mat-card {
-  transition: 0.3s;
+.module-list::-webkit-scrollbar {
+  width: 6px;
 }
 
-mat-card:hover {
-  transform: translateY(-2px);
+.module-list::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* ==========================
-   RESPONSIVE
-========================== */
+.module-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+/* ==================================================
+   TABLET
+================================================== */
 
 @media (max-width: 992px) {
-  .permission-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .selection-grid {
+    grid-template-columns: 1fr;
+    gap: 5px;
   }
 
-  .permission-header {
+  .permission-layout {
+    grid-template-columns: 260px minmax(0, 1fr);
+  }
+
+  .current-permission-list {
+    grid-template-columns: 1fr;
+  }
+
+  .permission-panel-header {
     flex-direction: column;
-
-    align-items: flex-start;
-
-    gap: 20px;
   }
 }
 
-/* ==========================
+/* ==================================================
    MOBILE
-========================== */
+================================================== */
 
 @media (max-width: 768px) {
   .permission-container {
@@ -261,13 +501,33 @@ mat-card:hover {
     font-size: 25px;
   }
 
-  .permission-grid {
-    grid-template-columns: 1fr;
+  .selection-card {
+    padding: 18px;
+  }
+
+  .permission-layout {
+    display: block;
+  }
+
+  .module-panel {
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .module-list {
+    max-height: 280px;
+  }
+
+  .permission-panel {
+    padding: 20px;
+  }
+
+  .permission-panel-header {
+    flex-direction: column;
   }
 
   .permission-actions {
     width: 100%;
-
     flex-direction: column;
   }
 
@@ -275,8 +535,12 @@ mat-card:hover {
     width: 100%;
   }
 
+  .current-permission-list {
+    grid-template-columns: 1fr;
+  }
+
   .buttons {
-    flex-direction: column;
+    padding: 20px;
   }
 
   .buttons button {

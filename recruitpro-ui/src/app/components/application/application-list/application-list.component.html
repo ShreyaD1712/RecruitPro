@@ -19,24 +19,24 @@
         <mat-icon>add</mat-icon>
         Add Application
       </button>
-    </div><!-- SEARCH -->
-      <mat-form-field appearance="outline" class="search-box">
-        <mat-label>Search Application</mat-label>
-        <input
-          matInput
-          [(ngModel)]="search"
-          placeholder="Applicant, Email, Job Title or Status"
-          (keyup.enter)="searchApplications()"
-        />
-        <button mat-icon-button matSuffix type="button" (click)="searchApplications()">
-          <mat-icon>search</mat-icon>
-        </button>
-      </mat-form-field>
+    </div>
+    <!-- SEARCH -->
+    <mat-form-field appearance="outline" class="search-box">
+      <mat-label>Search Application</mat-label>
+      <input
+        matInput
+        [(ngModel)]="search"
+        placeholder="Applicant, Email, Job Title or Status"
+        (keyup.enter)="searchApplications()"
+      />
+      <button mat-icon-button matSuffix type="button" (click)="searchApplications()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
     <!-- ==================================================
          FILTERS
     ================================================== -->
     <div class="filters">
-      
       <!-- DEPARTMENT -->
       <mat-form-field appearance="outline" class="filter-box">
         <mat-label>Department</mat-label>
@@ -138,13 +138,26 @@
             </span>
           </td>
         </ng-container>
-        <!-- ==================================================
-             ACTIONS
-        ================================================== -->
+        <!-- ================================================== -->
+        <!-- ACTIONS -->
+        <!-- ================================================== -->
         <ng-container matColumnDef="Actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
+
           <td mat-cell *matCellDef="let row">
-            <!-- EDIT -->
+            <!-- ADD OFFER -->
+            <button
+              *ngIf="row.CurrentStatus === 'Selected' && authService.hasPermission('CREATE_OFFER')"
+              mat-icon-button
+              color="primary"
+              type="button"
+              matTooltip="Create Offer"
+              (click)="addOffer(row, $event)"
+            >
+              <mat-icon>request_quote</mat-icon>
+            </button>
+
+            <!-- EDIT APPLICATION -->
             <button
               *ngIf="authService.hasPermission('UPDATE_APPLICATION')"
               mat-icon-button
@@ -155,7 +168,8 @@
             >
               <mat-icon>edit</mat-icon>
             </button>
-            <!-- DELETE -->
+
+            <!-- DELETE APPLICATION -->
             <button
               *ngIf="authService.hasPermission('DELETE_APPLICATION')"
               mat-icon-button

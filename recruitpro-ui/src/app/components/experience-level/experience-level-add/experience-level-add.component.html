@@ -1,14 +1,16 @@
 <div class="page">
   <div class="card">
-    <h2>Add Experience Level</h2>
+    <h2>{{ isEditMode ? 'Edit Experience Level' : 'Add Experience Level' }}</h2>
 
     <form [formGroup]="experienceLevelForm" (ngSubmit)="saveExperienceLevel()">
       <!-- Company -->
-
       <mat-form-field appearance="outline">
         <mat-label>Company*</mat-label>
 
-        <mat-select formControlName="CompanyId">
+        <mat-select
+          formControlName="CompanyId"
+          [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
+        >
           <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
             {{ company.CompanyName }}
           </mat-option>
@@ -20,7 +22,6 @@
       </mat-form-field>
 
       <!-- Experience Level Name -->
-
       <mat-form-field appearance="outline">
         <mat-label>Experience Level Name*</mat-label>
 
@@ -32,7 +33,6 @@
       </mat-form-field>
 
       <!-- Description -->
-
       <mat-form-field appearance="outline">
         <mat-label>Description</mat-label>
 
@@ -45,14 +45,21 @@
       </mat-form-field>
 
       <!-- Active -->
-
       <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
       <!-- Buttons -->
-
       <div class="buttons">
-        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
-          {{ loading ? 'Saving...' : 'Save' }}
+        <button
+          *ngIf="
+            (!isEditMode && authService.hasPermission('CREATE_EXPERIENCE_LEVEL')) ||
+            (isEditMode && authService.hasPermission('UPDATE_EXPERIENCE_LEVEL'))
+          "
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading || loadingExperienceLevel"
+        >
+          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
         <button

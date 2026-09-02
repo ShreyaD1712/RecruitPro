@@ -1,14 +1,16 @@
 <div class="page">
   <div class="card">
-    <h2>Add Employment Type</h2>
+    <h2>{{ isEditMode ? 'Edit Employment Type' : 'Add Employment Type' }}</h2>
 
     <form [formGroup]="employmentTypeForm" (ngSubmit)="saveEmploymentType()">
       <!-- Company -->
-
       <mat-form-field appearance="outline">
         <mat-label>Company*</mat-label>
 
-        <mat-select formControlName="CompanyId">
+        <mat-select
+          formControlName="CompanyId"
+          [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
+        >
           <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
             {{ company.CompanyName }}
           </mat-option>
@@ -20,7 +22,6 @@
       </mat-form-field>
 
       <!-- Employment Type Name -->
-
       <mat-form-field appearance="outline">
         <mat-label>Employment Type Name*</mat-label>
 
@@ -36,7 +37,6 @@
       </mat-form-field>
 
       <!-- Description -->
-
       <mat-form-field appearance="outline">
         <mat-label>Description</mat-label>
 
@@ -49,14 +49,21 @@
       </mat-form-field>
 
       <!-- Active -->
-
-      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+      <mat-slide-toggle formControlName="IsActive">Active</mat-slide-toggle>
 
       <!-- Buttons -->
-
       <div class="buttons">
-        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
-          {{ loading ? 'Saving...' : 'Save' }}
+        <button
+          *ngIf="
+            (!isEditMode && authService.hasPermission('CREATE_EMPLOYMENT_TYPE')) ||
+            (isEditMode && authService.hasPermission('UPDATE_EMPLOYMENT_TYPE'))
+          "
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="loading || loadingEmploymentType"
+        >
+          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
         <button

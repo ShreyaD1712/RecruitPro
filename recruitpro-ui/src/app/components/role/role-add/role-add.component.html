@@ -1,9 +1,13 @@
 <div class="page">
   <div class="card">
-    <h2>Add Role</h2>
+    <h2>
+      {{ isEditMode ? 'Edit Role' : 'Add Role' }}
+    </h2>
 
     <form [formGroup]="roleForm" (ngSubmit)="saveRole()">
-      <!-- Role Name -->
+      <!-- ================================================== -->
+      <!-- ROLE NAME -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Role Name</mat-label>
 
@@ -14,11 +18,17 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Company -->
+      <!-- ================================================== -->
+      <!-- COMPANY -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Company</mat-label>
 
         <mat-select formControlName="CompanyId">
+          <mat-option *ngIf="hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
+            Select Company
+          </mat-option>
+
           <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
             {{ company.CompanyName }}
           </mat-option>
@@ -29,29 +39,46 @@
         </mat-error>
       </mat-form-field>
 
-      <!-- Description -->
+      <!-- ================================================== -->
+      <!-- DESCRIPTION -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Description</mat-label>
 
         <textarea matInput rows="4" formControlName="Description"></textarea>
       </mat-form-field>
 
-      <!-- Status -->
+      <!-- ================================================== -->
+      <!-- STATUS -->
+      <!-- ================================================== -->
       <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
-      <!-- Buttons -->
+      <!-- ================================================== -->
+      <!-- BUTTONS -->
+      <!-- ================================================== -->
       <div class="buttons">
         <button
-          *ngIf="hasPermission('CREATE_ROLE')"
+          *ngIf="
+            (!isEditMode && hasPermission('CREATE_ROLE')) ||
+            (isEditMode && hasPermission('UPDATE_ROLE'))
+          "
           mat-raised-button
           color="primary"
           type="submit"
-          [disabled]="loading"
+          [disabled]="loading || loadingRole"
         >
-          {{ loading ? 'Saving...' : 'Save' }}
+          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
-        <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   </div>

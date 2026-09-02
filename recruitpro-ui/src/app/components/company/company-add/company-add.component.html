@@ -1,13 +1,11 @@
 <div class="page">
   <mat-card class="card">
-    <h2>Add Company</h2>
+    <h2>{{ isEditMode ? 'Edit Company' : 'Add Company' }}</h2>
 
     <form [formGroup]="companyForm" (ngSubmit)="saveCompany()">
       <!-- Company Code -->
-
       <mat-form-field appearance="outline">
         <mat-label>Company Code</mat-label>
-
         <input matInput formControlName="CompanyCode" />
 
         <mat-error *ngIf="companyForm.get('CompanyCode')?.hasError('required')">
@@ -16,10 +14,8 @@
       </mat-form-field>
 
       <!-- Company Name -->
-
       <mat-form-field appearance="outline">
         <mat-label>Company Name</mat-label>
-
         <input matInput formControlName="CompanyName" />
 
         <mat-error *ngIf="companyForm.get('CompanyName')?.hasError('required')">
@@ -28,10 +24,8 @@
       </mat-form-field>
 
       <!-- Email -->
-
       <mat-form-field appearance="outline">
         <mat-label>Email</mat-label>
-
         <input matInput type="email" formControlName="Email" />
 
         <mat-error *ngIf="companyForm.get('Email')?.hasError('required')">
@@ -44,44 +38,39 @@
       </mat-form-field>
 
       <!-- Phone -->
-
       <mat-form-field appearance="outline">
         <mat-label>Phone</mat-label>
-
         <input matInput formControlName="Phone" />
       </mat-form-field>
 
       <!-- Website -->
-
       <mat-form-field appearance="outline">
         <mat-label>Website</mat-label>
-
         <input matInput formControlName="Website" />
       </mat-form-field>
 
       <!-- Address -->
-
       <mat-form-field appearance="outline">
         <mat-label>Address</mat-label>
-
         <textarea matInput rows="4" formControlName="Address"></textarea>
       </mat-form-field>
 
       <!-- Active -->
-
       <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
       <!-- Buttons -->
-
       <div class="buttons">
         <button
-          *ngIf="hasPermission('CREATE_COMPANY')"
+          *ngIf="
+            (!isEditMode && hasPermission('CREATE_COMPANY')) ||
+            (isEditMode && hasPermission('UPDATE_COMPANY'))
+          "
           mat-raised-button
           color="primary"
           type="submit"
-          [disabled]="loading"
+          [disabled]="loading || loadingCompany"
         >
-          {{ loading ? 'Saving...' : 'Save' }}
+          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
         <button

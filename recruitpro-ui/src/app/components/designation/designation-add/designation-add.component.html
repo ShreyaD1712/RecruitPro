@@ -1,66 +1,118 @@
 <div class="page">
   <div class="card">
-    <h2>Add Designation</h2>
+    <h2>
+      {{ isEditMode ? 'Edit Designation' : 'Add Designation' }}
+    </h2>
 
     <form [formGroup]="designationForm" (ngSubmit)="saveDesignation()">
-      <!-- Designation Code -->
+      <!-- ================================================== -->
+      <!-- DESIGNATION CODE -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Designation Code</mat-label>
 
         <input matInput formControlName="DesignationCode" />
+
+        <mat-error *ngIf="designationForm.get('DesignationCode')?.hasError('required')">
+          Designation Code is required
+        </mat-error>
       </mat-form-field>
 
-      <!-- Designation Name -->
+      <!-- ================================================== -->
+      <!-- DESIGNATION NAME -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Designation Name</mat-label>
 
         <input matInput formControlName="DesignationName" />
+
+        <mat-error *ngIf="designationForm.get('DesignationName')?.hasError('required')">
+          Designation Name is required
+        </mat-error>
       </mat-form-field>
 
-      <!-- Company -->
+      <!-- ================================================== -->
+      <!-- COMPANY -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Company</mat-label>
 
         <mat-select formControlName="CompanyId" (selectionChange)="companyChanged()">
+          <mat-option *ngIf="hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
+            Select Company
+          </mat-option>
+
           <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
             {{ company.CompanyName }}
           </mat-option>
         </mat-select>
+
+        <mat-error *ngIf="designationForm.get('CompanyId')?.hasError('required')">
+          Company is required
+        </mat-error>
       </mat-form-field>
 
-      <!-- Department -->
+      <!-- ================================================== -->
+      <!-- DEPARTMENT -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Department</mat-label>
 
         <mat-select formControlName="DepartmentId">
+          <mat-option [value]="null">
+            {{ loadingDepartments ? 'Loading Departments...' : 'Select Department' }}
+          </mat-option>
+
           <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
             {{ department.DepartmentName }}
           </mat-option>
         </mat-select>
+
+        <mat-error *ngIf="designationForm.get('DepartmentId')?.hasError('required')">
+          Department is required
+        </mat-error>
       </mat-form-field>
 
-      <!-- Description -->
+      <!-- ================================================== -->
+      <!-- DESCRIPTION -->
+      <!-- ================================================== -->
       <mat-form-field appearance="outline">
         <mat-label>Description</mat-label>
 
         <textarea matInput rows="4" formControlName="Description"></textarea>
       </mat-form-field>
 
-      <!-- Status -->
+      <!-- ================================================== -->
+      <!-- STATUS -->
+      <!-- ================================================== -->
       <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
 
-      <!-- Buttons -->
+      <!-- ================================================== -->
+      <!-- BUTTONS -->
+      <!-- ================================================== -->
       <div class="buttons">
         <button
-          *ngIf="hasPermission('CREATE_DESIGNATION')"
+          *ngIf="
+            (!isEditMode && hasPermission('CREATE_DESIGNATION')) ||
+            (isEditMode && hasPermission('UPDATE_DESIGNATION'))
+          "
           mat-raised-button
           color="primary"
           type="submit"
+          [disabled]="loading || loadingDesignation"
         >
-          Save
+          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
-        <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancel</button>
+        <button
+          mat-raised-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+          [disabled]="loading"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   </div>
