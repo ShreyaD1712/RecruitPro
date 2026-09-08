@@ -1,7 +1,5 @@
 <div class="list-container">
-  <!-- ================================================== -->
   <!-- HEADER -->
-  <!-- ================================================== -->
   <div class="header">
     <div>
       <h2>Offer Management</h2>
@@ -20,9 +18,7 @@
     </button>
   </div>
 
-  <!-- ================================================== -->
   <!-- SEARCH -->
-  <!-- ================================================== -->
   <mat-form-field appearance="outline" class="search-box">
     <mat-label>Search Offers</mat-label>
 
@@ -38,9 +34,7 @@
     </button>
   </mat-form-field>
 
-  <!-- ================================================== -->
   <!-- FILTERS -->
-  <!-- ================================================== -->
   <div class="filters">
     <mat-form-field appearance="outline" class="filter-box">
       <mat-label>Offer Status</mat-label>
@@ -53,36 +47,37 @@
     </mat-form-field>
   </div>
 
-  <!-- ================================================== -->
   <!-- TABLE -->
-  <!-- ================================================== -->
   <div class="table-container">
     <table mat-table [dataSource]="offers" class="list-table">
-      <!-- Applicant -->
+      <!-- APPLICANT -->
       <ng-container matColumnDef="ApplicantName">
         <th mat-header-cell *matHeaderCellDef>Applicant</th>
+
         <td mat-cell *matCellDef="let row">
           {{ row.ApplicantName || '-' }}
         </td>
       </ng-container>
 
-      <!-- Job Opening -->
+      <!-- JOB OPENING -->
       <ng-container matColumnDef="JobTitle">
         <th mat-header-cell *matHeaderCellDef>Job Opening</th>
+
         <td mat-cell *matCellDef="let row">
           {{ row.JobTitle || '-' }}
         </td>
       </ng-container>
 
-      <!-- Department -->
+      <!-- DEPARTMENT -->
       <ng-container matColumnDef="DepartmentName">
         <th mat-header-cell *matHeaderCellDef>Department</th>
+
         <td mat-cell *matCellDef="let row">
           {{ row.DepartmentName || '-' }}
         </td>
       </ng-container>
 
-      <!-- Offered Salary -->
+      <!-- OFFERED SALARY -->
       <ng-container matColumnDef="OfferedSalary">
         <th mat-header-cell *matHeaderCellDef (click)="sort('OfferedSalary')">Offered Salary</th>
 
@@ -95,7 +90,7 @@
         </td>
       </ng-container>
 
-      <!-- Offer Date -->
+      <!-- OFFER DATE -->
       <ng-container matColumnDef="OfferDate">
         <th mat-header-cell *matHeaderCellDef (click)="sort('OfferDate')">Offer Date</th>
 
@@ -104,7 +99,7 @@
         </td>
       </ng-container>
 
-      <!-- Joining Date -->
+      <!-- JOINING DATE -->
       <ng-container matColumnDef="JoiningDate">
         <th mat-header-cell *matHeaderCellDef (click)="sort('JoiningDate')">Joining Date</th>
 
@@ -113,20 +108,23 @@
         </td>
       </ng-container>
 
-      <!-- Offer Status -->
+      <!-- OFFER STATUS -->
       <ng-container matColumnDef="OfferStatus">
         <th mat-header-cell *matHeaderCellDef (click)="sort('OfferStatus')">Status</th>
 
         <td mat-cell *matCellDef="let row">
-          {{ row.OfferStatus || '-' }}
+          <span class="badge" [ngClass]="getStatusClass(row.OfferStatus)">
+            {{ row.OfferStatus || '-' }}
+          </span>
         </td>
       </ng-container>
 
-      <!-- Actions -->
+      <!-- ACTIONS -->
       <ng-container matColumnDef="Actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
 
         <td mat-cell *matCellDef="let row">
+          <!-- VIEW -->
           <button
             *ngIf="authService.hasPermission('VIEW_OFFER')"
             mat-icon-button
@@ -137,9 +135,11 @@
             <mat-icon>visibility</mat-icon>
           </button>
 
+          <!-- EDIT -->
           <button
             *ngIf="authService.hasPermission('UPDATE_OFFER')"
             mat-icon-button
+            color="primary"
             type="button"
             matTooltip="Edit Offer"
             (click)="editOffer(row, $event)"
@@ -147,9 +147,11 @@
             <mat-icon>edit</mat-icon>
           </button>
 
+          <!-- DELETE -->
           <button
             *ngIf="authService.hasPermission('DELETE_OFFER')"
             mat-icon-button
+            color="warn"
             type="button"
             matTooltip="Delete Offer"
             (click)="deleteOffer(row, $event)"
@@ -165,19 +167,13 @@
     </table>
   </div>
 
-  <!-- ================================================== -->
   <!-- LOADING -->
-  <!-- ================================================== -->
   <div class="loading" *ngIf="loading">Loading Offers...</div>
 
-  <!-- ================================================== -->
   <!-- NO DATA -->
-  <!-- ================================================== -->
   <div class="no-data" *ngIf="!loading && offers.length === 0">No Offers Found</div>
 
-  <!-- ================================================== -->
   <!-- PAGINATION -->
-  <!-- ================================================== -->
   <div class="pagination">
     <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
       Previous
@@ -205,7 +201,7 @@
 <!-- ================================================== -->
 <div class="popup-backdrop" *ngIf="showOfferPopup && selectedOffer" (click)="closeOfferPopup()">
   <div class="applicant-popup" (click)="$event.stopPropagation()">
-    <!-- Popup Header -->
+    <!-- POPUP HEADER -->
     <div class="popup-header">
       <h2>Offer Details</h2>
 
@@ -214,7 +210,7 @@
       </button>
     </div>
 
-    <!-- Candidate Information -->
+    <!-- CANDIDATE INFORMATION -->
     <div class="details-section">
       <h3>Candidate Information</h3>
 
@@ -256,7 +252,7 @@
       </div>
     </div>
 
-    <!-- Offer Information -->
+    <!-- OFFER INFORMATION -->
     <div class="details-section">
       <h3>Offer Information</h3>
 
@@ -288,7 +284,8 @@
 
         <div>
           <label>Offer Status</label>
-          <span>
+
+          <span class="badge" [ngClass]="getStatusClass(selectedOffer.OfferStatus)">
             {{ selectedOffer.OfferStatus || '-' }}
           </span>
         </div>
@@ -309,7 +306,7 @@
       </div>
     </div>
 
-    <!-- Footer -->
+    <!-- FOOTER -->
     <div class="popup-footer">
       <button mat-raised-button color="primary" type="button" (click)="closeOfferPopup()">
         Close

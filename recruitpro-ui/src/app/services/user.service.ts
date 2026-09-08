@@ -26,7 +26,8 @@ export class UserService {
         sortBy: string = 'FirstName',
         order: string = 'asc',
         page: number = 1,
-        pageSize: number = 10
+        pageSize: number = 10,
+        activeRoleOnly: boolean = false
     ): Observable<any> {
 
         let params = new HttpParams()
@@ -40,6 +41,13 @@ export class UserService {
             params = params.set(
                 'company_id',
                 companyId.toString()
+            );
+        }
+
+        if (activeRoleOnly) {
+            params = params.set(
+                'active_role_only',
+                'true'
             );
         }
 

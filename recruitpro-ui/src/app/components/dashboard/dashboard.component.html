@@ -1,105 +1,205 @@
-<div class="dashboard">
+<div class="dashboard-container">
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h2>
+        {{ isSuperAdmin ? 'Super Admin Dashboard' : 'Dashboard' }}
+      </h2>
 
-    <div class="welcome-card">
+      <p>
+        {{
+          isSuperAdmin
+            ? 'Overall recruitment overview across all companies'
+            : 'Recruitment overview and hiring insights'
+        }}
+      </p>
+    </div>
+  </div>
 
-        <h1>Welcome Back 👋</h1>
+  <!-- LOADING -->
+  <div class="loading" *ngIf="loading">Loading Dashboard...</div>
 
-        <p>
-            Manage recruitment, interviews and candidates from one place.
-        </p>
+  <!-- DASHBOARD -->
+  <div *ngIf="!loading">
+    <!-- STATISTICS -->
+    <div class="stats-grid">
+      <!-- SUPER ADMIN ONLY -->
+      <mat-card class="stat-card" *ngIf="isSuperAdmin">
+        <div class="stat-icon">
+          <mat-icon>business</mat-icon>
+        </div>
 
+        <div>
+          <span>Total Companies</span>
+
+          <h3>
+            {{ stats.TotalCompanies }}
+          </h3>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>work</mat-icon>
+        </div>
+
+        <div>
+          <span>Job Openings</span>
+
+          <h3>
+            {{ stats.TotalJobOpenings }}
+          </h3>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>description</mat-icon>
+        </div>
+
+        <div>
+          <span>Applications</span>
+
+          <h3>
+            {{ stats.TotalApplications }}
+          </h3>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>person_search</mat-icon>
+        </div>
+
+        <div>
+          <span>Shortlisted</span>
+
+          <h3>
+            {{ stats.ShortlistedCandidates }}
+          </h3>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>record_voice_over</mat-icon>
+        </div>
+
+        <div>
+          <span>Interviews</span>
+
+          <h3>
+            {{ stats.TotalInterviews }}
+          </h3>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>request_quote</mat-icon>
+        </div>
+
+        <div>
+          <span>Offers</span>
+
+          <h3>
+            {{ stats.TotalOffers }}
+          </h3>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>how_to_reg</mat-icon>
+        </div>
+
+        <div>
+          <span>Hired</span>
+
+          <h3>
+            {{ stats.HiredCandidates }}
+          </h3>
+        </div>
+      </mat-card>
     </div>
 
-    <div class="cards">
+    <!-- CHART/DATA SECTION -->
+    <div class="dashboard-grid">
+      <!-- APPLICATIONS BY STATUS -->
+      <mat-card class="dashboard-card">
+        <h3>Applications by Status</h3>
 
-        <mat-card class="card blue">
+        <div class="data-row" *ngFor="let item of applicationsByStatus">
+          <span>
+            {{ item.Status }}
+          </span>
 
-            <mat-icon>business</mat-icon>
+          <strong>
+            {{ item.Count }}
+          </strong>
+        </div>
 
-            <h2>{{totalCompanies}}</h2>
+        <div class="empty-data" *ngIf="applicationsByStatus.length === 0">
+          No application data found.
+        </div>
+      </mat-card>
 
-            <p>Companies</p>
+      <!-- SUPER ADMIN -->
+      <mat-card class="dashboard-card" *ngIf="isSuperAdmin">
+        <h3>Applications by Company</h3>
 
-        </mat-card>
+        <div class="data-row" *ngFor="let item of applicationsByCompany">
+          <span>
+            {{ item.CompanyName }}
+          </span>
 
-        <mat-card class="card green">
+          <strong>
+            {{ item.Count }}
+          </strong>
+        </div>
 
-            <mat-icon>people</mat-icon>
+        <div class="empty-data" *ngIf="applicationsByCompany.length === 0">
+          No company application data found.
+        </div>
+      </mat-card>
 
-            <h2>{{totalUsers}}</h2>
+      <!-- COMPANY USER -->
+      <mat-card class="dashboard-card" *ngIf="!isSuperAdmin">
+        <h3>Applications by Department</h3>
 
-            <p>Users</p>
+        <div class="data-row" *ngFor="let item of applicationsByDepartment">
+          <span>
+            {{ item.DepartmentName }}
+          </span>
 
-        </mat-card>
+          <strong>
+            {{ item.Count }}
+          </strong>
+        </div>
 
-        <mat-card class="card orange">
+        <div class="empty-data" *ngIf="applicationsByDepartment.length === 0">
+          No department data found.
+        </div>
+      </mat-card>
 
-            <mat-icon>work</mat-icon>
+      <!-- SUPER ADMIN CAN ALSO SEE DEPARTMENT -->
+      <mat-card class="dashboard-card" *ngIf="isSuperAdmin">
+        <h3>Applications by Department</h3>
 
-            <h2>{{totalJobs}}</h2>
+        <div class="data-row" *ngFor="let item of applicationsByDepartment">
+          <span>
+            {{ item.DepartmentName }}
+          </span>
 
-            <p>Jobs</p>
+          <strong>
+            {{ item.Count }}
+          </strong>
+        </div>
 
-        </mat-card>
-
-        <mat-card class="card purple">
-
-            <mat-icon>person_search</mat-icon>
-
-            <h2>{{totalCandidates}}</h2>
-
-            <p>Candidates</p>
-
-        </mat-card>
-
+        <div class="empty-data" *ngIf="applicationsByDepartment.length === 0">
+          No department data found.
+        </div>
+      </mat-card>
     </div>
-
-    <div class="bottom-section">
-
-        <mat-card class="quick-actions">
-
-            <h2>Quick Actions</h2>
-
-            <button mat-raised-button color="primary">
-
-                Add Company
-
-            </button>
-
-            <button mat-raised-button color="accent">
-
-                Add User
-
-            </button>
-
-            <button mat-raised-button>
-
-                Add Job
-
-            </button>
-
-        </mat-card>
-
-        <mat-card class="activities">
-
-            <h2>Recent Activities</h2>
-
-            <ul>
-
-                <li>✔ Microsoft company added</li>
-
-                <li>✔ Infosys updated</li>
-
-                <li>✔ New Job Posted</li>
-
-                <li>✔ Candidate Registered</li>
-
-                <li>✔ Interview Scheduled</li>
-
-            </ul>
-
-        </mat-card>
-
-    </div>
-
+  </div>
 </div>

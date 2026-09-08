@@ -62,7 +62,8 @@ export class RolePermissionListComponent implements OnInit {
         { key: 'REFERRAL', label: 'Referral', icon: 'people_alt' },
         { key: 'INTERVIEW', label: 'Interview', icon: 'record_voice_over' },
         { key: 'INTERVIEW_FEEDBACK', label: 'Interview Feedback', icon: 'rate_review' },
-        { key: 'OFFER', label: 'Offer', icon: 'request_quote' }
+        { key: 'OFFER', label: 'Offer', icon: 'request_quote' },
+        { key: 'REPORT', label: 'Report', icon: 'bar_chart' }
     ];
 
     // ==================================================

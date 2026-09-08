@@ -1,61 +1,70 @@
 <div class="page">
   <div class="card">
-    <h2>
-      {{ isEditMode ? 'Edit Role' : 'Add Role' }}
-    </h2>
+    <!-- FORM HEADER -->
+    <div class="form-header">
+      <h2>{{ isEditMode ? 'Edit Role' : 'Add Role' }}</h2>
+    </div>
 
     <form [formGroup]="roleForm" (ngSubmit)="saveRole()">
-      <!-- ================================================== -->
-      <!-- ROLE NAME -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Role Name</mat-label>
+      <!-- FORM BODY -->
+      <div class="form-body">
+        <!-- FIRST ROW -->
+        <div class="form-grid">
+          <!-- COMPANY -->
+          <mat-form-field appearance="outline">
+            <mat-label>Company</mat-label>
 
-        <input matInput formControlName="RoleName" />
+            <mat-select formControlName="CompanyId">
+              <mat-option *ngIf="hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
+                Select Company
+              </mat-option>
 
-        <mat-error *ngIf="roleForm.get('RoleName')?.hasError('required')">
-          Role Name is required
-        </mat-error>
-      </mat-form-field>
+              <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+                {{ company.CompanyName }}
+              </mat-option>
+            </mat-select>
 
-      <!-- ================================================== -->
-      <!-- COMPANY -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Company</mat-label>
+            <mat-error *ngIf="roleForm.get('CompanyId')?.hasError('required')">
+              Company is required
+            </mat-error>
+          </mat-form-field>
 
-        <mat-select formControlName="CompanyId">
-          <mat-option *ngIf="hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
-            Select Company
-          </mat-option>
+          <!-- ROLE NAME -->
+          <mat-form-field appearance="outline">
+            <mat-label>Role Name</mat-label>
 
-          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
-            {{ company.CompanyName }}
-          </mat-option>
-        </mat-select>
+            <input matInput formControlName="RoleName" placeholder="Enter Role Name" />
 
-        <mat-error *ngIf="roleForm.get('CompanyId')?.hasError('required')">
-          Company is required
-        </mat-error>
-      </mat-form-field>
+            <mat-error *ngIf="roleForm.get('RoleName')?.hasError('required')">
+              Role Name is required
+            </mat-error>
+          </mat-form-field>
+        </div>
 
-      <!-- ================================================== -->
-      <!-- DESCRIPTION -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Description</mat-label>
+        <!-- SECOND ROW -->
+        <div class="form-grid second-row">
+          <!-- DESCRIPTION -->
+          <mat-form-field appearance="outline" class="description-field">
+            <mat-label>Description</mat-label>
 
-        <textarea matInput rows="4" formControlName="Description"></textarea>
-      </mat-form-field>
+            <textarea
+              matInput
+              rows="3"
+              formControlName="Description"
+              placeholder="Enter Description"
+            ></textarea>
+          </mat-form-field>
 
-      <!-- ================================================== -->
-      <!-- STATUS -->
-      <!-- ================================================== -->
-      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+          <!-- STATUS -->
+          <div class="active-field">
+            <span class="field-label">Status</span>
 
-      <!-- ================================================== -->
-      <!-- BUTTONS -->
-      <!-- ================================================== -->
+            <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
+      <!-- BUTTON FOOTER -->
       <div class="buttons">
         <button
           *ngIf="
@@ -70,13 +79,7 @@
           {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
-        <button
-          mat-raised-button
-          color="warn"
-          type="button"
-          (click)="cancel()"
-          [disabled]="loading"
-        >
+        <button mat-stroked-button type="button" (click)="cancel()" [disabled]="loading">
           Cancel
         </button>
       </div>

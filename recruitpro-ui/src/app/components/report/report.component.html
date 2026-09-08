@@ -1,0 +1,515 @@
+<div class="report-container">
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h2>Reports</h2>
+      <p>
+        {{
+          isSuperAdmin
+            ? 'View recruitment reports across all companies'
+            : 'View recruitment reports and hiring performance'
+        }}
+      </p>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      class="export-btn"
+      (click)="exportCsv()"
+      [disabled]="
+        loading ||
+        (reportType === 'summary' && !summary) ||
+        (reportType !== 'summary' && data.length === 0)
+      "
+    >
+      <mat-icon>download</mat-icon>
+      Export CSV
+    </button>
+  </div>
+
+  <!-- FILTER CARD -->
+  <mat-card class="filter-card">
+    <!-- FIRST FILTER ROW -->
+    <div class="report-filters">
+      <!-- COMPANY FIRST - SUPER ADMIN ONLY -->
+      <mat-form-field appearance="outline" *ngIf="isSuperAdmin">
+        <mat-label>Company</mat-label>
+
+        <mat-select [(ngModel)]="selectedCompanyId" (selectionChange)="companyChanged()">
+          <mat-option [value]="null"> All Companies </mat-option>
+
+          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+            {{ company.CompanyName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- REPORT TYPE -->
+      <mat-form-field appearance="outline">
+        <mat-label>Report Type</mat-label>
+
+        <mat-select [(ngModel)]="reportType" (selectionChange)="reportTypeChanged()">
+          <mat-option *ngFor="let report of reportTypes" [value]="report.value">
+            {{ report.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- FROM DATE -->
+      <mat-form-field appearance="outline">
+        <mat-label>From Date</mat-label>
+
+        <input matInput type="date" [(ngModel)]="fromDate" />
+      </mat-form-field>
+
+      <!-- TO DATE -->
+      <mat-form-field appearance="outline">
+        <mat-label>To Date</mat-label>
+
+        <input matInput type="date" [(ngModel)]="toDate" />
+      </mat-form-field>
+    </div>
+
+    <!-- APPLICATION / HIRED FILTERS -->
+    <div class="report-filters" *ngIf="reportType === 'applications' || reportType === 'hired'">
+      <!-- DEPARTMENT -->
+      <mat-form-field appearance="outline">
+        <mat-label>Department</mat-label>
+
+        <mat-select [(ngModel)]="selectedDepartmentId" (selectionChange)="departmentChanged()">
+          <mat-option [value]="null"> All Departments </mat-option>
+
+          <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
+            {{ department.DepartmentName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- JOB OPENING -->
+      <mat-form-field appearance="outline">
+        <mat-label>Job Opening</mat-label>
+
+        <mat-select [(ngModel)]="selectedJobOpeningId" [disabled]="!selectedDepartmentId">
+          <mat-option [value]="null"> All Job Openings </mat-option>
+
+          <mat-option *ngFor="let job of jobOpenings" [value]="job.JobOpeningId">
+            {{ job.JobTitle }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- APPLICATION STATUS -->
+      <mat-form-field appearance="outline" *ngIf="reportType === 'applications'">
+        <mat-label>Application Status</mat-label>
+
+        <mat-select [(ngModel)]="selectedApplicationStatus">
+          <mat-option [value]="null"> All Statuses </mat-option>
+
+          <mat-option *ngFor="let status of applicationStatuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- INTERVIEW FILTERS -->
+    <div class="report-filters" *ngIf="reportType === 'interviews'">
+      <mat-form-field appearance="outline">
+        <mat-label>Interview Status</mat-label>
+
+        <mat-select [(ngModel)]="selectedInterviewStatus">
+          <mat-option [value]="null"> All Statuses </mat-option>
+
+          <mat-option *ngFor="let status of interviewStatuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Interviewer</mat-label>
+
+        <mat-select [(ngModel)]="selectedInterviewerId">
+          <mat-option [value]="null"> All Interviewers </mat-option>
+
+          <mat-option *ngFor="let user of interviewers" [value]="user.UserId">
+            {{ user.FirstName }} {{ user.LastName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Interview Round</mat-label>
+
+        <mat-select [(ngModel)]="selectedInterviewRoundId">
+          <mat-option [value]="null"> All Interview Rounds </mat-option>
+
+          <mat-option *ngFor="let round of interviewRounds" [value]="round.InterviewRoundId">
+            {{ round.RoundName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- OFFER FILTERS -->
+    <div class="report-filters" *ngIf="reportType === 'offers'">
+      <mat-form-field appearance="outline">
+        <mat-label>Offer Status</mat-label>
+
+        <mat-select [(ngModel)]="selectedOfferStatus">
+          <mat-option [value]="null"> All Statuses </mat-option>
+
+          <mat-option *ngFor="let status of offerStatuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- SEARCH + ACTION BUTTONS -->
+    <div class="report-actions">
+      <mat-form-field appearance="outline" class="search-box" *ngIf="reportType !== 'summary'">
+        <mat-label>Search</mat-label>
+
+        <input
+          matInput
+          [(ngModel)]="search"
+          (keyup.enter)="onSearch()"
+          placeholder="Search applicant, email or job..."
+        />
+      </mat-form-field>
+
+      <div class="action-buttons">
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="applyFilters()"
+          [disabled]="loading"
+        >
+          Apply Filters
+        </button>
+
+        <button mat-stroked-button type="button" (click)="resetFilters()" [disabled]="loading">
+          Reset
+        </button>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- LOADING -->
+  <div class="loading" *ngIf="loading">
+    <mat-spinner diameter="42"></mat-spinner>
+    <span>Loading report...</span>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- SUMMARY -->
+  <!-- ===================================================== -->
+  <div class="summary-grid" *ngIf="!loading && reportType === 'summary' && summary">
+    <mat-card class="stat-card">
+      <div class="stat-icon">
+        <mat-icon>description</mat-icon>
+      </div>
+
+      <div>
+        <span>Total Applications</span>
+        <h3>{{ summary.TotalApplications || 0 }}</h3>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-icon">
+        <mat-icon>person_search</mat-icon>
+      </div>
+
+      <div>
+        <span>Shortlisted</span>
+        <h3>{{ summary.ShortlistedCandidates || 0 }}</h3>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-icon">
+        <mat-icon>record_voice_over</mat-icon>
+      </div>
+
+      <div>
+        <span>Interviews</span>
+        <h3>{{ summary.TotalInterviews || 0 }}</h3>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-icon">
+        <mat-icon>request_quote</mat-icon>
+      </div>
+
+      <div>
+        <span>Offers</span>
+        <h3>{{ summary.TotalOffers || 0 }}</h3>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <div class="stat-icon">
+        <mat-icon>how_to_reg</mat-icon>
+      </div>
+
+      <div>
+        <span>Hired</span>
+        <h3>{{ summary.HiredCandidates || 0 }}</h3>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- ===================================================== -->
+  <!-- APPLICATION REPORT -->
+  <!-- ===================================================== -->
+  <mat-card class="report-card" *ngIf="!loading && reportType === 'applications'">
+    <div class="report-card-header">
+      <div>
+        <h3>Applications Report</h3>
+        <p>{{ totalRecords }} record(s) found</p>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Job Opening</th>
+            <th>Applied Date</th>
+            <th>Status</th>
+            <th *ngIf="isSuperAdmin">Company</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of data">
+            <td>{{ item.ApplicantName }}</td>
+            <td>{{ item.Email }}</td>
+            <td>{{ item.DepartmentName }}</td>
+            <td>{{ item.JobTitle }}</td>
+
+            <td>
+              {{ item.AppliedDate | date: 'dd MMM yyyy' }}
+            </td>
+
+            <td>
+              <span class="badge" [ngClass]="item.CurrentStatus?.toLowerCase()">
+                {{ item.CurrentStatus }}
+              </span>
+            </td>
+
+            <td *ngIf="isSuperAdmin">
+              {{ item.CompanyName }}
+            </td>
+          </tr>
+
+          <tr *ngIf="data.length === 0">
+            <td [attr.colspan]="isSuperAdmin ? 7 : 6" class="empty-data">
+              No application report data found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-card>
+
+  <!-- ===================================================== -->
+  <!-- INTERVIEW REPORT -->
+  <!-- ===================================================== -->
+  <mat-card class="report-card" *ngIf="!loading && reportType === 'interviews'">
+    <div class="report-card-header">
+      <div>
+        <h3>Interviews Report</h3>
+        <p>{{ totalRecords }} record(s) found</p>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Job Opening</th>
+            <th>Interview Date</th>
+            <th>Mode</th>
+            <th>Status</th>
+            <th *ngIf="isSuperAdmin">Company</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of data">
+            <td>{{ item.ApplicantName }}</td>
+            <td>{{ item.JobTitle }}</td>
+
+            <td>
+              {{ item.InterviewDate | date: 'dd MMM yyyy' }}
+            </td>
+
+            <td>{{ item.InterviewMode }}</td>
+
+            <td>
+              <span class="badge" [ngClass]="item.Status?.toLowerCase()">
+                {{ item.Status }}
+              </span>
+            </td>
+
+            <td *ngIf="isSuperAdmin">
+              {{ item.CompanyName }}
+            </td>
+          </tr>
+
+          <tr *ngIf="data.length === 0">
+            <td [attr.colspan]="isSuperAdmin ? 6 : 5" class="empty-data">
+              No interview report data found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-card>
+
+  <!-- ===================================================== -->
+  <!-- OFFER REPORT -->
+  <!-- ===================================================== -->
+  <mat-card class="report-card" *ngIf="!loading && reportType === 'offers'">
+    <div class="report-card-header">
+      <div>
+        <h3>Offers Report</h3>
+        <p>{{ totalRecords }} record(s) found</p>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Job Opening</th>
+            <th>Offered Salary</th>
+            <th>Offer Date</th>
+            <th>Joining Date</th>
+            <th>Status</th>
+            <th *ngIf="isSuperAdmin">Company</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of data">
+            <td>{{ item.ApplicantName }}</td>
+            <td>{{ item.JobTitle }}</td>
+
+            <td>
+              {{ item.OfferedSalary != null ? (item.OfferedSalary | number: '1.0-2') : '-' }}
+            </td>
+
+            <td>
+              {{ item.OfferDate ? (item.OfferDate | date: 'dd MMM yyyy') : '-' }}
+            </td>
+
+            <td>
+              {{ item.JoiningDate ? (item.JoiningDate | date: 'dd MMM yyyy') : '-' }}
+            </td>
+
+            <td>
+              <span class="badge" [ngClass]="item.OfferStatus?.toLowerCase()">
+                {{ item.OfferStatus }}
+              </span>
+            </td>
+
+            <td *ngIf="isSuperAdmin">
+              {{ item.CompanyName }}
+            </td>
+          </tr>
+
+          <tr *ngIf="data.length === 0">
+            <td [attr.colspan]="isSuperAdmin ? 7 : 6" class="empty-data">
+              No offer report data found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-card>
+
+  <!-- ===================================================== -->
+  <!-- HIRED CANDIDATES REPORT -->
+  <!-- ===================================================== -->
+  <mat-card class="report-card" *ngIf="!loading && reportType === 'hired'">
+    <div class="report-card-header">
+      <div>
+        <h3>Hired Candidates Report</h3>
+        <p>{{ totalRecords }} record(s) found</p>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Email</th>
+            <th>Department</th>
+            <th>Job Opening</th>
+            <th>Applied Date</th>
+            <th>Status</th>
+            <th *ngIf="isSuperAdmin">Company</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of data">
+            <td>{{ item.ApplicantName }}</td>
+            <td>{{ item.Email }}</td>
+            <td>{{ item.DepartmentName }}</td>
+            <td>{{ item.JobTitle }}</td>
+
+            <td>
+              {{ item.AppliedDate | date: 'dd MMM yyyy' }}
+            </td>
+
+            <td>
+              <span class="badge hired">
+                {{ item.CurrentStatus }}
+              </span>
+            </td>
+
+            <td *ngIf="isSuperAdmin">
+              {{ item.CompanyName }}
+            </td>
+          </tr>
+
+          <tr *ngIf="data.length === 0">
+            <td [attr.colspan]="isSuperAdmin ? 7 : 6" class="empty-data">
+              No hired candidates found
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-card>
+
+  <!-- ===================================================== -->
+  <!-- CUSTOM PAGINATION -->
+  <!-- ===================================================== -->
+  <div class="pagination" *ngIf="!loading && reportType !== 'summary' && totalRecords > 0">
+    <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+      Previous
+    </button>
+
+    <span> Page {{ page }} of {{ totalPages }} </span>
+
+    <button mat-stroked-button type="button" (click)="nextPage()" [disabled]="page >= totalPages">
+      Next
+    </button>
+  </div>
+</div>

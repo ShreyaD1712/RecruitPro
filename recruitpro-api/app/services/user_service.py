@@ -23,6 +23,7 @@ class UserService:
         order: str,
         page: int,
         page_size: int,
+        active_role_only: bool = False
     ):
 
         return self.user_repository.get_all(
@@ -34,6 +35,7 @@ class UserService:
             order=order,
             page=page,
             page_size=page_size,
+            active_role_only=active_role_only
         )
 
     # -------------------------

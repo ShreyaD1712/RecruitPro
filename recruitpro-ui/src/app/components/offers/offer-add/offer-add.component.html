@@ -1,90 +1,134 @@
 <div class="page">
   <div class="card">
-    <!-- ================================================== -->
-    <!-- TITLE -->
-    <!-- ================================================== -->
-    <h2>
-      {{ isEditMode ? 'Edit Offer' : 'Add Offer' }}
-    </h2>
+    <!-- FORM HEADER -->
+    <div class="form-header">
+      <h2>{{ isEditMode ? 'Edit Offer' : 'Add Offer' }}</h2>
+    </div>
 
-    <!-- ================================================== -->
-    <!-- OFFER FORM -->
-    <!-- ================================================== -->
     <form [formGroup]="offerForm" (ngSubmit)="saveOffer()">
-      <!-- ================================================== -->
-      <!-- OFFERED SALARY -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Offered Salary</mat-label>
+      <!-- FORM BODY -->
+      <div class="form-body">
+        <!-- FIRST ROW -->
+        <div class="form-grid">
+          <!-- APPLICATION -->
+          <mat-form-field appearance="outline">
+            <mat-label>Application</mat-label>
 
-        <input
-          matInput
-          type="number"
-          min="0"
-          formControlName="OfferedSalary"
-          placeholder="Enter Offered Salary"
-        />
+            <mat-select
+              formControlName="ApplicationId"
+              (selectionChange)="applicationChanged()"
+              [disabled]="isEditMode || loadingApplications"
+            >
+              <mat-option *ngIf="loadingApplications" disabled>
+                Loading Applications...
+              </mat-option>
 
-        <mat-error *ngIf="offerForm.get('OfferedSalary')?.hasError('min')">
-          Offered Salary cannot be negative
-        </mat-error>
-      </mat-form-field>
+              <mat-option *ngFor="let app of applications" [value]="app.ApplicationId">
+                {{ app.ApplicantName }} - {{ app.JobTitle }}
+              </mat-option>
+            </mat-select>
 
-      <!-- ================================================== -->
-      <!-- OFFER DATE -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Offer Date</mat-label>
+            <mat-error *ngIf="offerForm.get('ApplicationId')?.hasError('required')">
+              Application is required
+            </mat-error>
+          </mat-form-field>
+        </div>
 
-        <input matInput type="date" formControlName="OfferDate" />
-      </mat-form-field>
+        <!-- SELECTED APPLICATION DETAILS -->
+        <div class="details-section" *ngIf="application">
+          <div class="details-grid">
+            <div>
+              <label>Applicant</label>
+              <span>{{ application.ApplicantName || '-' }}</span>
+            </div>
 
-      <!-- ================================================== -->
-      <!-- JOINING DATE -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Joining Date</mat-label>
+            <div>
+              <label>Job Opening</label>
+              <span>{{ application.JobTitle || '-' }}</span>
+            </div>
 
-        <input matInput type="date" formControlName="JoiningDate" />
-      </mat-form-field>
+            <div>
+              <label>Department</label>
+              <span>{{ application.DepartmentName || '-' }}</span>
+            </div>
 
-      <!-- ================================================== -->
-      <!-- OFFER STATUS -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Offer Status</mat-label>
+            <div>
+              <label>Application Status</label>
+              <span>{{ application.CurrentStatus || '-' }}</span>
+            </div>
+          </div>
+        </div>
 
-        <mat-select formControlName="OfferStatus">
-          <mat-option [value]="null"> Select Offer Status </mat-option>
+        <!-- SECOND ROW -->
+        <div class="form-grid">
+          <!-- OFFERED SALARY -->
+          <mat-form-field appearance="outline">
+            <mat-label>Offered Salary</mat-label>
 
-          <mat-option *ngFor="let status of offerStatuses" [value]="status">
-            {{ status }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+            <input
+              matInput
+              type="number"
+              min="0"
+              formControlName="OfferedSalary"
+              placeholder="Enter Offered Salary"
+            />
 
-      <!-- ================================================== -->
-      <!-- REMARKS -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Remarks</mat-label>
+            <mat-error *ngIf="offerForm.get('OfferedSalary')?.hasError('min')">
+              Offered Salary cannot be negative
+            </mat-error>
+          </mat-form-field>
 
-        <textarea
-          matInput
-          rows="4"
-          formControlName="Remarks"
-          placeholder="Enter Offer Remarks"
-        ></textarea>
+          <!-- OFFER DATE -->
+          <mat-form-field appearance="outline">
+            <mat-label>Offer Date</mat-label>
 
-        <mat-error *ngIf="offerForm.get('Remarks')?.hasError('maxlength')">
-          Remarks cannot exceed 500 characters
-        </mat-error>
-      </mat-form-field>
+            <input matInput type="date" formControlName="OfferDate" />
+          </mat-form-field>
 
-      <!-- ================================================== -->
-      <!-- BUTTONS -->
-      <!-- ================================================== -->
+          <!-- JOINING DATE -->
+          <mat-form-field appearance="outline">
+            <mat-label>Joining Date</mat-label>
+
+            <input matInput type="date" formControlName="JoiningDate" />
+          </mat-form-field>
+        </div>
+
+        <!-- THIRD ROW -->
+        <div class="form-grid">
+          <!-- OFFER STATUS -->
+          <mat-form-field appearance="outline">
+            <mat-label>Offer Status</mat-label>
+
+            <mat-select formControlName="OfferStatus">
+              <mat-option *ngFor="let status of offerStatuses" [value]="status">
+                {{ status }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- REMARKS -->
+        <div class="form-grid second-row">
+          <mat-form-field appearance="outline" class="description-field">
+            <mat-label>Remarks</mat-label>
+
+            <textarea
+              matInput
+              rows="3"
+              formControlName="Remarks"
+              placeholder="Enter Offer Remarks"
+            ></textarea>
+
+            <mat-error *ngIf="offerForm.get('Remarks')?.hasError('maxlength')">
+              Remarks cannot exceed 500 characters
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- BUTTON FOOTER -->
       <div class="buttons">
+        <!-- SAVE / UPDATE -->
         <button
           *ngIf="
             (!isEditMode && authService.hasPermission('CREATE_OFFER')) ||
@@ -93,18 +137,15 @@
           mat-raised-button
           color="primary"
           type="submit"
-          [disabled]="loading"
+          [disabled]="loading || loadingApplications"
         >
-          {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
+          {{
+            loading ? (isEditMode ? 'Updating...' : 'Saving...') : isEditMode ? 'Update' : 'Save'
+          }}
         </button>
 
-        <button
-          mat-raised-button
-          color="warn"
-          type="button"
-          (click)="cancel()"
-          [disabled]="loading"
-        >
+        <!-- CANCEL -->
+        <button mat-stroked-button type="button" (click)="cancel()" [disabled]="loading">
           Cancel
         </button>
       </div>

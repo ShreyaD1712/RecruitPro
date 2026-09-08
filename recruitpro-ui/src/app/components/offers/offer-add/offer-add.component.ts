@@ -38,11 +38,12 @@ export class OfferAddComponent implements OnInit {
 
     isEditMode = false;
     offerId: number | null = null;
-    applicationId: number | null = null;
 
+    applications: any[] = [];
     application: any = null;
 
     loading = false;
+    loadingApplications = false;
 
     offerStatuses = [
         'Draft',
@@ -63,16 +64,10 @@ export class OfferAddComponent implements OnInit {
 
     ngOnInit(): void {
         const id = this.route.snapshot.paramMap.get('id');
-        const applicationId =
-            this.route.snapshot.queryParamMap.get('applicationId');
 
         if (id) {
             this.isEditMode = true;
             this.offerId = Number(id);
-        }
-
-        if (applicationId) {
-            this.applicationId = Number(applicationId);
         }
 
         const permission = this.isEditMode
@@ -96,18 +91,8 @@ export class OfferAddComponent implements OnInit {
 
         if (this.isEditMode && this.offerId) {
             this.loadOffer();
-            return;
-        }
-
-        if (this.applicationId) {
-            this.offerForm.patchValue({
-                ApplicationId: this.applicationId
-            });
-
-            this.validateApplication(this.applicationId);
         } else {
-            alert('Application information not found.');
-            this.router.navigate(['/application']);
+            this.loadApplications();
         }
     }
 
@@ -116,72 +101,89 @@ export class OfferAddComponent implements OnInit {
     }
 
     // ==================================================
-    // VALIDATE APPLICATION
+    // LOAD SELECTED APPLICATIONS WITHOUT OFFER
     // ==================================================
-    validateApplication(applicationId: number): void {
-        this.applicationService
-            .getApplicationById(applicationId)
-            .subscribe({
-                next: (response: any) => {
-                    this.application = response?.data || response;
+    loadApplications(): void {
+        this.loadingApplications = true;
 
-                    if (this.application.CurrentStatus !== 'Selected') {
-                        alert(
-                            'Offer can only be created for a selected application.'
-                        );
+        this.applicationService.getApplications(
+            '',
+            null,
+            null,
+            'Selected',
+            'AppliedDate',
+            'desc',
+            1,
+            1000
+        ).subscribe({
+            next: (response: any) => {
+                const selectedApplications = response.data || [];
 
-                        this.router.navigate(['/application']);
-                        return;
-                    }
-
-                    if (!this.isEditMode) {
-                        this.checkExistingOffer(applicationId);
-                    }
-                },
-
-                error: (err: any) => {
-                    console.error(
-                        'Error validating application:',
-                        err
-                    );
-
-                    alert(
-                        err?.error?.detail ||
-                        'Unable to validate application.'
-                    );
-
-                    this.router.navigate(['/application']);
+                if (!selectedApplications.length) {
+                    this.applications = [];
+                    this.loadingApplications = false;
+                    return;
                 }
-            });
+
+                this.applications = [];
+                let completed = 0;
+
+                selectedApplications.forEach((application: any) => {
+                    this.offerService
+                        .getOfferByApplication(application.ApplicationId)
+                        .subscribe({
+                            next: (offerResponse: any) => {
+                                if (!offerResponse?.exists) {
+                                    this.applications.push({
+                                        ...application,
+                                        ApplicantName: application.applicant
+                                            ? `${application.applicant.FirstName || ''} ${application.applicant.LastName || ''}`.trim()
+                                            : '-',
+                                        JobTitle:
+                                            application.job_opening?.JobTitle || '-',
+                                        DepartmentName:
+                                            application.job_opening?.department?.DepartmentName || '-'
+                                    });
+                                }
+
+                                completed++;
+                                if (completed === selectedApplications.length) {
+                                    this.loadingApplications = false;
+                                }
+                            },
+                            error: () => {
+                                completed++;
+                                if (completed === selectedApplications.length) {
+                                    this.loadingApplications = false;
+                                }
+                            }
+                        });
+                });
+            },
+            error: (err: any) => {
+                console.error('Error loading applications:', err);
+                this.applications = [];
+                this.loadingApplications = false;
+
+                alert(
+                    err?.error?.detail ||
+                    'Unable to load selected applications.'
+                );
+            }
+        });
     }
 
     // ==================================================
-    // CHECK EXISTING OFFER
+    // APPLICATION CHANGE
     // ==================================================
-    checkExistingOffer(applicationId: number): void {
-        this.offerService
-            .getOfferByApplication(applicationId)
-            .subscribe({
-                next: (response: any) => {
-                    if (response?.exists) {
-                        alert(
-                            'Offer already exists for this application.'
-                        );
+    applicationChanged(): void {
+        const applicationId =
+            this.offerForm.get('ApplicationId')?.value;
 
-                        this.router.navigate([
-                            '/offer/edit',
-                            response.offer.OfferId
-                        ]);
-                    }
-                },
-
-                error: (err: any) => {
-                    console.error(
-                        'Error checking existing offer:',
-                        err
-                    );
-                }
-            });
+        this.application = this.applications.find(
+            application =>
+                application.ApplicationId === applicationId
+        ) || null;
     }
 
     // ==================================================
@@ -192,46 +194,30 @@ export class OfferAddComponent implements OnInit {
 
         this.loading = true;
 
-        this.offerService
-            .getOfferById(this.offerId)
+        this.offerService.getOfferById(this.offerId)
             .subscribe({
                 next: (response: any) => {
                     const offer = response?.data || response;
 
-                    this.applicationId =
-                        offer.ApplicationId;
-
-                    this.application =
-                        offer.application || null;
-
                     this.offerForm.patchValue({
-                        ApplicationId:
-                            offer.ApplicationId,
-                        OfferedSalary:
-                            offer.OfferedSalary,
-                        OfferDate:
-                            offer.OfferDate || null,
-                        JoiningDate:
-                            offer.JoiningDate || null,
-                        OfferStatus:
-                            offer.OfferStatus || 'Draft',
-                        Remarks:
-                            offer.Remarks || ''
+                        ApplicationId: offer.ApplicationId,
+                        OfferedSalary: offer.OfferedSalary,
+                        OfferDate: offer.OfferDate || null,
+                        JoiningDate: offer.JoiningDate || null,
+                        OfferStatus: offer.OfferStatus || 'Draft',
+                        Remarks: offer.Remarks || ''
                     });
 
-                    this.offerForm
-                        .get('ApplicationId')
-                        ?.disable();
+                    this.offerForm.get('ApplicationId')?.disable();
+
+                    this.loadApplicationDetails(
+                        offer.ApplicationId
+                    );
 
                     this.loading = false;
                 },
-
                 error: (err: any) => {
-                    console.error(
-                        'Error loading offer:',
-                        err
-                    );
-
+                    console.error('Error loading offer:', err);
                     this.loading = false;
 
                     alert(
@@ -245,6 +231,37 @@ export class OfferAddComponent implements OnInit {
     }
 
     // ==================================================
+    // LOAD APPLICATION DETAILS FOR EDIT
+    // ==================================================
+    loadApplicationDetails(applicationId: number): void {
+        this.applicationService
+            .getApplicationById(applicationId)
+            .subscribe({
+                next: (response: any) => {
+                    const application =
+                        response?.data || response;
+
+                    this.application = {
+                        ...application,
+                        ApplicantName: application.applicant
+                            ? `${application.applicant.FirstName || ''} ${application.applicant.LastName || ''}`.trim()
+                            : '-',
+                        JobTitle:
+                            application.job_opening?.JobTitle || '-',
+                        DepartmentName:
+                            application.job_opening?.department?.DepartmentName || '-'
+                    };
+                },
+                error: (err: any) => {
+                    console.error(
+                        'Error loading application details:',
+                        err
+                    );
+                }
+            });
+    }
+
+    // ==================================================
     // SAVE OFFER
     // ==================================================
     saveOffer(): void {
@@ -253,9 +270,7 @@ export class OfferAddComponent implements OnInit {
             : 'CREATE_OFFER';
 
         if (!this.authService.hasPermission(permission)) {
-            alert(
-                'You do not have permission to perform this action.'
-            );
+            alert('You do not have permission to perform this action.');
             return;
         }
 
@@ -264,8 +279,7 @@ export class OfferAddComponent implements OnInit {
             return;
         }
 
-        const formData =
-            this.offerForm.getRawValue();
+        const formData = this.offerForm.getRawValue();
 
         if (
             formData.OfferDate &&
@@ -273,18 +287,15 @@ export class OfferAddComponent implements OnInit {
             new Date(formData.JoiningDate) <
             new Date(formData.OfferDate)
         ) {
-            alert(
-                'Joining Date cannot be before Offer Date.'
-            );
+            alert('Joining Date cannot be before Offer Date.');
             return;
         }
 
         const data = {
-            ApplicationId:
-                formData.ApplicationId,
+            ApplicationId: formData.ApplicationId,
             OfferedSalary:
-                formData.OfferedSalary !== '' &&
-                    formData.OfferedSalary !== null
+                formData.OfferedSalary !== null &&
+                    formData.OfferedSalary !== ''
                     ? Number(formData.OfferedSalary)
                     : null,
             OfferDate:
@@ -296,8 +307,6 @@ export class OfferAddComponent implements OnInit {
             Remarks:
                 formData.Remarks || null
         };
-
-        console.log('Offer Data:', data);
 
         this.loading = true;
 
@@ -312,25 +321,15 @@ export class OfferAddComponent implements OnInit {
     // CREATE OFFER
     // ==================================================
     createOffer(data: any): void {
-        this.offerService
-            .addOffer(data)
+        this.offerService.addOffer(data)
             .subscribe({
                 next: () => {
                     this.loading = false;
-
-                    alert(
-                        'Offer Added Successfully'
-                    );
-
+                    alert('Offer Added Successfully');
                     this.router.navigate(['/offer']);
                 },
-
                 error: (err: any) => {
-                    console.error(
-                        'Error adding offer:',
-                        err
-                    );
-
+                    console.error('Error adding offer:', err);
                     this.loading = false;
 
                     alert(
@@ -355,20 +354,11 @@ export class OfferAddComponent implements OnInit {
             .subscribe({
                 next: () => {
                     this.loading = false;
-
-                    alert(
-                        'Offer Updated Successfully'
-                    );
-
+                    alert('Offer Updated Successfully');
                     this.router.navigate(['/offer']);
                 },
-
                 error: (err: any) => {
-                    console.error(
-                        'Error updating offer:',
-                        err
-                    );
-
+                    console.error('Error updating offer:', err);
                     this.loading = false;
 
                     alert(
@@ -383,24 +373,16 @@ export class OfferAddComponent implements OnInit {
     // FORMAT DATE
     // ==================================================
     formatDate(value: any): string | null {
-        if (!value) {
-            return null;
-        }
+        if (!value) return null;
 
         const date = new Date(value);
-
-        const year =
-            date.getFullYear();
-
-        const month =
-            String(
-                date.getMonth() + 1
-            ).padStart(2, '0');
-
-        const day =
-            String(
-                date.getDate()
-            ).padStart(2, '0');
+        const year = date.getFullYear();
+        const month = String(
+            date.getMonth() + 1
+        ).padStart(2, '0');
+        const day = String(
+            date.getDate()
+        ).padStart(2, '0');
 
         return `${year}-${month}-${day}`;
     }

@@ -1,64 +1,94 @@
 <div class="page">
   <mat-card class="card">
-    <h2>{{ isEditMode ? 'Edit Company' : 'Add Company' }}</h2>
+    <!-- FORM HEADER -->
+    <div class="form-header">
+      <h2>{{ isEditMode ? 'Edit Company' : 'Add Company' }}</h2>
+    </div>
 
     <form [formGroup]="companyForm" (ngSubmit)="saveCompany()">
-      <!-- Company Code -->
-      <mat-form-field appearance="outline">
-        <mat-label>Company Code</mat-label>
-        <input matInput formControlName="CompanyCode" />
+      <!-- FORM BODY -->
+      <div class="form-body">
+        <!-- FIRST ROW -->
+        <div class="form-grid">
+          <!-- COMPANY CODE -->
+          <mat-form-field appearance="outline">
+            <mat-label>Company Code</mat-label>
 
-        <mat-error *ngIf="companyForm.get('CompanyCode')?.hasError('required')">
-          Company Code is required
-        </mat-error>
-      </mat-form-field>
+            <input matInput formControlName="CompanyCode" placeholder="Enter Company Code" />
 
-      <!-- Company Name -->
-      <mat-form-field appearance="outline">
-        <mat-label>Company Name</mat-label>
-        <input matInput formControlName="CompanyName" />
+            <mat-error *ngIf="companyForm.get('CompanyCode')?.hasError('required')">
+              Company Code is required
+            </mat-error>
+          </mat-form-field>
 
-        <mat-error *ngIf="companyForm.get('CompanyName')?.hasError('required')">
-          Company Name is required
-        </mat-error>
-      </mat-form-field>
+          <!-- COMPANY NAME -->
+          <mat-form-field appearance="outline">
+            <mat-label>Company Name</mat-label>
 
-      <!-- Email -->
-      <mat-form-field appearance="outline">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="Email" />
+            <input matInput formControlName="CompanyName" placeholder="Enter Company Name" />
 
-        <mat-error *ngIf="companyForm.get('Email')?.hasError('required')">
-          Email is required
-        </mat-error>
+            <mat-error *ngIf="companyForm.get('CompanyName')?.hasError('required')">
+              Company Name is required
+            </mat-error>
+          </mat-form-field>
 
-        <mat-error *ngIf="companyForm.get('Email')?.hasError('email')">
-          Enter a valid email address
-        </mat-error>
-      </mat-form-field>
+          <!-- EMAIL -->
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
 
-      <!-- Phone -->
-      <mat-form-field appearance="outline">
-        <mat-label>Phone</mat-label>
-        <input matInput formControlName="Phone" />
-      </mat-form-field>
+            <input matInput type="email" formControlName="Email" placeholder="Enter Email" />
 
-      <!-- Website -->
-      <mat-form-field appearance="outline">
-        <mat-label>Website</mat-label>
-        <input matInput formControlName="Website" />
-      </mat-form-field>
+            <mat-error *ngIf="companyForm.get('Email')?.hasError('required')">
+              Email is required
+            </mat-error>
 
-      <!-- Address -->
-      <mat-form-field appearance="outline">
-        <mat-label>Address</mat-label>
-        <textarea matInput rows="4" formControlName="Address"></textarea>
-      </mat-form-field>
+            <mat-error *ngIf="companyForm.get('Email')?.hasError('email')">
+              Enter a valid email address
+            </mat-error>
+          </mat-form-field>
+        </div>
 
-      <!-- Active -->
-      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+        <!-- SECOND ROW -->
+        <div class="form-grid">
+          <!-- PHONE -->
+          <mat-form-field appearance="outline">
+            <mat-label>Phone</mat-label>
 
-      <!-- Buttons -->
+            <input matInput formControlName="Phone" placeholder="Enter Phone Number" />
+          </mat-form-field>
+
+          <!-- WEBSITE -->
+          <mat-form-field appearance="outline">
+            <mat-label>Website</mat-label>
+
+            <input matInput formControlName="Website" placeholder="Enter Website URL" />
+          </mat-form-field>
+
+          <!-- STATUS -->
+          <div class="active-field">
+            <span class="field-label">Status</span>
+
+            <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+          </div>
+        </div>
+
+        <!-- THIRD ROW -->
+        <div class="form-grid">
+          <!-- ADDRESS -->
+          <mat-form-field appearance="outline" class="description-field">
+            <mat-label>Address</mat-label>
+
+            <textarea
+              matInput
+              rows="3"
+              formControlName="Address"
+              placeholder="Enter Company Address"
+            ></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- BUTTON FOOTER -->
       <div class="buttons">
         <button
           *ngIf="
@@ -73,13 +103,7 @@
           {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
-        <button
-          mat-raised-button
-          color="warn"
-          type="button"
-          (click)="cancel()"
-          [disabled]="loading"
-        >
+        <button mat-stroked-button type="button" (click)="cancel()" [disabled]="loading">
           Cancel
         </button>
       </div>

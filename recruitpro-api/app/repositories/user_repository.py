@@ -22,10 +22,15 @@ class UserRepository:
         order: str = "asc",
         page: int = 1,
         page_size: int = 10,
+        active_role_only: bool = False,
     ):
         query = db.query(User).options(
             joinedload(User.company), joinedload(User.department), joinedload(User.role)
         )
+        if active_role_only:
+            query = query.join(Role, User.RoleId == Role.RoleId).filter(
+                Role.IsActive == True
+            )
         # -------------------------
         # Company Filter
         # -------------------------

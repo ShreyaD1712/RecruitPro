@@ -60,6 +60,8 @@ import { InterviewFeedbackListComponent } from './components/interview-feedback/
 // Offer
 import { OfferListComponent } from './components/offers/offer-list/offer-list.component';
 import { OfferAddComponent } from './components/offers/offer-add/offer-add.component';
+// Report
+import { ReportComponent } from './components/report/report.component';
 export const routes: Routes = [
   // Login Page
   {
@@ -304,6 +306,11 @@ export const routes: Routes = [
       {
         path: 'offer/edit/:id',
         component: OfferAddComponent
+      },
+      // Report
+      {
+        path: 'report',
+        component: ReportComponent
       },
       // Default Route
       {

@@ -1,53 +1,69 @@
 <div class="page">
   <div class="card">
-    <h2>{{ isEditMode ? 'Edit Interview Round' : 'Add Interview Round' }}</h2>
+    <!-- FORM HEADER -->
+    <div class="form-header">
+      <h2>{{ isEditMode ? 'Edit Interview Round' : 'Add Interview Round' }}</h2>
+    </div>
 
     <form [formGroup]="interviewRoundForm" (ngSubmit)="saveInterviewRound()">
-      <!-- Company -->
-      <mat-form-field appearance="outline">
-        <mat-label>Company*</mat-label>
+      <!-- FORM BODY -->
+      <div class="form-body">
+        <!-- FIRST ROW -->
+        <div class="form-grid">
+          <!-- COMPANY -->
+          <mat-form-field appearance="outline">
+            <mat-label>Company</mat-label>
 
-        <mat-select
-          formControlName="CompanyId"
-          [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
-        >
-          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
-            {{ company.CompanyName }}
-          </mat-option>
-        </mat-select>
+            <mat-select
+              formControlName="CompanyId"
+              [disabled]="!authService.hasPermission('VIEW_ALL_COMPANIES')"
+            >
+              <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+                {{ company.CompanyName }}
+              </mat-option>
+            </mat-select>
 
-        <mat-error *ngIf="interviewRoundForm.get('CompanyId')?.hasError('required')">
-          Company is required
-        </mat-error>
-      </mat-form-field>
+            <mat-error *ngIf="interviewRoundForm.get('CompanyId')?.hasError('required')">
+              Company is required
+            </mat-error>
+          </mat-form-field>
 
-      <!-- Interview Round Name -->
-      <mat-form-field appearance="outline">
-        <mat-label>Interview Round Name*</mat-label>
+          <!-- INTERVIEW ROUND NAME -->
+          <mat-form-field appearance="outline">
+            <mat-label>Interview Round Name</mat-label>
 
-        <input matInput formControlName="RoundName" placeholder="Enter Interview Round Name" />
+            <input matInput formControlName="RoundName" placeholder="Enter Interview Round Name" />
 
-        <mat-error *ngIf="interviewRoundForm.get('RoundName')?.hasError('required')">
-          Interview Round Name is required
-        </mat-error>
-      </mat-form-field>
+            <mat-error *ngIf="interviewRoundForm.get('RoundName')?.hasError('required')">
+              Interview Round Name is required
+            </mat-error>
+          </mat-form-field>
+        </div>
 
-      <!-- Description -->
-      <mat-form-field appearance="outline">
-        <mat-label>Description</mat-label>
+        <!-- SECOND ROW -->
+        <div class="form-grid second-row">
+          <!-- DESCRIPTION -->
+          <mat-form-field appearance="outline" class="description-field">
+            <mat-label>Description</mat-label>
 
-        <textarea
-          matInput
-          rows="4"
-          formControlName="Description"
-          placeholder="Enter Description"
-        ></textarea>
-      </mat-form-field>
+            <textarea
+              matInput
+              rows="3"
+              formControlName="Description"
+              placeholder="Enter Description"
+            ></textarea>
+          </mat-form-field>
 
-      <!-- Active -->
-      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+          <!-- STATUS -->
+          <div class="active-field">
+            <span class="field-label">Status</span>
 
-      <!-- Buttons -->
+            <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
+      <!-- BUTTON FOOTER -->
       <div class="buttons">
         <button
           *ngIf="
@@ -62,13 +78,7 @@
           {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
-        <button
-          mat-raised-button
-          color="warn"
-          type="button"
-          (click)="cancel()"
-          [disabled]="loading"
-        >
+        <button mat-stroked-button type="button" (click)="cancel()" [disabled]="loading">
           Cancel
         </button>
       </div>

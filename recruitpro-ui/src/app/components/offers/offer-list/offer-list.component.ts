@@ -87,9 +87,6 @@ export class OfferListComponent implements OnInit {
         this.loadOffers();
     }
 
-    // ==================================================
-    // LOAD OFFERS
-    // ==================================================
     loadOffers(): void {
         this.loading = true;
 
@@ -167,25 +164,16 @@ export class OfferListComponent implements OnInit {
         });
     }
 
-    // ==================================================
-    // SEARCH
-    // ==================================================
     searchOffers(): void {
         this.page = 1;
         this.loadOffers();
     }
 
-    // ==================================================
-    // STATUS FILTER
-    // ==================================================
     onOfferStatusChange(): void {
         this.page = 1;
         this.loadOffers();
     }
 
-    // ==================================================
-    // SORT
-    // ==================================================
     sort(column: string): void {
         if (this.sortBy === column) {
             this.order =
@@ -201,23 +189,15 @@ export class OfferListComponent implements OnInit {
         this.loadOffers();
     }
 
-    // ==================================================
-    // ADD OFFER
-    // ==================================================
     addOffer(): void {
         if (!this.authService.hasPermission('CREATE_OFFER')) {
             alert('You do not have permission to create offers.');
             return;
         }
 
-        this.router.navigate([
-            '/offer/add'
-        ]);
+        this.router.navigate(['/offer/add']);
     }
 
-    // ==================================================
-    // VIEW OFFER
-    // ==================================================
     viewOffer(
         offer: any,
         event?: Event
@@ -233,17 +213,11 @@ export class OfferListComponent implements OnInit {
         this.showOfferPopup = true;
     }
 
-    // ==================================================
-    // CLOSE POPUP
-    // ==================================================
     closeOfferPopup(): void {
         this.showOfferPopup = false;
         this.selectedOffer = null;
     }
 
-    // ==================================================
-    // EDIT OFFER
-    // ==================================================
     editOffer(
         offer: any,
         event?: Event
@@ -261,9 +235,6 @@ export class OfferListComponent implements OnInit {
         ]);
     }
 
-    // ==================================================
-    // DELETE OFFER
-    // ==================================================
     deleteOffer(
         offer: any,
         event?: Event
@@ -310,9 +281,6 @@ export class OfferListComponent implements OnInit {
             });
     }
 
-    // ==================================================
-    // PREVIOUS PAGE
-    // ==================================================
     previousPage(): void {
         if (this.page > 1) {
             this.page--;
@@ -320,9 +288,6 @@ export class OfferListComponent implements OnInit {
         }
     }
 
-    // ==================================================
-    // NEXT PAGE
-    // ==================================================
     nextPage(): void {
         if (
             this.page * this.pageSize <
@@ -333,9 +298,6 @@ export class OfferListComponent implements OnInit {
         }
     }
 
-    // ==================================================
-    // START RECORD
-    // ==================================================
     getStartRecord(): number {
         if (this.totalRecords === 0) {
             return 0;
@@ -347,13 +309,35 @@ export class OfferListComponent implements OnInit {
         ) + 1;
     }
 
-    // ==================================================
-    // END RECORD
-    // ==================================================
     getEndRecord(): number {
         return Math.min(
             this.page * this.pageSize,
             this.totalRecords
         );
+    }
+
+    // ==================================================
+    // OFFER STATUS CLASS
+    // ==================================================
+    getStatusClass(status: string): string {
+        switch (status) {
+            case 'Draft':
+                return 'draft';
+
+            case 'Sent':
+                return 'sent';
+
+            case 'Accepted':
+                return 'accepted';
+
+            case 'Rejected':
+                return 'rejected';
+
+            case 'Withdrawn':
+                return 'withdrawn';
+
+            default:
+                return '';
+        }
     }
 }

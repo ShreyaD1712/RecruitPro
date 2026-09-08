@@ -1,100 +1,97 @@
 <div class="page">
   <div class="card">
-    <!-- ================================================== -->
-    <!-- TITLE -->
-    <!-- ================================================== -->
-    <h2>
-      {{ isEditMode ? 'Edit Interview Feedback' : 'Add Interview Feedback' }}
-    </h2>
+    <!-- FORM HEADER -->
+    <div class="form-header">
+      <h2>
+        {{ isEditMode ? 'Edit Interview Feedback' : 'Add Interview Feedback' }}
+      </h2>
+    </div>
 
-    <!-- ================================================== -->
-    <!-- FEEDBACK FORM -->
-    <!-- ================================================== -->
     <form [formGroup]="feedbackForm" (ngSubmit)="saveFeedback()">
-      <!-- ================================================== -->
-      <!-- RATING -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Rating</mat-label>
+      <!-- FORM BODY -->
+      <div class="form-body">
+        <!-- FIRST ROW -->
+        <div class="form-grid">
+          <!-- RATING -->
+          <mat-form-field appearance="outline">
+            <mat-label>Rating</mat-label>
 
-        <mat-select formControlName="Rating">
-          <mat-option [value]="null"> Select Rating </mat-option>
+            <mat-select formControlName="Rating">
+              <mat-option [value]="null"> Select Rating </mat-option>
 
-          <mat-option *ngFor="let rating of ratings" [value]="rating">
-            {{ rating }}
-          </mat-option>
-        </mat-select>
+              <mat-option *ngFor="let rating of ratings" [value]="rating">
+                {{ rating }}
+              </mat-option>
+            </mat-select>
 
-        <mat-error
-          *ngIf="
-            feedbackForm.get('Rating')?.hasError('min') ||
-            feedbackForm.get('Rating')?.hasError('max')
-          "
-        >
-          Rating must be between 1 and 5
-        </mat-error>
-      </mat-form-field>
+            <mat-error
+              *ngIf="
+                feedbackForm.get('Rating')?.hasError('min') ||
+                feedbackForm.get('Rating')?.hasError('max')
+              "
+            >
+              Rating must be between 1 and 5
+            </mat-error>
+          </mat-form-field>
 
-      <!-- ================================================== -->
-      <!-- STRENGTHS -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Strengths</mat-label>
+          <!-- RECOMMENDATION -->
+          <mat-form-field appearance="outline">
+            <mat-label>Recommendation</mat-label>
 
-        <textarea
-          matInput
-          rows="4"
-          formControlName="Strengths"
-          placeholder="Enter candidate strengths"
-        ></textarea>
-      </mat-form-field>
+            <mat-select formControlName="Recommendation">
+              <mat-option [value]="null"> Select Recommendation </mat-option>
 
-      <!-- ================================================== -->
-      <!-- WEAKNESSES -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Weaknesses</mat-label>
+              <mat-option *ngFor="let recommendation of recommendations" [value]="recommendation">
+                {{ recommendation }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
 
-        <textarea
-          matInput
-          rows="4"
-          formControlName="Weaknesses"
-          placeholder="Enter candidate weaknesses"
-        ></textarea>
-      </mat-form-field>
+        <!-- SECOND ROW -->
+        <div class="form-grid">
+          <!-- STRENGTHS -->
+          <mat-form-field appearance="outline" class="description-field">
+            <mat-label>Strengths</mat-label>
 
-      <!-- ================================================== -->
-      <!-- RECOMMENDATION -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Recommendation</mat-label>
+            <textarea
+              matInput
+              rows="3"
+              formControlName="Strengths"
+              placeholder="Enter candidate strengths"
+            ></textarea>
+          </mat-form-field>
 
-        <mat-select formControlName="Recommendation">
-          <mat-option [value]="null"> Select Recommendation </mat-option>
+          <!-- WEAKNESSES -->
+          <mat-form-field appearance="outline">
+            <mat-label>Weaknesses</mat-label>
 
-          <mat-option *ngFor="let recommendation of recommendations" [value]="recommendation">
-            {{ recommendation }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+            <textarea
+              matInput
+              rows="3"
+              formControlName="Weaknesses"
+              placeholder="Enter candidate weaknesses"
+            ></textarea>
+          </mat-form-field>
+        </div>
 
-      <!-- ================================================== -->
-      <!-- COMMENTS -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Comments</mat-label>
+        <!-- THIRD ROW -->
+        <div class="form-grid">
+          <!-- COMMENTS -->
+          <mat-form-field appearance="outline" class="description-field">
+            <mat-label>Comments</mat-label>
 
-        <textarea
-          matInput
-          rows="4"
-          formControlName="Comments"
-          placeholder="Enter overall interview feedback"
-        ></textarea>
-      </mat-form-field>
+            <textarea
+              matInput
+              rows="3"
+              formControlName="Comments"
+              placeholder="Enter overall interview feedback"
+            ></textarea>
+          </mat-form-field>
+        </div>
+      </div>
 
-      <!-- ================================================== -->
-      <!-- BUTTONS -->
-      <!-- ================================================== -->
+      <!-- BUTTON FOOTER -->
       <div class="buttons">
         <!-- SAVE / UPDATE -->
         <button
@@ -111,13 +108,7 @@
         </button>
 
         <!-- CANCEL -->
-        <button
-          mat-raised-button
-          color="warn"
-          type="button"
-          (click)="cancel()"
-          [disabled]="loading"
-        >
+        <button mat-stroked-button type="button" (click)="cancel()" [disabled]="loading">
           Cancel
         </button>
       </div>

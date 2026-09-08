@@ -10,6 +10,7 @@ from app.schemas.user_schema import (
     UserResponse,
     UserListResponse,
     ChangePassword,
+    DeleteUserResponse,
 )
 from app.permission_dependency import require_permission
 from app.services.user_service import UserService
@@ -30,6 +31,7 @@ def get_all_users(
     order: str = "asc",
     page: int = 1,
     page_size: int = 10,
+    active_role_only: bool = Query(False),
     db: Session = Depends(get_db),
     current_user: dict = Depends(require_permission("VIEW_USER")),
 ):
@@ -43,6 +45,7 @@ def get_all_users(
         order=order,
         page=page,
         page_size=page_size,
+        active_role_only=active_role_only,
     )
 
 
@@ -50,7 +53,11 @@ def get_all_users(
 # Get User By Id
 # -------------------------
 @router.get("/{user_id}", response_model=UserResponse)
-def get_user(user_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+def get_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
 
     return user_service.get_by_id(db, user_id, current_user)
 
@@ -99,11 +106,8 @@ def change_password(
 # -------------------------
 # Delete User
 # -------------------------
-@router.delete("/{user_id}", response_model=UserResponse)
+@router.delete("/{user_id}")
 def delete_user(
-    user_id: int,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(require_permission("DELETE_USER")),
+    user_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user)
 ):
-
-    return user_service.delete(db, current_user, user_id)
+    return user_service.delete(db=db, current_user=current_user, user_id=user_id)

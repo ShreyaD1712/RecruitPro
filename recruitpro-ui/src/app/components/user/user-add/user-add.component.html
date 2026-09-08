@@ -1,151 +1,157 @@
 <div class="page">
   <div class="card">
-    <h2>
-      {{ isEditMode ? 'Edit User' : 'Add User' }}
-    </h2>
+    <!-- FORM HEADER -->
+    <div class="form-header">
+      <h2>{{ isEditMode ? 'Edit User' : 'Add User' }}</h2>
+    </div>
 
     <form [formGroup]="userForm" (ngSubmit)="saveUser()">
-      <!-- ================================================== -->
-      <!-- FIRST NAME -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>First Name*</mat-label>
+      <!-- FORM BODY -->
+      <div class="form-body">
+        <!-- FIRST ROW -->
+        <div class="form-grid">
+          <!-- COMPANY -->
+          <mat-form-field appearance="outline">
+            <mat-label>Company</mat-label>
 
-        <input matInput formControlName="FirstName" />
+            <mat-select formControlName="CompanyId" (selectionChange)="companyChanged()">
+              <mat-option *ngIf="authService.hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
+                Select Company
+              </mat-option>
 
-        <mat-error *ngIf="userForm.get('FirstName')?.hasError('required')">
-          First Name is required
-        </mat-error>
-      </mat-form-field>
+              <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+                {{ company.CompanyName }}
+              </mat-option>
+            </mat-select>
 
-      <!-- ================================================== -->
-      <!-- LAST NAME -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Last Name*</mat-label>
+            <mat-error *ngIf="userForm.get('CompanyId')?.hasError('required')">
+              Company is required
+            </mat-error>
+          </mat-form-field>
 
-        <input matInput formControlName="LastName" />
+          <!-- DEPARTMENT -->
+          <mat-form-field appearance="outline">
+            <mat-label>Department</mat-label>
 
-        <mat-error *ngIf="userForm.get('LastName')?.hasError('required')">
-          Last Name is required
-        </mat-error>
-      </mat-form-field>
+            <mat-select formControlName="DepartmentId">
+              <mat-option [value]="null">
+                {{ loadingDepartments ? 'Loading Departments...' : 'Select Department' }}
+              </mat-option>
 
-      <!-- ================================================== -->
-      <!-- EMAIL -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Email*</mat-label>
+              <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
+                {{ department.DepartmentName }}
+              </mat-option>
+            </mat-select>
 
-        <input matInput type="email" formControlName="Email" />
+            <mat-error *ngIf="userForm.get('DepartmentId')?.hasError('required')">
+              Department is required
+            </mat-error>
+          </mat-form-field>
 
-        <mat-error *ngIf="userForm.get('Email')?.hasError('required')">
-          Email is required
-        </mat-error>
+          <!-- ROLE -->
+          <mat-form-field appearance="outline">
+            <mat-label>Role</mat-label>
 
-        <mat-error *ngIf="userForm.get('Email')?.hasError('email')">
-          Enter a valid email address
-        </mat-error>
-      </mat-form-field>
+            <mat-select formControlName="RoleId">
+              <mat-option [value]="null">
+                {{ loadingRoles ? 'Loading Roles...' : 'Select Role' }}
+              </mat-option>
 
-      <!-- ================================================== -->
-      <!-- PASSWORD -->
-      <!-- ONLY FOR ADD MODE -->
-      <!-- ================================================== -->
-      <mat-form-field *ngIf="!isEditMode" appearance="outline">
-        <mat-label>Password*</mat-label>
+              <mat-option *ngFor="let role of roles" [value]="role.RoleId">
+                {{ role.RoleName }}
+              </mat-option>
+            </mat-select>
 
-        <input matInput type="password" formControlName="Password" />
+            <mat-error *ngIf="userForm.get('RoleId')?.hasError('required')">
+              Role is required
+            </mat-error>
+          </mat-form-field>
+        </div>
 
-        <mat-error *ngIf="userForm.get('Password')?.hasError('required')">
-          Password is required
-        </mat-error>
-      </mat-form-field>
+        <!-- SECOND ROW -->
+        <div class="form-grid">
+          <!-- FIRST NAME -->
+          <mat-form-field appearance="outline">
+            <mat-label>First Name</mat-label>
 
-      <!-- ================================================== -->
-      <!-- MOBILE -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Mobile Number*</mat-label>
+            <input matInput formControlName="FirstName" placeholder="Enter First Name" />
 
-        <input matInput type="tel" formControlName="MobileNo" />
+            <mat-error *ngIf="userForm.get('FirstName')?.hasError('required')">
+              First Name is required
+            </mat-error>
+          </mat-form-field>
 
-        <mat-error *ngIf="userForm.get('MobileNo')?.hasError('required')">
-          Mobile Number is required
-        </mat-error>
-      </mat-form-field>
+          <!-- LAST NAME -->
+          <mat-form-field appearance="outline">
+            <mat-label>Last Name</mat-label>
 
-      <!-- ================================================== -->
-      <!-- COMPANY -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Company*</mat-label>
+            <input matInput formControlName="LastName" placeholder="Enter Last Name" />
 
-        <mat-select formControlName="CompanyId" (selectionChange)="companyChanged()">
-          <mat-option *ngIf="authService.hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
-            Select Company
-          </mat-option>
+            <mat-error *ngIf="userForm.get('LastName')?.hasError('required')">
+              Last Name is required
+            </mat-error>
+          </mat-form-field>
 
-          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
-            {{ company.CompanyName }}
-          </mat-option>
-        </mat-select>
+          <!-- EMAIL -->
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
 
-        <mat-error *ngIf="userForm.get('CompanyId')?.hasError('required')">
-          Company is required
-        </mat-error>
-      </mat-form-field>
+            <input matInput type="email" formControlName="Email" placeholder="Enter Email" />
 
-      <!-- ================================================== -->
-      <!-- DEPARTMENT -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Department*</mat-label>
+            <mat-error *ngIf="userForm.get('Email')?.hasError('required')">
+              Email is required
+            </mat-error>
 
-        <mat-select formControlName="DepartmentId">
-          <mat-option [value]="null">
-            {{ loadingDepartments ? 'Loading Departments...' : 'Select Department' }}
-          </mat-option>
+            <mat-error *ngIf="userForm.get('Email')?.hasError('email')">
+              Enter a valid email address
+            </mat-error>
+          </mat-form-field>
+        </div>
 
-          <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
-            {{ department.DepartmentName }}
-          </mat-option>
-        </mat-select>
+        <!-- THIRD ROW -->
+        <div class="form-grid">
+          <!-- PASSWORD -->
+          <mat-form-field *ngIf="!isEditMode" appearance="outline">
+            <mat-label>Password</mat-label>
 
-        <mat-error *ngIf="userForm.get('DepartmentId')?.hasError('required')">
-          Department is required
-        </mat-error>
-      </mat-form-field>
+            <input
+              matInput
+              type="password"
+              formControlName="Password"
+              placeholder="Enter Password"
+            />
 
-      <!-- ================================================== -->
-      <!-- ROLE -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Role*</mat-label>
+            <mat-error *ngIf="userForm.get('Password')?.hasError('required')">
+              Password is required
+            </mat-error>
+          </mat-form-field>
 
-        <mat-select formControlName="RoleId">
-          <mat-option [value]="null">
-            {{ loadingRoles ? 'Loading Roles...' : 'Select Role' }}
-          </mat-option>
+          <!-- MOBILE -->
+          <mat-form-field appearance="outline">
+            <mat-label>Mobile Number</mat-label>
 
-          <mat-option *ngFor="let role of roles" [value]="role.RoleId">
-            {{ role.RoleName }}
-          </mat-option>
-        </mat-select>
+            <input
+              matInput
+              type="tel"
+              formControlName="MobileNo"
+              placeholder="Enter Mobile Number"
+            />
 
-        <mat-error *ngIf="userForm.get('RoleId')?.hasError('required')">
-          Role is required
-        </mat-error>
-      </mat-form-field>
+            <mat-error *ngIf="userForm.get('MobileNo')?.hasError('required')">
+              Mobile Number is required
+            </mat-error>
+          </mat-form-field>
 
-      <!-- ================================================== -->
-      <!-- STATUS -->
-      <!-- ================================================== -->
-      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+          <!-- STATUS -->
+          <div class="active-field">
+            <span class="field-label">Status</span>
 
-      <!-- ================================================== -->
-      <!-- BUTTONS -->
-      <!-- ================================================== -->
+            <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
+      <!-- BUTTON FOOTER -->
       <div class="buttons">
         <button
           *ngIf="
@@ -160,13 +166,7 @@
           {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
-        <button
-          mat-raised-button
-          color="warn"
-          type="button"
-          (click)="cancel()"
-          [disabled]="loading"
-        >
+        <button mat-stroked-button type="button" (click)="cancel()" [disabled]="loading">
           Cancel
         </button>
       </div>

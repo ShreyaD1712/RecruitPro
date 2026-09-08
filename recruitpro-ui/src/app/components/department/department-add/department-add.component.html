@@ -1,59 +1,81 @@
 <div class="page">
   <mat-card class="card">
-    <h2>
-      {{ isEditMode ? 'Edit Department' : 'Add Department' }}
-    </h2>
+    <!-- FORM HEADER -->
+    <div class="form-header">
+      <h2>{{ isEditMode ? 'Edit Department' : 'Add Department' }}</h2>
+    </div>
 
     <form [formGroup]="departmentForm" (ngSubmit)="saveDepartment()">
-      <mat-form-field appearance="outline">
-        <mat-label>Department Code</mat-label>
+      <!-- FORM BODY -->
+      <div class="form-body">
+        <!-- FIRST ROW -->
+        <div class="form-grid">
+          <!-- COMPANY -->
+          <mat-form-field appearance="outline">
+            <mat-label>Company</mat-label>
 
-        <input matInput formControlName="DepartmentCode" />
+            <mat-select formControlName="CompanyId">
+              <mat-option *ngIf="hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
+                Select Company
+              </mat-option>
 
-        <mat-error *ngIf="departmentForm.get('DepartmentCode')?.hasError('required')">
-          Department Code is required
-        </mat-error>
-      </mat-form-field>
+              <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
+                {{ company.CompanyName }}
+              </mat-option>
+            </mat-select>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Department Name</mat-label>
+            <mat-error *ngIf="departmentForm.get('CompanyId')?.hasError('required')">
+              Company is required
+            </mat-error>
+          </mat-form-field>
 
-        <input matInput formControlName="DepartmentName" />
+          <!-- DEPARTMENT CODE -->
+          <mat-form-field appearance="outline">
+            <mat-label>Department Code</mat-label>
 
-        <mat-error *ngIf="departmentForm.get('DepartmentName')?.hasError('required')">
-          Department Name is required
-        </mat-error>
-      </mat-form-field>
+            <input matInput formControlName="DepartmentCode" placeholder="Enter Department Code" />
 
-      <!-- ================================================== -->
-      <!-- COMPANY -->
-      <!-- ================================================== -->
-      <mat-form-field appearance="outline">
-        <mat-label>Company</mat-label>
+            <mat-error *ngIf="departmentForm.get('DepartmentCode')?.hasError('required')">
+              Department Code is required
+            </mat-error>
+          </mat-form-field>
 
-        <mat-select formControlName="CompanyId">
-          <mat-option *ngIf="hasPermission('VIEW_ALL_COMPANIES')" [value]="null">
-            Select Company
-          </mat-option>
+          <!-- DEPARTMENT NAME -->
+          <mat-form-field appearance="outline">
+            <mat-label>Department Name</mat-label>
 
-          <mat-option *ngFor="let company of companies" [value]="company.CompanyId">
-            {{ company.CompanyName }}
-          </mat-option>
-        </mat-select>
+            <input matInput formControlName="DepartmentName" placeholder="Enter Department Name" />
 
-        <mat-error *ngIf="departmentForm.get('CompanyId')?.hasError('required')">
-          Company is required
-        </mat-error>
-      </mat-form-field>
+            <mat-error *ngIf="departmentForm.get('DepartmentName')?.hasError('required')">
+              Department Name is required
+            </mat-error>
+          </mat-form-field>
+        </div>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Description</mat-label>
+        <!-- SECOND ROW -->
+        <div class="form-grid second-row">
+          <!-- DESCRIPTION -->
+          <mat-form-field appearance="outline" class="description-field">
+            <mat-label>Description</mat-label>
 
-        <textarea matInput rows="4" formControlName="Description"></textarea>
-      </mat-form-field>
+            <textarea
+              matInput
+              rows="3"
+              formControlName="Description"
+              placeholder="Enter Description"
+            ></textarea>
+          </mat-form-field>
 
-      <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+          <!-- STATUS -->
+          <div class="active-field">
+            <span class="field-label">Status</span>
 
+            <mat-slide-toggle formControlName="IsActive"> Active </mat-slide-toggle>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM FOOTER -->
       <div class="buttons">
         <button
           *ngIf="
@@ -68,13 +90,7 @@
           {{ loading ? 'Saving...' : isEditMode ? 'Update' : 'Save' }}
         </button>
 
-        <button
-          mat-raised-button
-          color="warn"
-          type="button"
-          (click)="cancel()"
-          [disabled]="loading"
-        >
+        <button mat-stroked-button type="button" (click)="cancel()" [disabled]="loading">
           Cancel
         </button>
       </div>
