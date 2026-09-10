@@ -1,316 +1,324 @@
-<div class="list-container">
-  <!-- HEADER -->
-  <div class="header">
-    <div>
-      <h2>Offer Management</h2>
-      <p>View and manage candidate offers</p>
-    </div>
+<div class="offer-page">
+  <div class="list-container">
+    <!-- HEADER -->
+    <div class="header">
+      <div>
+        <h2>Offer Management</h2>
+        <p>View and manage candidate offers</p>
+      </div>
 
-    <button
-      *ngIf="authService.hasPermission('CREATE_OFFER')"
-      mat-raised-button
-      color="primary"
-      type="button"
-      (click)="addOffer()"
-    >
-      <mat-icon>add</mat-icon>
-      Add Offer
-    </button>
-  </div>
-
-  <!-- SEARCH -->
-  <mat-form-field appearance="outline" class="search-box">
-    <mat-label>Search Offers</mat-label>
-
-    <input
-      matInput
-      [(ngModel)]="search"
-      placeholder="Applicant, Job Opening or Offer Status"
-      (keyup.enter)="searchOffers()"
-    />
-
-    <button mat-icon-button matSuffix type="button" (click)="searchOffers()">
-      <mat-icon>search</mat-icon>
-    </button>
-  </mat-form-field>
-
-  <!-- FILTERS -->
-  <div class="filters">
-    <mat-form-field appearance="outline" class="filter-box">
-      <mat-label>Offer Status</mat-label>
-
-      <mat-select [(ngModel)]="selectedOfferStatus" (selectionChange)="onOfferStatusChange()">
-        <mat-option *ngFor="let status of offerStatuses" [value]="status">
-          {{ status }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-
-  <!-- TABLE -->
-  <div class="table-container">
-    <table mat-table [dataSource]="offers" class="list-table">
-      <!-- APPLICANT -->
-      <ng-container matColumnDef="ApplicantName">
-        <th mat-header-cell *matHeaderCellDef>Applicant</th>
-
-        <td mat-cell *matCellDef="let row">
-          {{ row.ApplicantName || '-' }}
-        </td>
-      </ng-container>
-
-      <!-- JOB OPENING -->
-      <ng-container matColumnDef="JobTitle">
-        <th mat-header-cell *matHeaderCellDef>Job Opening</th>
-
-        <td mat-cell *matCellDef="let row">
-          {{ row.JobTitle || '-' }}
-        </td>
-      </ng-container>
-
-      <!-- DEPARTMENT -->
-      <ng-container matColumnDef="DepartmentName">
-        <th mat-header-cell *matHeaderCellDef>Department</th>
-
-        <td mat-cell *matCellDef="let row">
-          {{ row.DepartmentName || '-' }}
-        </td>
-      </ng-container>
-
-      <!-- OFFERED SALARY -->
-      <ng-container matColumnDef="OfferedSalary">
-        <th mat-header-cell *matHeaderCellDef (click)="sort('OfferedSalary')">Offered Salary</th>
-
-        <td mat-cell *matCellDef="let row">
-          {{
-            row.OfferedSalary !== null && row.OfferedSalary !== undefined
-              ? (row.OfferedSalary | number: '1.2-2')
-              : '-'
-          }}
-        </td>
-      </ng-container>
-
-      <!-- OFFER DATE -->
-      <ng-container matColumnDef="OfferDate">
-        <th mat-header-cell *matHeaderCellDef (click)="sort('OfferDate')">Offer Date</th>
-
-        <td mat-cell *matCellDef="let row">
-          {{ row.OfferDate ? (row.OfferDate | date: 'dd-MM-yyyy') : '-' }}
-        </td>
-      </ng-container>
-
-      <!-- JOINING DATE -->
-      <ng-container matColumnDef="JoiningDate">
-        <th mat-header-cell *matHeaderCellDef (click)="sort('JoiningDate')">Joining Date</th>
-
-        <td mat-cell *matCellDef="let row">
-          {{ row.JoiningDate ? (row.JoiningDate | date: 'dd-MM-yyyy') : '-' }}
-        </td>
-      </ng-container>
-
-      <!-- OFFER STATUS -->
-      <ng-container matColumnDef="OfferStatus">
-        <th mat-header-cell *matHeaderCellDef (click)="sort('OfferStatus')">Status</th>
-
-        <td mat-cell *matCellDef="let row">
-          <span class="badge" [ngClass]="getStatusClass(row.OfferStatus)">
-            {{ row.OfferStatus || '-' }}
-          </span>
-        </td>
-      </ng-container>
-
-      <!-- ACTIONS -->
-      <ng-container matColumnDef="Actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-
-        <td mat-cell *matCellDef="let row">
-          <!-- VIEW -->
-          <button
-            *ngIf="authService.hasPermission('VIEW_OFFER')"
-            mat-icon-button
-            type="button"
-            matTooltip="View Offer"
-            (click)="viewOffer(row, $event)"
-          >
-            <mat-icon>visibility</mat-icon>
-          </button>
-
-          <!-- EDIT -->
-          <button
-            *ngIf="authService.hasPermission('UPDATE_OFFER')"
-            mat-icon-button
-            color="primary"
-            type="button"
-            matTooltip="Edit Offer"
-            (click)="editOffer(row, $event)"
-          >
-            <mat-icon>edit</mat-icon>
-          </button>
-
-          <!-- DELETE -->
-          <button
-            *ngIf="authService.hasPermission('DELETE_OFFER')"
-            mat-icon-button
-            color="warn"
-            type="button"
-            matTooltip="Delete Offer"
-            (click)="deleteOffer(row, $event)"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-  </div>
-
-  <!-- LOADING -->
-  <div class="loading" *ngIf="loading">Loading Offers...</div>
-
-  <!-- NO DATA -->
-  <div class="no-data" *ngIf="!loading && offers.length === 0">No Offers Found</div>
-
-  <!-- PAGINATION -->
-  <div class="pagination">
-    <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
-      Previous
-    </button>
-
-    <span>
-      Page {{ page }}
-      of
-      {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
-    </span>
-
-    <button
-      mat-stroked-button
-      type="button"
-      (click)="nextPage()"
-      [disabled]="page * pageSize >= totalRecords"
-    >
-      Next
-    </button>
-  </div>
-</div>
-
-<!-- ================================================== -->
-<!-- OFFER DETAILS POPUP -->
-<!-- ================================================== -->
-<div class="popup-backdrop" *ngIf="showOfferPopup && selectedOffer" (click)="closeOfferPopup()">
-  <div class="applicant-popup" (click)="$event.stopPropagation()">
-    <!-- POPUP HEADER -->
-    <div class="popup-header">
-      <h2>Offer Details</h2>
-
-      <button mat-icon-button type="button" (click)="closeOfferPopup()">
-        <mat-icon>close</mat-icon>
+      <button
+        *ngIf="authService.hasPermission('CREATE_OFFER')"
+        mat-raised-button
+        color="primary"
+        type="button"
+        (click)="addOffer()"
+      >
+        <mat-icon>add</mat-icon>
+        Add Offer
       </button>
     </div>
 
-    <!-- CANDIDATE INFORMATION -->
-    <div class="details-section">
-      <h3>Candidate Information</h3>
+    <!-- FILTERS -->
+    <div class="filters">
+      <mat-form-field appearance="outline" class="filter-box">
+        <mat-label>Offer Status</mat-label>
 
-      <div class="details-grid">
-        <div>
-          <label>Applicant</label>
-          <span>
-            {{ selectedOffer.ApplicantName || '-' }}
-          </span>
-        </div>
+        <mat-select [(ngModel)]="selectedOfferStatus" (selectionChange)="onOfferStatusChange()">
+          <mat-option *ngFor="let status of offerStatuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- SEARCH -->
+      <mat-form-field appearance="outline" class="search-box">
+        <mat-label>Search Offers</mat-label>
 
-        <div>
-          <label>Job Opening</label>
-          <span>
-            {{ selectedOffer.JobTitle || '-' }}
-          </span>
-        </div>
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Applicant, Job Opening or Offer Status"
+          (keyup.enter)="searchOffers()"
+        />
 
-        <div>
-          <label>Department</label>
-          <span>
-            {{ selectedOffer.DepartmentName || '-' }}
-          </span>
-        </div>
-
-        <div>
-          <label>Designation</label>
-          <span>
-            {{ selectedOffer.DesignationName || '-' }}
-          </span>
-        </div>
-
-        <div>
-          <label>Application Status</label>
-          <span>
-            {{ selectedOffer.ApplicationStatus || '-' }}
-          </span>
-        </div>
-      </div>
+        <button mat-icon-button matSuffix type="button" (click)="searchOffers()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
     </div>
 
-    <!-- OFFER INFORMATION -->
-    <div class="details-section">
-      <h3>Offer Information</h3>
+    <!-- TABLE -->
+    <div class="table-container">
+      <table mat-table [dataSource]="offers" class="list-table">
+        <!-- APPLICANT -->
+        <ng-container matColumnDef="ApplicantName">
+          <th mat-header-cell *matHeaderCellDef>Applicant</th>
 
-      <div class="details-grid">
-        <div>
-          <label>Offered Salary</label>
-          <span>
+          <td mat-cell *matCellDef="let row">
+            {{ row.ApplicantName || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- JOB OPENING -->
+        <ng-container matColumnDef="JobTitle">
+          <th mat-header-cell *matHeaderCellDef>Job Opening</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.JobTitle || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- DEPARTMENT -->
+        <ng-container matColumnDef="DepartmentName">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
+
+          <td mat-cell *matCellDef="let row">
+            {{ row.DepartmentName || '-' }}
+          </td>
+        </ng-container>
+
+        <!-- OFFERED SALARY -->
+        <ng-container matColumnDef="OfferedSalary">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('OfferedSalary')">Offered Salary</th>
+
+          <td mat-cell *matCellDef="let row">
             {{
-              selectedOffer.OfferedSalary !== null && selectedOffer.OfferedSalary !== undefined
-                ? (selectedOffer.OfferedSalary | number: '1.2-2')
+              row.OfferedSalary !== null && row.OfferedSalary !== undefined
+                ? (row.OfferedSalary | number: '1.2-2')
                 : '-'
             }}
-          </span>
-        </div>
+          </td>
+        </ng-container>
 
-        <div>
-          <label>Offer Date</label>
-          <span>
-            {{ selectedOffer.OfferDate ? (selectedOffer.OfferDate | date: 'dd-MM-yyyy') : '-' }}
-          </span>
-        </div>
+        <!-- OFFER DATE -->
+        <ng-container matColumnDef="OfferDate">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('OfferDate')">Offer Date</th>
 
-        <div>
-          <label>Joining Date</label>
-          <span>
-            {{ selectedOffer.JoiningDate ? (selectedOffer.JoiningDate | date: 'dd-MM-yyyy') : '-' }}
-          </span>
-        </div>
+          <td mat-cell *matCellDef="let row">
+            {{ row.OfferDate ? (row.OfferDate | date: 'dd-MM-yyyy') : '-' }}
+          </td>
+        </ng-container>
 
-        <div>
-          <label>Offer Status</label>
+        <!-- JOINING DATE -->
+        <ng-container matColumnDef="JoiningDate">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('JoiningDate')">Joining Date</th>
 
-          <span class="badge" [ngClass]="getStatusClass(selectedOffer.OfferStatus)">
-            {{ selectedOffer.OfferStatus || '-' }}
-          </span>
-        </div>
+          <td mat-cell *matCellDef="let row">
+            {{ row.JoiningDate ? (row.JoiningDate | date: 'dd-MM-yyyy') : '-' }}
+          </td>
+        </ng-container>
 
-        <div>
-          <label>Remarks</label>
-          <span>
-            {{ selectedOffer.Remarks || '-' }}
-          </span>
-        </div>
+        <!-- OFFER STATUS -->
+        <ng-container matColumnDef="OfferStatus">
+          <th mat-header-cell *matHeaderCellDef (click)="sort('OfferStatus')">Status</th>
 
-        <div>
-          <label>Created Date</label>
-          <span>
-            {{ selectedOffer.CreatedOn ? (selectedOffer.CreatedOn | date: 'dd-MM-yyyy') : '-' }}
-          </span>
-        </div>
-      </div>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge" [ngClass]="getStatusClass(row.OfferStatus)">
+              {{ row.OfferStatus || '-' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- ACTIONS -->
+        <ng-container matColumnDef="Actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+
+          <td mat-cell *matCellDef="let row">
+            <!-- VIEW -->
+            <button
+              *ngIf="authService.hasPermission('VIEW_OFFER')"
+              mat-icon-button
+              type="button"
+              matTooltip="View Offer"
+              (click)="viewOffer(row, $event)"
+            >
+              <mat-icon>visibility</mat-icon>
+            </button>
+
+            <!-- EDIT -->
+            <button
+              *ngIf="authService.hasPermission('UPDATE_OFFER')"
+              mat-icon-button
+              color="primary"
+              type="button"
+              matTooltip="Edit Offer"
+              (click)="editOffer(row, $event)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <!-- DELETE -->
+            <button
+              *ngIf="authService.hasPermission('DELETE_OFFER')"
+              mat-icon-button
+              color="warn"
+              type="button"
+              matTooltip="Delete Offer"
+              (click)="deleteOffer(row, $event)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
     </div>
 
-    <!-- FOOTER -->
-    <div class="popup-footer">
-      <button mat-raised-button color="primary" type="button" (click)="closeOfferPopup()">
-        Close
+    <!-- LOADING -->
+    <div class="loading" *ngIf="loading">Loading Offers...</div>
+
+    <!-- NO DATA -->
+    <div class="no-data" *ngIf="!loading && offers.length === 0">No Offers Found</div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+      <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+        Previous
       </button>
+
+      <span>
+        Page {{ page }}
+        of
+        {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+      </span>
+
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page * pageSize >= totalRecords"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+
+  <!-- ================================================== -->
+  <!-- OFFER DETAILS POPUP -->
+  <!-- ================================================== -->
+  <div class="popup-backdrop" *ngIf="showOfferPopup && selectedOffer" (click)="closeOfferPopup()">
+    <div class="applicant-popup" (click)="$event.stopPropagation()">
+      <!-- POPUP HEADER -->
+      <div class="popup-header">
+        <h2>Offer Details</h2>
+
+        <button mat-icon-button type="button" (click)="closeOfferPopup()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- CANDIDATE INFORMATION -->
+      <div class="details-section">
+        <h3>Candidate Information</h3>
+
+        <div class="details-grid">
+          <div>
+            <label>Applicant</label>
+            <span>
+              {{ selectedOffer.ApplicantName || '-' }}
+            </span>
+          </div>
+
+          <div>
+            <label>Job Opening</label>
+            <span>
+              {{ selectedOffer.JobTitle || '-' }}
+            </span>
+          </div>
+
+          <div>
+            <label>Department</label>
+            <span>
+              {{ selectedOffer.DepartmentName || '-' }}
+            </span>
+          </div>
+
+          <div>
+            <label>Designation</label>
+            <span>
+              {{ selectedOffer.DesignationName || '-' }}
+            </span>
+          </div>
+
+          <div>
+            <label>Application Status</label>
+            <span>
+              {{ selectedOffer.ApplicationStatus || '-' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- OFFER INFORMATION -->
+      <div class="details-section">
+        <h3>Offer Information</h3>
+
+        <div class="details-grid">
+          <div>
+            <label>Offered Salary</label>
+            <span>
+              {{
+                selectedOffer.OfferedSalary !== null && selectedOffer.OfferedSalary !== undefined
+                  ? (selectedOffer.OfferedSalary | number: '1.2-2')
+                  : '-'
+              }}
+            </span>
+          </div>
+
+          <div>
+            <label>Offer Date</label>
+            <span>
+              {{ selectedOffer.OfferDate ? (selectedOffer.OfferDate | date: 'dd-MM-yyyy') : '-' }}
+            </span>
+          </div>
+
+          <div>
+            <label>Joining Date</label>
+            <span>
+              {{
+                selectedOffer.JoiningDate ? (selectedOffer.JoiningDate | date: 'dd-MM-yyyy') : '-'
+              }}
+            </span>
+          </div>
+
+          <div>
+            <label>Offer Status</label>
+
+            <span class="badge" [ngClass]="getStatusClass(selectedOffer.OfferStatus)">
+              {{ selectedOffer.OfferStatus || '-' }}
+            </span>
+          </div>
+
+          <div>
+            <label>Remarks</label>
+            <span>
+              {{ selectedOffer.Remarks || '-' }}
+            </span>
+          </div>
+
+          <div>
+            <label>Created Date</label>
+            <span>
+              {{ selectedOffer.CreatedOn ? (selectedOffer.CreatedOn | date: 'dd-MM-yyyy') : '-' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="popup-footer">
+        <button
+          mat-stroked-button
+          type="button"
+          class="popup-close-btn"
+          (click)="closeOfferPopup()"
+        >
+          Close
+        </button>
+      </div>
     </div>
   </div>
 </div>

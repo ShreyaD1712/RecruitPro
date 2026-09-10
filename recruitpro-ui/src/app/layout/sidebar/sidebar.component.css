@@ -1,32 +1,114 @@
-:host{
-    display:block;
-    width:250px;
-    margin:0;
-    padding:0;
-    flex-shrink:0;
+:host {
+  display: block;
+  width: 250px;
+  min-width: 250px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 250px;
 }
 
-.sidebar{
-    width:100%;
-    background:white;
-    height:calc(100vh - 70px);
-    box-shadow:2px 0 10px rgba(0,0,0,.1);
-    display:flex;
-    flex-direction:column;
+.sidebar {
+  width: 100%;
+  height: calc(100vh - 70px);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-right: 1px solid #d8ddce;
+  box-shadow: 2px 0 10px rgba(63, 74, 47, 0.08);
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.sidebar a{
-    display:flex;
-    align-items:center;
-    gap:15px;
-    padding:18px 20px;
-    text-decoration:none;
-    color:#555;
-    transition:.3s;
+.sidebar a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-height: 56px;
+  padding: 15px 20px;
+  color: #596348;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  box-sizing: border-box;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
-.sidebar a:hover,
-.sidebar a.active{
-    background:#2563eb;
-    color:white;
+.sidebar a mat-icon {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  font-size: 22px;
+  color: #788066;
+  transition: color 0.2s ease;
+}
+
+.sidebar a:hover {
+  background: #f2f4ed;
+  color: #4f5b38;
+}
+
+.sidebar a:hover mat-icon {
+  color: #66734a;
+}
+
+.sidebar a.active {
+  background: #eef1e7;
+  color: #4f5b38;
+  font-weight: 700;
+}
+
+/* Active left indicator */
+
+.sidebar a.active::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 0;
+  width: 4px;
+  background: #66734a;
+  border-radius: 0 4px 4px 0;
+}
+
+.sidebar a.active mat-icon {
+  color: #66734a;
+}
+
+.sidebar a:active {
+  background: #e4e9da;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #cbd2be;
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #aeb89b;
+}
+
+@media (max-width: 768px) {
+  :host {
+    width: 220px;
+    min-width: 220px;
+    flex: 0 0 220px;
+  }
+
+  .sidebar a {
+    padding: 14px 18px;
+    gap: 12px;
+    font-size: 14px;
+  }
 }

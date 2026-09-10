@@ -21,7 +21,7 @@ import { RoleAddComponent } from './components/role/role-add/role-add.component'
 // User Components
 import { UserListComponent } from './components/user/user-list/user-list.component';
 import { UserAddComponent } from './components/user/user-add/user-add.component';
-
+// Profile Component
 import { ProfileComponent } from './components/profile/profile.component';
 // Role Permission Components
 import { RolePermissionListComponent } from './components/role-permission/role-permission-list/role-permission-list.component';
@@ -62,6 +62,8 @@ import { OfferListComponent } from './components/offers/offer-list/offer-list.co
 import { OfferAddComponent } from './components/offers/offer-add/offer-add.component';
 // Report
 import { ReportComponent } from './components/report/report.component';
+// Notification
+import { NotificationListComponent } from './components/notification/notification-list/notification-list.component';
 export const routes: Routes = [
   // Login Page
   {
@@ -311,6 +313,11 @@ export const routes: Routes = [
       {
         path: 'report',
         component: ReportComponent
+      },
+      // Notification
+      {
+        path: 'notifications',
+        component: NotificationListComponent
       },
       // Default Route
       {

@@ -1,133 +1,133 @@
 <div class="applicant-page">
   <div class="list-container">
-    <!-- ==================================================
-         HEADER
-    ================================================== -->
+    <!-- Header -->
     <div class="header">
       <div>
         <h2>Applicant Management</h2>
         <p>Manage company applicants</p>
       </div>
-      <!-- ADD APPLICANT -->
+
+      <!-- Add Applicant -->
       <button
         *ngIf="authService.hasPermission('CREATE_APPLICANT')"
         mat-raised-button
         color="primary"
+        class="add-button"
         type="button"
         (click)="addApplicant()"
       >
-        <mat-icon> add </mat-icon>
+        <mat-icon>add</mat-icon>
         Add Applicant
       </button>
     </div>
-    <!-- ==================================================
-         SEARCH
-    ================================================== -->
-    <mat-form-field appearance="outline" class="search-box">
-      <mat-label> Search Applicant </mat-label>
-      <input
-        matInput
-        [(ngModel)]="search"
-        placeholder="Search Name, Email, Mobile or Company"
-        (keyup.enter)="searchApplicants()"
-      />
-      <button mat-icon-button matSuffix type="button" (click)="searchApplicants()">
-        <mat-icon> search </mat-icon>
-      </button>
-    </mat-form-field>
-    <!-- ==================================================
-         TABLE
-    ================================================== -->
+
+    <!-- Search -->
+    <div class="filters">
+      <mat-form-field appearance="outline" class="search-box">
+        <mat-label>Search Applicant</mat-label>
+
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Search Name, Email, Mobile or Company"
+          (keyup.enter)="searchApplicants()"
+        />
+
+        <button mat-icon-button matSuffix type="button" (click)="searchApplicants()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <!-- Applicant Table -->
     <div class="table-container">
       <table mat-table [dataSource]="applicants" class="list-table">
-        <!-- ==================================================
-             NAME
-        ================================================== -->
+        <!-- Name -->
         <ng-container matColumnDef="Name">
           <th mat-header-cell *matHeaderCellDef (click)="sort('FirstName')">Name</th>
-          <td mat-cell *matCellDef="let row">
-            {{ row.FirstName }}
-            {{ row.LastName }}
-          </td>
+
+          <td mat-cell *matCellDef="let row">{{ row.FirstName }} {{ row.LastName }}</td>
         </ng-container>
-        <!-- ==================================================
-             EMAIL
-        ================================================== -->
+
+        <!-- Email -->
         <ng-container matColumnDef="Email">
           <th mat-header-cell *matHeaderCellDef (click)="sort('Email')">Email</th>
+
           <td mat-cell *matCellDef="let row">
             {{ row.Email }}
           </td>
         </ng-container>
-        <!-- ==================================================
-             MOBILE
-        ================================================== -->
+
+        <!-- Mobile -->
         <ng-container matColumnDef="MobileNo">
           <th mat-header-cell *matHeaderCellDef>Mobile No.</th>
+
           <td mat-cell *matCellDef="let row">
             {{ row.MobileNo }}
           </td>
         </ng-container>
-        <!-- ==================================================
-             CURRENT COMPANY
-        ================================================== -->
+
+        <!-- Current Company -->
         <ng-container matColumnDef="CurrentCompany">
           <th mat-header-cell *matHeaderCellDef (click)="sort('CurrentCompany')">
             Current Company
           </th>
+
           <td mat-cell *matCellDef="let row">
             {{ row.CurrentCompany || '-' }}
           </td>
         </ng-container>
-        <!-- ==================================================
-             CURRENT CITY
-        ================================================== -->
+
+        <!-- Current City -->
         <ng-container matColumnDef="CurrentCity">
           <th mat-header-cell *matHeaderCellDef (click)="sort('CurrentCity')">Current City</th>
+
           <td mat-cell *matCellDef="let row">
             {{ row.CurrentCity || '-' }}
           </td>
         </ng-container>
-        <!-- ==================================================
-             EXPECTED CTC
-        ================================================== -->
+
+        <!-- Expected CTC -->
         <ng-container matColumnDef="ExpectedCTC">
           <th mat-header-cell *matHeaderCellDef>Expected CTC</th>
+
           <td mat-cell *matCellDef="let row">
             <span *ngIf="row.ExpectedCTC !== null && row.ExpectedCTC !== undefined">
               {{ row.ExpectedCTC }}
             </span>
+
             <span *ngIf="row.ExpectedCTC === null || row.ExpectedCTC === undefined">
               Not Specified
             </span>
           </td>
         </ng-container>
-        <!-- ==================================================
-             NOTICE PERIOD
-        ================================================== -->
+
+        <!-- Notice Period -->
         <ng-container matColumnDef="NoticePeriod">
           <th mat-header-cell *matHeaderCellDef>Notice Period</th>
+
           <td mat-cell *matCellDef="let row">
             {{ row.NoticePeriod || '-' }}
           </td>
         </ng-container>
-        <!-- ==================================================
-             ACTIONS
-        ================================================== -->
+
+        <!-- Actions -->
         <ng-container matColumnDef="Actions">
           <th mat-header-cell *matHeaderCellDef>Actions</th>
+
           <td mat-cell *matCellDef="let row">
-            <!-- VIEW -->
+            <!-- View -->
             <button
               mat-icon-button
-              color="primary"
+              class="view-action"
               type="button"
               matTooltip="View Applicant"
               (click)="openApplicantPopup(row, $event)"
             >
-              <mat-icon> visibility </mat-icon>
+              <mat-icon>visibility</mat-icon>
             </button>
-            <!-- EDIT -->
+
+            <!-- Edit -->
             <button
               *ngIf="authService.hasPermission('UPDATE_APPLICANT')"
               mat-icon-button
@@ -136,9 +136,10 @@
               matTooltip="Edit"
               (click)="editApplicant(row.ApplicantId, $event)"
             >
-              <mat-icon> edit </mat-icon>
+              <mat-icon>edit</mat-icon>
             </button>
-            <!-- DELETE -->
+
+            <!-- Delete -->
             <button
               *ngIf="authService.hasPermission('DELETE_APPLICANT')"
               mat-icon-button
@@ -147,128 +148,122 @@
               matTooltip="Delete"
               (click)="deleteApplicant(row.ApplicantId, $event)"
             >
-              <mat-icon> delete </mat-icon>
+              <mat-icon>delete</mat-icon>
             </button>
           </td>
         </ng-container>
-        <!-- HEADER ROW -->
+
+        <!-- Header Row -->
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <!-- DATA ROW -->
+
+        <!-- Data Row -->
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
-    </div>
-    <!-- ==================================================
-         LOADING
-    ================================================== -->
-    <div class="loading" *ngIf="loading">Loading Applicants...</div>
-    <!-- ==================================================
-         NO DATA
-    ================================================== -->
-    <div class="no-data" *ngIf="!loading && applicants.length === 0">No Applicants Found</div>
-    <!-- ==================================================
-         PAGINATION
-    ================================================== -->
-    <div class="pagination">
-      <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
-        Previous
-      </button>
-      <span>
-        Page {{ page }}
-        of
-        {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
-      </span>
-      <button
-        mat-stroked-button
-        type="button"
-        (click)="nextPage()"
-        [disabled]="page * pageSize >= totalRecords"
-      >
-        Next
-      </button>
+
+      <!-- Loading -->
+      <div class="loading" *ngIf="loading">Loading Applicants...</div>
+
+      <!-- No Data -->
+      <div class="no-data" *ngIf="!loading && applicants.length === 0">No Applicants Found</div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <!-- Previous -->
+        <button mat-stroked-button type="button" (click)="previousPage()" [disabled]="page <= 1">
+          Previous
+        </button>
+
+        <!-- Page Number -->
+        <span>
+          Page {{ page }}
+
+          of
+
+          {{ totalRecords === 0 ? 1 : Math.ceil(totalRecords / pageSize) }}
+        </span>
+
+        <!-- Next -->
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="page * pageSize >= totalRecords"
+        >
+          Next
+        </button>
+      </div>
     </div>
   </div>
+
   <!-- ==================================================
-     APPLICANT DETAILS POPUP
-     NO SEPARATE COMPONENT
-================================================== -->
+       APPLICANT DETAILS POPUP
+  ================================================== -->
   <div class="popup-backdrop" *ngIf="showApplicantPopup" (click)="closePopupOnBackdrop($event)">
     <div class="applicant-popup">
-      <!-- ==================================================
-         POPUP HEADER
-    ================================================== -->
+      <!-- Popup Header -->
       <div class="popup-header">
         <h2>
           {{ selectedApplicant?.FirstName }}
           {{ selectedApplicant?.LastName }}
         </h2>
+
         <button mat-icon-button type="button" (click)="closeApplicantPopup()">
           <mat-icon>close</mat-icon>
         </button>
       </div>
-      <!-- ==================================================
-         LOADING
-    ================================================== -->
+
+      <!-- Loading -->
       <div class="loading" *ngIf="popupLoading">Loading Applicant Details...</div>
-      <!-- ==================================================
-         DETAILS
-    ================================================== -->
+
+      <!-- Details -->
       <div *ngIf="!popupLoading">
-        <!-- ==================================================
-           PERSONAL INFORMATION
-      ================================================== -->
+        <!-- Personal Information -->
         <div class="details-section">
           <h3>Personal Information</h3>
+
           <div class="details-grid">
             <div>
               <label>Email</label>
-              <span>
-                {{ selectedApplicant?.Email || '-' }}
-              </span>
+              <span>{{ selectedApplicant?.Email || '-' }}</span>
             </div>
+
             <div>
               <label>Mobile No</label>
-              <span>
-                {{ selectedApplicant?.MobileNo || '-' }}
-              </span>
+              <span>{{ selectedApplicant?.MobileNo || '-' }}</span>
             </div>
+
             <div>
               <label>Date of Birth</label>
-              <span>
-                {{ selectedApplicant?.DOB || '-' }}
-              </span>
+              <span>{{ selectedApplicant?.DOB || '-' }}</span>
             </div>
+
             <div>
               <label>Gender</label>
-              <span>
-                {{ selectedApplicant?.Gender || '-' }}
-              </span>
+              <span>{{ selectedApplicant?.Gender || '-' }}</span>
             </div>
+
             <div>
               <label>Current City</label>
-              <span>
-                {{ selectedApplicant?.CurrentCity || '-' }}
-              </span>
+              <span>{{ selectedApplicant?.CurrentCity || '-' }}</span>
             </div>
+
             <div>
               <label>LinkedIn</label>
-              <span>
-                {{ selectedApplicant?.LinkedInUrl || '-' }}
-              </span>
+              <span>{{ selectedApplicant?.LinkedInUrl || '-' }}</span>
             </div>
           </div>
         </div>
-        <!-- ==================================================
-           PROFESSIONAL INFORMATION
-      ================================================== -->
+
+        <!-- Professional Information -->
         <div class="details-section">
           <h3>Professional Information</h3>
+
           <div class="details-grid">
             <div>
               <label>Current Company</label>
-              <span>
-                {{ selectedApplicant?.CurrentCompany || '-' }}
-              </span>
+              <span>{{ selectedApplicant?.CurrentCompany || '-' }}</span>
             </div>
+
             <div>
               <label>Current CTC</label>
               <span>
@@ -280,6 +275,7 @@
                 }}
               </span>
             </div>
+
             <div>
               <label>Expected CTC</label>
               <span>
@@ -291,68 +287,54 @@
                 }}
               </span>
             </div>
+
             <div>
               <label>Notice Period</label>
-              <span>
-                {{ selectedApplicant?.NoticePeriod || '-' }}
-              </span>
+              <span>{{ selectedApplicant?.NoticePeriod || '-' }}</span>
             </div>
           </div>
         </div>
-        <!-- ==================================================
-           SKILLS
-      ================================================== -->
+
+        <!-- Skills -->
         <div class="details-section">
           <h3>Skills</h3>
-          <div *ngIf="applicantSkills.length > 0" style="display: flex; flex-wrap: wrap; gap: 10px">
-            <div
-              *ngFor="let skill of applicantSkills"
-              style="
-                background: #eaf2ff;
-                color: #1565c0;
-                border: 1px solid #bcd3f5;
-                border-radius: 18px;
-                padding: 8px 14px;
-                font-weight: 500;
-              "
-            >
+
+          <div class="skill-list" *ngIf="applicantSkills.length > 0">
+            <span class="skill-chip" *ngFor="let skill of applicantSkills">
               {{ getApplicantSkillName(skill) }}
-            </div>
+            </span>
           </div>
+
           <div *ngIf="applicantSkills.length === 0">No skills added.</div>
         </div>
-        <!-- ==================================================
-           EDUCATION
-      ================================================== -->
+
+        <!-- Education -->
         <div class="details-section">
           <h3>Education</h3>
+
           <div *ngIf="applicantEducations.length > 0">
-            <div *ngFor="let education of applicantEducations" style="margin-bottom: 20px">
+            <div class="detail-record" *ngFor="let education of applicantEducations">
               <div class="details-grid">
                 <div>
                   <label>Degree</label>
-                  <span>
-                    {{ education.Degree || '-' }}
-                  </span>
+                  <span>{{ education.Degree || '-' }}</span>
                 </div>
+
                 <div>
                   <label>Institute</label>
-                  <span>
-                    {{ education.Institute || '-' }}
-                  </span>
+                  <span>{{ education.Institute || '-' }}</span>
                 </div>
+
                 <div>
                   <label>University</label>
-                  <span>
-                    {{ education.University || '-' }}
-                  </span>
+                  <span>{{ education.University || '-' }}</span>
                 </div>
+
                 <div>
                   <label>Passing Year</label>
-                  <span>
-                    {{ education.PassingYear || '-' }}
-                  </span>
+                  <span>{{ education.PassingYear || '-' }}</span>
                 </div>
+
                 <div>
                   <label>Percentage</label>
                   <span>
@@ -364,40 +346,34 @@
                   </span>
                 </div>
               </div>
-              <hr
-                *ngIf="applicantEducations.length > 1"
-                style="border: none; border-top: 1px solid #e0e0e0; margin-top: 18px"
-              />
             </div>
           </div>
+
           <div *ngIf="applicantEducations.length === 0">No education details added.</div>
         </div>
-        <!-- ==================================================
-           WORK EXPERIENCE
-      ================================================== -->
+
+        <!-- Work Experience -->
         <div class="details-section">
           <h3>Work Experience</h3>
+
           <div *ngIf="applicantWorkExperiences.length > 0">
-            <div *ngFor="let experience of applicantWorkExperiences" style="margin-bottom: 20px">
+            <div class="detail-record" *ngFor="let experience of applicantWorkExperiences">
               <div class="details-grid">
                 <div>
                   <label>Company Name</label>
-                  <span>
-                    {{ experience.CompanyName || '-' }}
-                  </span>
+                  <span>{{ experience.CompanyName || '-' }}</span>
                 </div>
+
                 <div>
                   <label>Designation</label>
-                  <span>
-                    {{ experience.Designation || '-' }}
-                  </span>
+                  <span>{{ experience.Designation || '-' }}</span>
                 </div>
+
                 <div>
                   <label>Start Date</label>
-                  <span>
-                    {{ experience.StartDate || '-' }}
-                  </span>
+                  <span>{{ experience.StartDate || '-' }}</span>
                 </div>
+
                 <div>
                   <label>End Date</label>
                   <span>
@@ -406,76 +382,58 @@
                     }}
                   </span>
                 </div>
-                <div style="grid-column: 1 / -1">
+
+                <div class="full-width-detail">
                   <label>Responsibilities</label>
-                  <span>
-                    {{ experience.Responsibilities || '-' }}
-                  </span>
+                  <span>{{ experience.Responsibilities || '-' }}</span>
                 </div>
               </div>
-              <hr
-                *ngIf="applicantWorkExperiences.length > 1"
-                style="border: none; border-top: 1px solid #e0e0e0; margin-top: 18px"
-              />
             </div>
           </div>
+
           <div *ngIf="applicantWorkExperiences.length === 0">No work experience added.</div>
         </div>
-        <!-- ==================================================
-           UPLOADED DOCUMENTS
-      ================================================== -->
+
+        <!-- Documents -->
         <div class="details-section">
           <h3>Uploaded Documents</h3>
+
           <div *ngIf="applicantDocuments.length > 0">
-            <div
-              *ngFor="let document of applicantDocuments"
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 20px;
-                padding: 12px 0;
-                border-bottom: 1px solid #eeeeee;
-              "
-            >
+            <div class="document-row" *ngFor="let document of applicantDocuments">
               <div>
                 <label>
                   {{ document.DocumentType || 'Document' }}
                 </label>
-                <span style="display: block; margin-top: 4px">
+
+                <span>
                   {{ getDocumentName(document) }}
                 </span>
               </div>
+
               <button
-                *ngIf="isPdf(document)"
-                mat-raised-button
-                color="primary"
+                mat-stroked-button
                 type="button"
+                class="document-btn"
                 (click)="openDocument(document)"
               >
-                <mat-icon> picture_as_pdf </mat-icon>
+                <mat-icon>picture_as_pdf</mat-icon>
                 Open PDF
-              </button>
-              <button
-                *ngIf="!isPdf(document)"
-                mat-raised-button
-                color="primary"
-                type="button"
-                (click)="openDocument(document)"
-              >
-                <mat-icon> open_in_new </mat-icon>
-                Open
               </button>
             </div>
           </div>
+
           <div *ngIf="applicantDocuments.length === 0">No documents uploaded.</div>
         </div>
       </div>
-      <!-- ==================================================
-         POPUP FOOTER
-    ================================================== -->
+
+      <!-- Popup Footer -->
       <div class="popup-footer">
-        <button mat-raised-button color="primary" type="button" (click)="closeApplicantPopup()">
+        <button
+          mat-stroked-button
+          type="button"
+          class="popup-close-btn"
+          (click)="closeApplicantPopup()"
+        >
           Close
         </button>
       </div>

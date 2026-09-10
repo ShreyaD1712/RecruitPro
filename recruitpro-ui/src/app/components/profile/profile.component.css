@@ -1,16 +1,32 @@
+/* ==================================================
+   PROFILE CARD
+================================================== */
+
 .profile-card {
-  max-width: 750px;
+  width: calc(100% - 60px);
+  max-width: 900px;
   margin: 30px auto;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid #d8ddce;
+  border-radius: 16px;
+  box-sizing: border-box;
+  box-shadow: 0 8px 24px rgba(63, 74, 47, 0.1);
+  overflow: hidden;
 }
+
+/* ==================================================
+   PROFILE HEADER
+================================================== */
 
 .profile-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 25px;
+  padding: 32px 30px 26px;
+  margin: 0;
+  background: linear-gradient(135deg, #e8eddd 0%, #f5f7f0 100%);
+  border-bottom: 1px solid #d8ddce;
 }
 
 .profile-image-container {
@@ -20,120 +36,260 @@
   margin-bottom: 15px;
 }
 
-/* NEW */
+/* ==================================================
+   PROFILE IMAGE
+================================================== */
+
 .profile-image {
   width: 150px;
   height: 150px;
-  border-radius: 50%;
-  border: 4px solid #2563eb;
-  background: #f5f5f5;
-  overflow: hidden;
-
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #f5f6f1;
+  border: 4px solid #66734a;
+  border-radius: 50%;
+  box-shadow: 0 6px 16px rgba(63, 74, 47, 0.15);
+  box-sizing: border-box;
 }
 
-/* NEW */
 .profile-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* NEW */
+/* ==================================================
+   DEFAULT AVATAR
+================================================== */
+
 .default-avatar {
-  font-size: 150px !important;
   width: 150px;
   height: 150px;
-  color: #bdbdbd;
+  font-size: 150px !important;
+  color: #aeb89b;
 }
+
+/* ==================================================
+   CAMERA BUTTON
+================================================== */
 
 .camera-btn {
   position: absolute;
-  right: 0;
+  right: 2px;
   bottom: 5px;
-
-  width: 40px;
-  height: 40px;
-
-  border-radius: 50%;
-  background: #2563eb;
-  color: white;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  cursor: pointer;
-  transition: 0.3s;
-
   z-index: 10;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #66734a;
+  color: #ffffff;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(63, 74, 47, 0.22);
+  transition: 0.2s ease;
 }
 
 .camera-btn:hover {
-  background: #1d4ed8;
+  background: #4f5b38;
+  transform: scale(1.05);
 }
+
+.camera-btn mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  line-height: 20px;
+}
+
+/* ==================================================
+   PROFILE NAME
+================================================== */
 
 .profile-header h2 {
   margin: 10px 0 5px;
+  color: #3f4a2f;
   font-size: 28px;
-  font-weight: 600;
-  color: #222;
+  font-weight: 700;
 }
 
 .profile-header p {
   margin: 0;
-  color: #666;
+  color: #788066;
   font-size: 15px;
 }
 
+/* ==================================================
+   PROFILE BODY
+================================================== */
+
 .profile-body {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  margin: 30px 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 24px;
+  padding: 30px;
+  margin: 0;
+  background: #ffffff;
 }
 
 mat-form-field {
   width: 100%;
+  margin: 0;
 }
+
+/* ==================================================
+   MATERIAL FORM FIELD OLIVE FOCUS
+================================================== */
+
+::ng-deep .profile-card .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+::ng-deep .profile-card .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+::ng-deep .profile-card .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #66734a !important;
+}
+
+::ng-deep .profile-card .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: #66734a !important;
+}
+
+/* ==================================================
+   PROFILE ACTIONS
+================================================== */
 
 .profile-actions {
   display: flex;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
   gap: 15px;
-  margin-top: 25px;
+  padding: 20px 30px;
+  margin: 0;
+  background: #fafbf8;
+  border-top: 1px solid #d8ddce;
 }
 
 .profile-actions button {
-  min-width: 170px;
+  min-width: 160px;
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
+/* ==================================================
+   PRIMARY BUTTON
+================================================== */
+
+.profile-actions button[color='primary'] {
+  background: #66734a !important;
+  color: #ffffff !important;
+  border: 1px solid #66734a !important;
+  box-shadow: 0 4px 10px rgba(102, 115, 74, 0.22);
+}
+
+.profile-actions button[color='primary']:hover:not(:disabled) {
+  background: #4f5b38 !important;
+  border-color: #4f5b38 !important;
+  transform: translateY(-1px);
+}
+
+/* ==================================================
+   SECONDARY / STROKED BUTTON
+================================================== */
+
+.profile-actions button[mat-stroked-button]:not([color='warn']) {
+  background: #ffffff !important;
+  color: #5c6843 !important;
+  border-color: #aeb89b !important;
+}
+
+.profile-actions button[mat-stroked-button]:not([color='warn']):hover:not(:disabled) {
+  background: #eef1e7 !important;
+  color: #4f5b38 !important;
+  border-color: #8f9b79 !important;
+  transform: translateY(-1px);
+}
+
+/* ==================================================
+   LOGOUT BUTTON
+================================================== */
+
+.profile-actions button[color='warn'] {
+  background: #fff1f0 !important;
+  color: #b42318 !important;
+  border: 1px solid #f3b7b2 !important;
+  box-shadow: none !important;
+}
+
+.profile-actions button[color='warn']:hover:not(:disabled) {
+  background: #b42318 !important;
+  color: #ffffff !important;
+  border-color: #b42318 !important;
+  transform: translateY(-1px);
+}
+
+/* ==================================================
+   DISABLED BUTTONS
+================================================== */
+
+.profile-actions button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+
 @media (max-width: 768px) {
+  .profile-card {
+    width: calc(100% - 30px);
+    margin: 20px auto;
+  }
+
+  .profile-header {
+    padding: 26px 20px 22px;
+  }
+
   .profile-body {
     grid-template-columns: 1fr;
+    padding: 24px 20px;
   }
 
-  .profile-card {
-    margin: 20px;
-    padding: 20px;
-  }
-
-  .profile-image-container {
-    width: 120px;
-    height: 120px;
-  }
-
+  .profile-image-container,
   .profile-image {
     width: 120px;
     height: 120px;
   }
 
   .default-avatar {
-    font-size: 120px !important;
     width: 120px;
     height: 120px;
+    font-size: 120px !important;
+  }
+
+  .camera-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .profile-header h2 {
+    font-size: 24px;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+    padding: 18px 20px;
+  }
+
+  .profile-actions button {
+    width: 100%;
   }
 }

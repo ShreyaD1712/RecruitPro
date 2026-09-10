@@ -21,25 +21,6 @@
         Schedule Interview
       </button>
     </div>
-
-    <!-- ==================================================
-         SEARCH
-    ================================================== -->
-    <mat-form-field appearance="outline" class="search-box">
-      <mat-label>Search Interview</mat-label>
-
-      <input
-        matInput
-        [(ngModel)]="search"
-        placeholder="Applicant, Job Opening, Interviewer or Round"
-        (keyup.enter)="searchInterviews()"
-      />
-
-      <button mat-icon-button matSuffix type="button" (click)="searchInterviews()">
-        <mat-icon>search</mat-icon>
-      </button>
-    </mat-form-field>
-
     <!-- ==================================================
          FILTERS
     ================================================== -->
@@ -53,6 +34,21 @@
             {{ status }}
           </mat-option>
         </mat-select>
+      </mat-form-field>
+      <!-- SEARCH -->
+      <mat-form-field appearance="outline" class="search-box">
+        <mat-label>Search Interview</mat-label>
+
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Applicant, Job Opening, Interviewer or Round"
+          (keyup.enter)="searchInterviews()"
+        />
+
+        <button mat-icon-button matSuffix type="button" (click)="searchInterviews()">
+          <mat-icon>search</mat-icon>
+        </button>
       </mat-form-field>
     </div>
 
@@ -158,6 +154,7 @@
               "
               mat-icon-button
               color="primary"
+              class="feedback-btn"
               type="button"
               [disabled]="row.FeedbackLoading"
               [matTooltip]="

@@ -1,4 +1,4 @@
-<div class="application-page">
+<div class="referral-page">
   <div class="list-container">
     <!-- ==================================================
          HEADER
@@ -13,20 +13,22 @@
     <!-- ==================================================
          SEARCH
     ================================================== -->
-    <mat-form-field appearance="outline" class="search-box">
-      <mat-label>Search Referral</mat-label>
+    <div class="filters">
+      <mat-form-field appearance="outline" class="search-box">
+        <mat-label>Search Referral</mat-label>
 
-      <input
-        matInput
-        [(ngModel)]="search"
-        placeholder="Applicant Name or Referrer Name"
-        (keyup.enter)="searchReferrals()"
-      />
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Applicant Name or Referrer Name"
+          (keyup.enter)="searchReferrals()"
+        />
 
-      <button mat-icon-button matSuffix type="button" (click)="searchReferrals()">
-        <mat-icon>search</mat-icon>
-      </button>
-    </mat-form-field>
+        <button mat-icon-button matSuffix type="button" (click)="searchReferrals()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
 
     <!-- ==================================================
          TABLE

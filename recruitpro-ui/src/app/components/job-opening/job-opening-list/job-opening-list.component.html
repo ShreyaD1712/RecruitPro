@@ -8,7 +8,7 @@
         <h2>Job Opening Management</h2>
         <p>Manage company job openings</p>
       </div>
-      
+
       <!-- ADD -->
       <button
         *ngIf="authService.hasPermission('CREATE_JOB_OPENING')"
@@ -21,32 +21,17 @@
         Add Job Opening
       </button>
     </div>
-    <!-- SEARCH -->
-      <mat-form-field appearance="outline" class="search-box">
-        <mat-label>Search Job Opening</mat-label>
 
-        <input
-          matInput
-          [(ngModel)]="search"
-          placeholder="Search Job Title, Description or Location"
-          (keyup.enter)="searchJobOpenings()"
-        />
-
-        <button mat-icon-button matSuffix type="button" (click)="searchJobOpenings()">
-          <mat-icon>search</mat-icon>
-        </button>
-      </mat-form-field>
     <!-- ==================================================
      FILTERS
 ================================================== -->
     <div class="filters">
- 
       <!-- DEPARTMENT -->
       <mat-form-field appearance="outline" class="filter-box">
         <mat-label>Department</mat-label>
 
         <mat-select [(ngModel)]="selectedDepartmentId" (selectionChange)="departmentChanged()">
-          <mat-option [value]="null"> All Departments </mat-option>
+          <mat-option [value]="null">All Departments</mat-option>
 
           <mat-option *ngFor="let department of departments" [value]="department.DepartmentId">
             {{ department.DepartmentName }}
@@ -63,7 +48,7 @@
           (selectionChange)="designationChanged()"
           [disabled]="selectedDepartmentId === null"
         >
-          <mat-option [value]="null"> All Designations </mat-option>
+          <mat-option [value]="null">All Designations</mat-option>
 
           <mat-option *ngFor="let designation of designations" [value]="designation.DesignationId">
             {{ designation.DesignationName }}
@@ -76,12 +61,26 @@
         <mat-label>Status</mat-label>
 
         <mat-select [(ngModel)]="selectedStatus" (selectionChange)="statusChanged()">
-          <mat-option value="Open"> Open </mat-option>
-
-          <mat-option value="Closed"> Closed </mat-option>
-
-          <mat-option value="All"> All </mat-option>
+          <mat-option value="Open">Open</mat-option>
+          <mat-option value="Closed">Closed</mat-option>
+          <mat-option value="All">All</mat-option>
         </mat-select>
+      </mat-form-field>
+
+      <!-- SEARCH -->
+      <mat-form-field appearance="outline" class="search-box">
+        <mat-label>Search Job Opening</mat-label>
+
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Search Job Title, Description or Location"
+          (keyup.enter)="searchJobOpenings()"
+        />
+
+        <button mat-icon-button matSuffix type="button" (click)="searchJobOpenings()">
+          <mat-icon>search</mat-icon>
+        </button>
       </mat-form-field>
     </div>
     <!-- ==================================================

@@ -27,6 +27,7 @@ from app.routers import interview_feedback
 from app.routers import offer
 from app.routers import dashboard
 from app.routers import report
+from app.routers import notification
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="RecruitPro API")
@@ -66,6 +67,7 @@ app.include_router(interview_feedback.router)
 app.include_router(offer.router)
 app.include_router(dashboard.router)
 app.include_router(report.router)
+app.include_router(notification.router)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 

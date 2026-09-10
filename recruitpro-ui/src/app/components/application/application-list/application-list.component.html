@@ -22,24 +22,6 @@
     </div>
 
     <!-- ================================================== -->
-    <!-- SEARCH -->
-    <!-- ================================================== -->
-    <mat-form-field appearance="outline" class="search-box">
-      <mat-label>Search Application</mat-label>
-
-      <input
-        matInput
-        [(ngModel)]="search"
-        placeholder="Applicant, Email, Job Title or Status"
-        (keyup.enter)="searchApplications()"
-      />
-
-      <button mat-icon-button matSuffix type="button" (click)="searchApplications()">
-        <mat-icon>search</mat-icon>
-      </button>
-    </mat-form-field>
-
-    <!-- ================================================== -->
     <!-- FILTERS -->
     <!-- ================================================== -->
     <div class="filters">
@@ -75,6 +57,22 @@
             {{ status }}
           </mat-option>
         </mat-select>
+      </mat-form-field>
+
+      <!-- SEARCH -->
+      <mat-form-field appearance="outline" class="search-box">
+        <mat-label>Search Application</mat-label>
+
+        <input
+          matInput
+          [(ngModel)]="search"
+          placeholder="Applicant, Email, Job Title or Status"
+          (keyup.enter)="searchApplications()"
+        />
+
+        <button mat-icon-button matSuffix type="button" (click)="searchApplications()">
+          <mat-icon>search</mat-icon>
+        </button>
       </mat-form-field>
     </div>
 

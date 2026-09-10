@@ -1,62 +1,175 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-.login-container{
-    display:flex;
-    height:100vh;
-    background:linear-gradient(135deg,#2563eb,#4f46e5,#7c3aed);
-    font-family:Arial,Helvetica,sans-serif;
+
+.login-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #3f4a2f 0%, #66734a 50%, #8b9870 100%);
+  font-family: Arial, Helvetica, sans-serif;
 }
-.left-panel{
-    flex:1;
-    color:white;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    padding:80px;
+
+.left-panel {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px;
+  color: #ffffff;
 }
-.brand h1{
-    font-size:60px;
-    margin-bottom:20px;
+
+.brand {
+  max-width: 600px;
 }
-.brand h3{
-    font-size:26px;
-    margin-bottom:20px;
+
+.brand h1 {
+  margin: 0 0 20px;
+  font-size: 60px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  color: #ffffff;
 }
-.brand p{
-    font-size:18px;
-    line-height:30px;
+
+.brand h3 {
+  margin: 0 0 20px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #eef1e7;
 }
-.right-panel{
-    flex:1;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+
+.brand p {
+  margin: 0;
+  color: #f5f7f0;
+  font-size: 18px;
+  line-height: 30px;
 }
-.login-card{
-    width:420px;
-    padding:40px;
-    border-radius:20px;
-    box-shadow:0 20px 40px rgba(0,0,0,.3);
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
 }
-.login-card h2{
-    text-align:center;
-    margin-bottom:10px;
+
+.login-card {
+  width: 420px;
+  max-width: 100%;
+  padding: 40px;
+  background: #ffffff;
+  border: 1px solid #d8ddce;
+  border-radius: 20px;
+  box-shadow: 0 20px 45px rgba(31, 40, 22, 0.25);
 }
-.login-card p{
-    text-align:center;
-    margin-bottom:30px;
-    color:gray;
+
+.login-card h2 {
+  margin: 0 0 10px;
+  text-align: center;
+  color: #4f5b38;
+  font-size: 28px;
+  font-weight: 700;
 }
-mat-form-field{
-    width:100%;
-    margin-bottom:20px;
+
+.login-card p {
+  margin: 0 0 30px;
+  text-align: center;
+  color: #788066;
+  font-size: 14px;
 }
-.login-btn{
-    width:100%;
-    height:50px;
-    font-size:18px;
-    border-radius:10px;
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+::ng-deep .login-card .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  border-color: #66734a;
+}
+
+::ng-deep .login-card .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: #66734a !important;
+}
+
+::ng-deep .login-card .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+::ng-deep .login-card .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+::ng-deep .login-card .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: #66734a !important;
+}
+
+.login-btn {
+  width: 100%;
+  height: 50px;
+  background: #66734a !important;
+  color: #ffffff !important;
+  border-radius: 10px !important;
+  font-size: 17px;
+  font-weight: 600;
+  box-shadow: 0 5px 14px rgba(102, 115, 74, 0.28);
+  transition: 0.2s ease;
+}
+
+.login-btn:hover:not(:disabled) {
+  background: #4f5b38 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 7px 18px rgba(79, 91, 56, 0.32);
+}
+
+.login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+@media (max-width: 900px) {
+  .login-container {
+    flex-direction: column;
+  }
+
+  .left-panel {
+    flex: none;
+    padding: 45px 30px 25px;
+    text-align: center;
+  }
+
+  .brand h1 {
+    font-size: 45px;
+  }
+
+  .brand h3 {
+    font-size: 22px;
+  }
+
+  .brand p {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .right-panel {
+    flex: 1;
+    padding: 25px 20px 45px;
+  }
+}
+
+@media (max-width: 600px) {
+  .left-panel {
+    padding: 35px 20px 20px;
+  }
+
+  .brand h1 {
+    font-size: 38px;
+  }
+
+  .brand h3 {
+    font-size: 19px;
+  }
+
+  .login-card {
+    padding: 30px 25px;
+    border-radius: 16px;
+  }
+
+  .login-card h2 {
+    font-size: 25px;
+  }
 }

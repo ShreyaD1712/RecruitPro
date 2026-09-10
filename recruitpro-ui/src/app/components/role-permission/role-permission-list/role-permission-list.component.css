@@ -1,80 +1,112 @@
-/* ==================================================
-   PAGE
-================================================== */
+:host {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
 
-.permission-container {
-  padding: 30px;
-  background: #f4f7fc;
+.list-container {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
   min-height: 100vh;
+  padding: 30px;
+  margin: 0;
+  background: #f5f6f1;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* ==================================================
-   HEADER
+   MAIN CARD
+================================================== */
+
+.list-card {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+  background: #ffffff;
+  border-radius: 18px;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(63, 74, 47, 0.1);
+}
+
+/* ==================================================
+   HEADER - EXACT SAME AS LIST PAGE
 ================================================== */
 
 .header {
-  margin-bottom: 25px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 32px;
+  margin: 0;
+  background: linear-gradient(135deg, #e8eddd 0%, #f5f7f0 100%);
+  border-bottom: 1px solid #d8ddce;
+  box-sizing: border-box;
 }
 
 .header h2 {
   margin: 0;
-  color: #1f3fbf;
+  color: #4f5b38;
   font-size: 30px;
   font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
 .header p {
-  margin-top: 5px;
-  margin-bottom: 0;
-  color: #777;
+  margin: 6px 0 0;
+  color: #788066;
   font-size: 14px;
 }
 
 /* ==================================================
-   SELECTION CARD
+   FILTERS - EXACT SAME AS LIST PAGE
 ================================================== */
 
-.selection-card {
-  padding: 25px;
-  margin-bottom: 25px;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-}
-
-/* ==================================================
-   COMPANY + ROLE
-================================================== */
-
-.selection-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.selection-field {
+.filters {
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 32px 10px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.filter-box {
+  width: 310px;
 }
 
 /* ==================================================
-   PERMISSION CARD
+   PERMISSION OUTER CONTAINER
 ================================================== */
 
-.permission-card {
-  padding: 0;
+.permission-container {
+  width: calc(100% - 64px);
+  min-width: 0;
+  margin: 0 32px;
+  border: 1px solid #d8ddce;
+  border-radius: 12px;
   overflow: hidden;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  box-sizing: border-box;
 }
 
 /* ==================================================
-   TWO PANEL LAYOUT
+   PERMISSION LAYOUT
 ================================================== */
 
 .permission-layout {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
-  min-height: 560px;
+  min-height: 520px;
 }
 
 /* ==================================================
@@ -82,8 +114,8 @@
 ================================================== */
 
 .module-panel {
-  background: #f8faff;
-  border-right: 1px solid #e2e8f0;
+  background: #f7f8f3;
+  border-right: 1px solid #d8ddce;
 }
 
 /* ==================================================
@@ -91,21 +123,22 @@
 ================================================== */
 
 .panel-heading {
-  padding: 24px;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 20px 22px;
+  background: #f0f2ea;
+  border-bottom: 1px solid #cbd2be;
 }
 
 .panel-heading h3 {
   margin: 0;
-  color: #1f3fbf;
-  font-size: 21px;
+  color: #3f4a2f;
+  font-size: 19px;
   font-weight: 700;
 }
 
 .panel-heading p {
   margin: 5px 0 0;
-  color: #777;
-  font-size: 14px;
+  color: #788066;
+  font-size: 13px;
 }
 
 /* ==================================================
@@ -113,12 +146,12 @@
 ================================================== */
 
 .module-list {
-  max-height: 560px;
+  max-height: 520px;
   overflow-y: auto;
 }
 
 /* ==================================================
-   MODULE ITEM
+   MODULE ITEMS
 ================================================== */
 
 .module-item {
@@ -126,38 +159,27 @@
   min-height: 58px;
   padding: 12px 18px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-
+  justify-content: space-between;
   border: none;
-  border-bottom: 1px solid #edf1f7;
-
+  border-bottom: 1px solid #e4e7dd;
   background: transparent;
-
-  color: #374151;
-
+  color: #46503c;
   cursor: pointer;
-
   text-align: left;
-
-  transition: 0.2s;
+  transition: all 0.2s ease;
 }
 
 .module-item:hover {
-  background: #eef4ff;
+  background: #eef1e7;
 }
 
-/* ==================================================
-   ACTIVE MODULE
-================================================== */
-
 .module-item.active-module {
-  background: #eef4ff;
-  color: #1f3fbf;
-
-  border-left: 4px solid #2563eb;
-
   padding-left: 14px;
+  background: #e8eddd;
+  color: #4f5b38;
+  border-left: 4px solid #66734a;
+  font-weight: 600;
 }
 
 /* ==================================================
@@ -168,13 +190,15 @@
   display: flex;
   align-items: center;
   gap: 12px;
-
   font-size: 15px;
   font-weight: 500;
 }
 
 .module-info mat-icon {
-  color: #2563eb;
+  width: 21px;
+  height: 21px;
+  color: #66734a;
+  font-size: 21px;
 }
 
 /* ==================================================
@@ -184,17 +208,17 @@
 .permission-count {
   min-width: 26px;
   padding: 4px 8px;
-
-  background: #eaf2ff;
-
-  color: #1f3fbf;
-
-  border-radius: 12px;
-
+  background: #e4e9d9;
+  color: #4f5b38;
+  border-radius: 20px;
   font-size: 12px;
-  font-weight: 600;
-
+  font-weight: 700;
   text-align: center;
+}
+
+.active-module .permission-count {
+  background: #66734a;
+  color: #ffffff;
 }
 
 /* ==================================================
@@ -202,8 +226,10 @@
 ================================================== */
 
 .permission-panel {
-  padding: 30px;
+  min-width: 0;
+  padding: 25px;
   background: #ffffff;
+  box-sizing: border-box;
 }
 
 /* ==================================================
@@ -214,77 +240,85 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-
   gap: 20px;
-
-  padding-bottom: 22px;
-  margin-bottom: 25px;
-
-  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e4e7dd;
 }
 
 .permission-panel-header h3 {
   margin: 0;
-
-  color: #1f3fbf;
-
-  font-size: 22px;
+  color: #3f4a2f;
+  font-size: 20px;
   font-weight: 700;
 }
 
 .permission-panel-header p {
   margin: 5px 0 0;
-
-  color: #777;
-
+  color: #788066;
   font-size: 14px;
 }
 
 /* ==================================================
-   PERMISSION ACTIONS
+   SELECT / CLEAR BUTTONS
 ================================================== */
 
 .permission-actions {
   display: flex;
+  align-items: center;
   gap: 10px;
 }
 
 .permission-actions button {
+  height: 40px;
   border-radius: 8px;
+  font-weight: 600;
+}
+
+.permission-actions button[color='primary'] {
+  background: #eef1e7;
+  color: #5c6843;
+  border-color: #aeb89b;
+}
+
+.permission-actions button[color='primary']:hover:not(:disabled) {
+  background: #66734a;
+  color: #ffffff;
+  border-color: #66734a;
+}
+
+.permission-actions button[color='warn'] {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.permission-actions button[color='warn']:hover:not(:disabled) {
+  background: #dc2626;
+  color: #ffffff;
 }
 
 /* ==================================================
-   PERMISSION LIST
+   PERMISSIONS
 ================================================== */
 
 .current-permission-list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 15px;
 }
 
-/* ==================================================
-   PERMISSION ITEM
-================================================== */
-
 .permission-item {
-  padding: 17px;
-
-  background: #f8faff;
-
-  border: 1px solid #e2e8f0;
-
+  padding: 16px;
+  background: #fafbf8;
+  border: 1px solid #dfe3d6;
   border-radius: 10px;
-
-  transition: 0.25s;
+  transition: all 0.2s ease;
 }
 
 .permission-item:hover {
-  background: #eef4ff;
-
-  border-color: #2563eb;
-
-  transform: translateY(-2px);
+  background: #f0f2ea;
+  border-color: #aeb89b;
 }
 
 .permission-item mat-checkbox {
@@ -292,160 +326,146 @@
 }
 
 /* ==================================================
-   PERMISSION CONTENT
+   CHECKBOX
+================================================== */
+
+::ng-deep .permission-item .mat-mdc-checkbox {
+  --mdc-checkbox-selected-checkmark-color: #ffffff;
+  --mdc-checkbox-selected-focus-icon-color: #66734a;
+  --mdc-checkbox-selected-hover-icon-color: #66734a;
+  --mdc-checkbox-selected-icon-color: #66734a;
+  --mdc-checkbox-selected-pressed-icon-color: #4f5b38;
+}
+
+/* ==================================================
+   PERMISSION TEXT
 ================================================== */
 
 .permission-content {
   display: flex;
   flex-direction: column;
-
   gap: 3px;
-
   padding-left: 4px;
 }
 
 .permission-name {
-  color: #374151;
-
+  color: #46503c;
   font-size: 15px;
   font-weight: 600;
 }
 
 .permission-code {
-  color: #777;
-
+  color: #858b78;
   font-size: 11px;
 }
 
 /* ==================================================
-   MODULE EMPTY
-================================================== */
-
-.module-empty {
-  height: 100%;
-
-  min-height: 420px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  text-align: center;
-
-  color: #777;
-}
-
-.module-empty mat-icon {
-  width: 50px;
-  height: 50px;
-
-  font-size: 50px;
-
-  color: #2563eb;
-
-  margin-bottom: 15px;
-}
-
-.module-empty h3 {
-  margin: 0;
-
-  color: #1f3fbf;
-
-  font-size: 22px;
-}
-
-.module-empty p {
-  margin-top: 8px;
-}
-
-/* ==================================================
-   NO PERMISSIONS
-================================================== */
-
-.no-permissions {
-  padding: 40px;
-
-  text-align: center;
-
-  color: #777;
-}
-
-/* ==================================================
-   BUTTONS
+   SAVE FOOTER
 ================================================== */
 
 .buttons {
   display: flex;
   justify-content: flex-end;
-
-  padding: 22px 30px;
-
-  border-top: 1px solid #e2e8f0;
-
+  align-items: center;
+  padding: 20px 24px;
   background: #ffffff;
+  border-top: 1px solid #d8ddce;
 }
 
 .buttons button {
   min-width: 180px;
-  height: 45px;
-
-  border-radius: 10px;
-
+  height: 44px;
+  border-radius: 9px;
   font-weight: 600;
 }
 
-/* ==================================================
-   LOADING
-================================================== */
+.buttons button[color='primary'] {
+  background: #66734a !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(102, 115, 74, 0.24);
+}
 
-.loading {
-  padding: 45px;
-
-  text-align: center;
-
-  color: #777;
-
-  font-size: 16px;
+.buttons button[color='primary']:hover:not(:disabled) {
+  background: #4f5b38 !important;
 }
 
 /* ==================================================
-   EMPTY ROLE
+   EMPTY
 ================================================== */
 
 .empty-card {
+  width: calc(100% - 64px);
+  margin: 0 32px 30px;
   padding: 50px;
-
+  background: #ffffff;
+  border: 1px solid #d8ddce;
+  border-radius: 12px;
   text-align: center;
-
-  border-radius: 15px;
-
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-
-  color: #777;
+  box-sizing: border-box;
 }
 
 .empty-card mat-icon {
   width: 50px;
   height: 50px;
-
+  margin-bottom: 12px;
+  color: #66734a;
   font-size: 50px;
-
-  color: #2563eb;
-
-  margin-bottom: 15px;
 }
 
 .empty-card h3 {
-  margin: 5px 0;
-
-  color: #1f3fbf;
-
-  font-size: 22px;
+  margin: 0;
+  color: #4f5b38;
+  font-size: 21px;
+  font-weight: 700;
 }
 
 .empty-card p {
-  margin: 5px 0;
+  margin: 7px 0 0;
+  color: #788066;
+}
+
+.module-empty {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.module-empty mat-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 12px;
+  color: #66734a;
+  font-size: 50px;
+}
+
+.module-empty h3 {
+  margin: 0;
+  color: #4f5b38;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.module-empty p {
+  margin: 7px 0 0;
+  color: #788066;
+}
+
+.loading,
+.no-permissions {
+  padding: 40px;
+  color: #788066;
+  text-align: center;
+}
+
+/* ==================================================
+   BOTTOM SPACE
+================================================== */
+
+.permission-container {
+  margin-bottom: 30px;
 }
 
 /* ==================================================
@@ -461,7 +481,7 @@
 }
 
 .module-list::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #b8c0a9;
   border-radius: 10px;
 }
 
@@ -470,9 +490,12 @@
 ================================================== */
 
 @media (max-width: 992px) {
-  .selection-grid {
-    grid-template-columns: 1fr;
-    gap: 5px;
+  .filters {
+    flex-wrap: wrap;
+  }
+
+  .filter-box {
+    width: 100%;
   }
 
   .permission-layout {
@@ -493,16 +516,27 @@
 ================================================== */
 
 @media (max-width: 768px) {
-  .permission-container {
+  .list-container {
     padding: 15px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 22px;
   }
 
   .header h2 {
     font-size: 25px;
   }
 
-  .selection-card {
-    padding: 18px;
+  .filters {
+    padding: 22px 22px 8px;
+  }
+
+  .permission-container {
+    width: calc(100% - 44px);
+    margin: 0 22px 22px;
   }
 
   .permission-layout {
@@ -511,7 +545,7 @@
 
   .module-panel {
     border-right: none;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid #d8ddce;
   }
 
   .module-list {
@@ -545,5 +579,10 @@
 
   .buttons button {
     width: 100%;
+  }
+
+  .empty-card {
+    width: calc(100% - 44px);
+    margin: 0 22px 22px;
   }
 }

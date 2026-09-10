@@ -184,33 +184,100 @@
       <h2>Applicant Details</h2>
     </div>
 
-    <div class="form-body">
-      <div class="buttons">
-        <button mat-raised-button color="primary" type="button" (click)="showSection('skills')">
-          Skills
-        </button>
+    <div
+      style="
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 16px 30px;
+        background: #ffffff;
+      "
+    >
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="showSection('skills')"
+        [style.background]="activeSection === 'skills' ? '#66734a' : '#ffffff'"
+        [style.color]="activeSection === 'skills' ? '#ffffff' : '#4f5b38'"
+        style="
+          min-width: 110px;
+          height: 40px;
+          border-color: #aeb89b;
+          border-radius: 8px;
+          font-weight: 600;
+        "
+      >
+        Skills
+      </button>
 
-        <button mat-raised-button color="primary" type="button" (click)="showSection('education')">
-          Education
-        </button>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="showSection('education')"
+        [style.background]="activeSection === 'education' ? '#66734a' : '#ffffff'"
+        [style.color]="activeSection === 'education' ? '#ffffff' : '#4f5b38'"
+        style="
+          min-width: 120px;
+          height: 40px;
+          border-color: #aeb89b;
+          border-radius: 8px;
+          font-weight: 600;
+        "
+      >
+        Education
+      </button>
 
-        <button
-          mat-raised-button
-          color="primary"
-          type="button"
-          (click)="showSection('work-experience')"
-        >
-          Work Experience
-        </button>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="showSection('work-experience')"
+        [style.background]="activeSection === 'work-experience' ? '#66734a' : '#ffffff'"
+        [style.color]="activeSection === 'work-experience' ? '#ffffff' : '#4f5b38'"
+        style="
+          min-width: 165px;
+          height: 40px;
+          border-color: #aeb89b;
+          border-radius: 8px;
+          font-weight: 600;
+        "
+      >
+        Work Experience
+      </button>
 
-        <button mat-raised-button color="primary" type="button" (click)="showSection('documents')">
-          Documents
-        </button>
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="showSection('documents')"
+        [style.background]="activeSection === 'documents' ? '#66734a' : '#ffffff'"
+        [style.color]="activeSection === 'documents' ? '#ffffff' : '#4f5b38'"
+        style="
+          min-width: 120px;
+          height: 40px;
+          border-color: #aeb89b;
+          border-radius: 8px;
+          font-weight: 600;
+        "
+      >
+        Documents
+      </button>
 
-        <button mat-raised-button color="accent" type="button" (click)="finishApplicant()">
-          Finish
-        </button>
-      </div>
+      <button
+        mat-raised-button
+        type="button"
+        (click)="finishApplicant()"
+        style="
+          min-width: 100px;
+          height: 40px;
+          margin-left: auto;
+          background: #4f5b38;
+          color: #ffffff;
+          border-radius: 8px;
+          font-weight: 600;
+        "
+      >
+        Finish
+      </button>
     </div>
   </div>
 
@@ -222,14 +289,15 @@
       <h2>Skills</h2>
     </div>
 
-    <div class="form-body">
-      <p>
-        Available Skills:
-        {{ getSelectableSkills().length }}
+    <div style="padding: 25px 30px; background: #ffffff">
+      <!-- AVAILABLE SKILLS -->
+      <p style="margin: 0 0 12px; color: #596348; font-size: 14px; font-weight: 600">
+        Available Skills: {{ getSelectableSkills().length }}
       </p>
 
-      <div class="form-grid">
-        <mat-form-field appearance="outline" class="description-field">
+      <!-- SKILL SELECT -->
+      <div style="display: flex; align-items: flex-start; gap: 15px; max-width: 900px">
+        <mat-form-field appearance="outline" style="width: 100%; margin: 0">
           <mat-label>Select Skills</mat-label>
 
           <mat-select
@@ -242,64 +310,81 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-      </div>
 
-      <div class="buttons">
+        <!-- ADD SKILLS -->
         <button
           mat-raised-button
-          color="primary"
           type="button"
           (click)="addSkill()"
           [disabled]="skillLoading || selectedSkillIds.length === 0"
+          style="
+            min-width: 125px;
+            height: 56px;
+            background: #66734a;
+            color: #ffffff;
+            border-radius: 8px;
+            font-weight: 600;
+            white-space: nowrap;
+          "
         >
           {{ skillLoading ? 'Saving...' : 'Add Skills' }}
         </button>
       </div>
+    </div>
 
-      <!-- APPLICANT SKILLS -->
-      <div *ngIf="skills.length > 0" style="margin-top: 25px">
-        <h3 style="color: #1565c0; font-size: 22px; font-weight: 600; margin-bottom: 15px">
-          Applicant Skills
-        </h3>
+    <!-- APPLICANT SKILLS -->
+    <div
+      *ngIf="skills.length > 0"
+      style="padding: 22px 30px 26px; background: #fafbf8; border-top: 1px solid #d8ddce"
+    >
+      <h3 style="margin: 0 0 15px; color: #4f5b38; font-size: 20px; font-weight: 700">
+        Applicant Skills
+      </h3>
 
-        <div style="display: flex; flex-wrap: wrap; gap: 10px">
-          <div
-            *ngFor="let skill of skills"
+      <div style="display: flex; flex-wrap: wrap; gap: 10px">
+        <div
+          *ngFor="let skill of skills"
+          style="
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #eef1e7;
+            color: #4f5b38;
+            border: 1px solid #cbd2be;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+          "
+        >
+          <span>
+            {{ skill.SkillName || getSkillName(skill.SkillId) }}
+          </span>
+
+          <button
+            *ngIf="authService.hasPermission('UPDATE_APPLICANT')"
+            type="button"
+            (click)="removeSkill(skill)"
+            title="Remove Skill"
             style="
-              background: #eaf2ff;
-              color: #1565c0;
-              border: 1px solid #bcd3f5;
-              padding: 8px 12px;
-              border-radius: 18px;
-              font-weight: 500;
-              display: flex;
+              width: 20px;
+              height: 20px;
+              padding: 0;
+              display: inline-flex;
               align-items: center;
-              gap: 8px;
+              justify-content: center;
+              border: none;
+              border-radius: 50%;
+              background: #fef2f2;
+              color: #dc2626;
+              font-size: 17px;
+              font-weight: 700;
+              line-height: 1;
+              cursor: pointer;
             "
           >
-            <span>
-              {{ skill.SkillName || getSkillName(skill.SkillId) }}
-            </span>
-
-            <button
-              *ngIf="authService.hasPermission('UPDATE_APPLICANT')"
-              type="button"
-              (click)="removeSkill(skill)"
-              title="Remove Skill"
-              style="
-                border: none;
-                background: transparent;
-                color: #d32f2f;
-                font-size: 18px;
-                font-weight: bold;
-                cursor: pointer;
-                padding: 0;
-                line-height: 1;
-              "
-            >
-              ×
-            </button>
-          </div>
+            ×
+          </button>
         </div>
       </div>
     </div>
@@ -416,45 +501,57 @@
     </form>
 
     <!-- ADDED EDUCATION -->
-    <div *ngIf="educations.length > 0" class="form-body">
-      <h3 style="color: #1565c0; font-size: 22px; font-weight: 600; margin-bottom: 15px">
+    <div *ngIf="educations.length > 0" class="form-body" style="border-top: 1px solid #e4e7dd">
+      <h3 style="margin: 0 0 18px; color: #4f5b38; font-size: 21px; font-weight: 700">
         Added Education
       </h3>
 
       <div
         *ngFor="let education of educations"
         style="
-          background: #f7faff;
-          border: 1px solid #d8e6f8;
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 20px;
+          padding: 17px 18px;
+          margin-bottom: 12px;
+          background: #fafbf8;
+          border: 1px solid #dfe3d6;
           border-radius: 10px;
-          padding: 14px 16px;
-          margin-bottom: 10px;
+          box-sizing: border-box;
         "
       >
-        <strong style="color: #1565c0">
-          {{ education.Degree }}
-        </strong>
+        <div style="min-width: 0; display: flex; flex-direction: column; gap: 5px">
+          <strong style="color: #4f5b38; font-size: 15px; font-weight: 700">
+            {{ education.Degree }}
+          </strong>
 
-        -
-        {{ education.Institute }}
-        -
-        {{ education.University }}
-        -
-        {{ education.PassingYear }}
-        -
-        {{ education.Percentage }}%
-
-        <div style="margin-top: 10px">
-          <button
-            *ngIf="authService.hasPermission('UPDATE_APPLICANT')"
-            mat-raised-button
-            color="primary"
-            type="button"
-            (click)="editEducation(education)"
-          >
-            Edit
-          </button>
+          <span style="color: #596348; font-size: 14px">
+            {{ education.Institute }}
+            • {{ education.University }} • {{ education.PassingYear }} • {{ education.Percentage }}%
+          </span>
         </div>
+
+        <button
+          *ngIf="authService.hasPermission('UPDATE_APPLICANT')"
+          mat-stroked-button
+          type="button"
+          (click)="editEducation(education)"
+          style="
+            min-width: 85px;
+            height: 38px;
+            flex-shrink: 0;
+            background: #fff7e6;
+            color: #d97706;
+            border-color: #f5d89a;
+            border-radius: 8px;
+            font-weight: 600;
+          "
+        >
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
       </div>
     </div>
   </div>
@@ -495,7 +592,7 @@
 
           <!-- CURRENTLY WORKING -->
           <div class="active-field">
-            <span class="field-label">Employment Status</span>
+            <span class="field-label"> Employment Status </span>
 
             <mat-checkbox formControlName="CurrentlyWorking"> Currently Working </mat-checkbox>
           </div>
@@ -536,7 +633,7 @@
         </div>
 
         <!-- RESPONSIBILITIES -->
-        <div class="form-grid second-row">
+        <div class="form-grid">
           <mat-form-field appearance="outline" class="description-field">
             <mat-label>Responsibilities</mat-label>
 
@@ -579,49 +676,71 @@
     </form>
 
     <!-- ADDED WORK EXPERIENCE -->
-    <div *ngIf="workExperiences.length > 0" class="form-body">
-      <h3 style="color: #1565c0; font-size: 22px; font-weight: 600; margin-bottom: 15px">
+    <div *ngIf="workExperiences.length > 0" class="form-body" style="border-top: 1px solid #e4e7dd">
+      <h3 style="margin: 0 0 18px; color: #4f5b38; font-size: 21px; font-weight: 700">
         Added Work Experience
       </h3>
 
       <div
         *ngFor="let experience of workExperiences"
         style="
-          background: #f7faff;
-          border: 1px solid #d8e6f8;
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 20px;
+          padding: 17px 18px;
+          margin-bottom: 12px;
+          background: #fafbf8;
+          border: 1px solid #dfe3d6;
           border-radius: 10px;
-          padding: 14px 16px;
-          margin-bottom: 10px;
+          box-sizing: border-box;
         "
       >
-        <strong style="color: #1565c0">
-          {{ experience.Designation }}
-        </strong>
+        <div style="min-width: 0; display: flex; flex-direction: column; gap: 5px">
+          <strong style="color: #4f5b38; font-size: 15px; font-weight: 700">
+            {{ experience.Designation }}
+          </strong>
 
-        -
-        {{ experience.CompanyName }}
+          <span style="color: #596348; font-size: 14px">
+            {{ experience.CompanyName }}
+          </span>
 
-        <div>
-          {{ experience.StartDate | date: 'dd-MM-yyyy' }}
-          -
-          {{ experience.CurrentlyWorking ? 'Present' : (experience.EndDate | date: 'dd-MM-yyyy') }}
-        </div>
+          <span style="color: #788066; font-size: 13px">
+            {{ experience.StartDate | date: 'dd-MM-yyyy' }}
+            -
+            {{
+              experience.CurrentlyWorking ? 'Present' : (experience.EndDate | date: 'dd-MM-yyyy')
+            }}
+          </span>
 
-        <div *ngIf="experience.Responsibilities" style="margin-top: 5px">
-          {{ experience.Responsibilities }}
-        </div>
-
-        <div style="margin-top: 10px">
-          <button
-            *ngIf="authService.hasPermission('UPDATE_APPLICANT')"
-            mat-raised-button
-            color="primary"
-            type="button"
-            (click)="editWorkExperience(experience)"
+          <span
+            *ngIf="experience.Responsibilities"
+            style="color: #788066; font-size: 13px; line-height: 1.5"
           >
-            Edit
-          </button>
+            {{ experience.Responsibilities }}
+          </span>
         </div>
+
+        <button
+          *ngIf="authService.hasPermission('UPDATE_APPLICANT')"
+          mat-stroked-button
+          type="button"
+          (click)="editWorkExperience(experience)"
+          style="
+            min-width: 85px;
+            height: 38px;
+            flex-shrink: 0;
+            background: #fff7e6;
+            color: #d97706;
+            border-color: #f5d89a;
+            border-radius: 8px;
+            font-weight: 600;
+          "
+        >
+          <mat-icon>edit</mat-icon>
+          Edit
+        </button>
       </div>
     </div>
   </div>
@@ -675,8 +794,10 @@
       </div>
 
       <div class="buttons">
+        <!-- CHOOSE FILE -->
         <button mat-stroked-button type="button" (click)="fileInput.click()">Choose File</button>
 
+        <!-- UPLOAD -->
         <button
           mat-raised-button
           color="primary"
@@ -690,29 +811,34 @@
     </form>
 
     <!-- UPLOADED DOCUMENTS -->
-    <div *ngIf="documents.length > 0" class="form-body">
-      <h3 style="color: #1565c0; font-size: 22px; font-weight: 600; margin-bottom: 15px">
+    <div *ngIf="documents.length > 0" class="form-body" style="border-top: 1px solid #e4e7dd">
+      <h3 style="margin: 0 0 18px; color: #4f5b38; font-size: 21px; font-weight: 700">
         Uploaded Documents
       </h3>
 
       <div
         *ngFor="let document of documents"
         style="
-          background: #f7faff;
-          border: 1px solid #d8e6f8;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          padding: 17px 18px;
+          margin-bottom: 12px;
+          background: #fafbf8;
+          border: 1px solid #dfe3d6;
           border-radius: 10px;
-          padding: 14px 16px;
-          margin-bottom: 10px;
+          box-sizing: border-box;
         "
       >
-        <strong style="color: #1565c0">
-          {{ document.DocumentType }}
-        </strong>
+        <div style="display: flex; flex-direction: column; gap: 5px">
+          <strong style="color: #4f5b38; font-size: 15px; font-weight: 700">
+            {{ document.DocumentType }}
+          </strong>
 
-        <span *ngIf="document.FileName">
-          -
-          {{ document.FileName }}
-        </span>
+          <span *ngIf="document.FileName" style="color: #596348; font-size: 14px">
+            {{ document.FileName }}
+          </span>
+        </div>
       </div>
     </div>
   </div>

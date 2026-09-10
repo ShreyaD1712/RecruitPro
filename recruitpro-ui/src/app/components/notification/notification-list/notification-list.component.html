@@ -1,0 +1,166 @@
+<div class="notification-page">
+  <div class="list-container">
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
+    <div class="header">
+      <div>
+        <h2>Notifications</h2>
+
+        <p>View and manage your notifications</p>
+      </div>
+
+      <button
+        mat-flat-button
+        class="mark-all-button"
+        type="button"
+        [disabled]="loading"
+        (click)="markAllAsRead()"
+      >
+        <mat-icon>done_all</mat-icon>
+        Mark All as Read
+      </button>
+    </div>
+
+    <!-- ==================================================
+         FILTERS
+    ================================================== -->
+    <div class="filters">
+      <!-- READ STATUS -->
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+
+        <mat-select [(ngModel)]="selectedReadStatus" (selectionChange)="onFilterChange()">
+          <mat-option value="All"> All </mat-option>
+
+          <mat-option value="Unread"> Unread </mat-option>
+
+          <mat-option value="Read"> Read </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- NOTIFICATION TYPE -->
+      <mat-form-field appearance="outline">
+        <mat-label>Notification Type</mat-label>
+
+        <mat-select [(ngModel)]="selectedNotificationType" (selectionChange)="onFilterChange()">
+          <mat-option *ngFor="let type of notificationTypes" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- SEARCH -->
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Notifications</mat-label>
+
+        <input
+          matInput
+          [(ngModel)]="search"
+          (keyup.enter)="onSearch()"
+          placeholder="Search title or message"
+        />
+
+        <button *ngIf="search" matSuffix mat-icon-button type="button" (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+
+        <button matSuffix mat-icon-button type="button" (click)="onSearch()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <!-- ==================================================
+         LOADING
+    ================================================== -->
+    <div class="loading-state" *ngIf="loading">Loading notifications...</div>
+
+    <!-- ==================================================
+         EMPTY STATE
+    ================================================== -->
+    <div class="empty-state" *ngIf="!loading && notifications.length === 0">
+      <mat-icon> notifications_none </mat-icon>
+
+      <h3>No Notifications Found</h3>
+
+      <p>You don't have any notifications matching the selected filters.</p>
+    </div>
+
+    <!-- ==================================================
+         NOTIFICATION LIST
+    ================================================== -->
+    <div class="notification-list" *ngIf="!loading && notifications.length > 0">
+      <div
+        class="notification-row"
+        *ngFor="let notification of notifications"
+        [class.unread]="!notification.IsRead"
+        (click)="markAsRead(notification)"
+      >
+        <!-- ICON -->
+        <div class="notification-icon">
+          <mat-icon>
+            {{
+              notification.NotificationType === 'Interview'
+                ? 'event'
+                : notification.NotificationType === 'Application'
+                  ? 'assignment'
+                  : notification.NotificationType === 'Offer'
+                    ? 'description'
+                    : notification.NotificationType === 'Referral'
+                      ? 'group'
+                      : 'notifications'
+            }}
+          </mat-icon>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="notification-content">
+          <div class="notification-top">
+            <div class="notification-title">
+              {{ notification.Title }}
+
+              <span class="unread-dot" *ngIf="!notification.IsRead"></span>
+            </div>
+
+            <div class="notification-date">
+              {{ notification.CreatedOn | date: 'dd MMM yyyy, hh:mm a' }}
+            </div>
+          </div>
+
+          <div class="notification-message">
+            {{ notification.Message }}
+          </div>
+
+          <div class="notification-type" *ngIf="notification.NotificationType">
+            {{ notification.NotificationType }}
+          </div>
+        </div>
+
+        <!-- STATUS -->
+        <div class="notification-status">
+          <span class="status-badge unread-status" *ngIf="!notification.IsRead"> Unread </span>
+
+          <span class="status-badge read-status" *ngIf="notification.IsRead"> Read </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================================================
+         PAGINATION
+    ================================================== -->
+    <div class="pagination" *ngIf="!loading && totalRecords > 0">
+      <button mat-stroked-button type="button" [disabled]="page <= 1" (click)="previousPage()">
+        <mat-icon>chevron_left</mat-icon>
+        Previous
+      </button>
+
+      <span> Page {{ page }} of {{ totalPages }} </span>
+
+      <button mat-stroked-button type="button" [disabled]="page >= totalPages" (click)="nextPage()">
+        Next
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

@@ -7,10 +7,14 @@ from app.schemas.referral_schema import (
     ReferralUpdate,
 )
 
+from app.services.notification_service import NotificationService
+from app.schemas.notification_schema import NotificationCreate
+
 
 class ReferralService:
     def __init__(self):
         self.repository = ReferralRepository()
+        self.notification_service = NotificationService()
 
     # ==================================================
     # PERMISSION CHECK
@@ -44,6 +48,37 @@ class ReferralService:
             )
 
         return company_id
+
+    # ==================================================
+    # CREATE REFERRAL NOTIFICATION
+    # ==================================================
+    def create_referral_notification(
+        self,
+        db: Session,
+        user_id: int,
+        applicant,
+        application_id: int,
+        title: str,
+        message: str,
+        current_user: dict,
+    ):
+        applicant_name = f"{applicant.FirstName} {applicant.LastName}"
+
+        notification = NotificationCreate(
+            UserId=user_id,
+            Title=title,
+            Message=message.format(
+                applicant_name=applicant_name,
+                application_id=application_id,
+            ),
+            NotificationType="Referral",
+        )
+
+        return self.notification_service.create_notification(
+            db=db,
+            notification=notification,
+            current_user=current_user,
+        )
 
     # ==================================================
     # GET ALL REFERRALS
@@ -169,9 +204,6 @@ class ReferralService:
         # ==================================================
         # DUPLICATE REFERRAL CHECK
         # ==================================================
-        # Every application should have only one
-        # Referral row.
-        # ==================================================
         existing_referral = self.repository.get_by_application(
             db=db,
             application_id=referral.ApplicationId,
@@ -186,9 +218,6 @@ class ReferralService:
 
         # ==================================================
         # CHECK REFERRER USER
-        # ==================================================
-        # ReferrerUserId = NULL means
-        # application is not referred.
         # ==================================================
         if referral.ReferrerUserId is not None:
 
@@ -207,12 +236,31 @@ class ReferralService:
         # ==================================================
         # CREATE REFERRAL
         # ==================================================
-        return self.repository.create(
+        created_referral = self.repository.create(
             db=db,
             referral=referral,
             company_id=company_id,
             current_user=current_user,
         )
+
+        # ==================================================
+        # CREATE NEW REFERRAL NOTIFICATION
+        # ==================================================
+        if referral.ReferrerUserId is not None:
+            self.create_referral_notification(
+                db=db,
+                user_id=referral.ReferrerUserId,
+                applicant=applicant,
+                application_id=referral.ApplicationId,
+                title="New Referral",
+                message=(
+                    "{applicant_name} has been assigned to you as "
+                    "the referrer for Application #{application_id}."
+                ),
+                current_user=current_user,
+            )
+
+        return created_referral
 
     # ==================================================
     # UPDATE REFERRAL
@@ -245,6 +293,9 @@ class ReferralService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Referral not found",
             )
+
+        # Save old referrer before update
+        old_referrer_user_id = existing.ReferrerUserId
 
         # ==================================================
         # CHECK APPLICATION
@@ -301,7 +352,7 @@ class ReferralService:
             )
 
         # ==================================================
-        # CHECK REFERRER USER
+        # CHECK NEW REFERRER USER
         # ==================================================
         if referral.ReferrerUserId is not None:
 
@@ -331,6 +382,98 @@ class ReferralService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Referral not found",
+            )
+
+        new_referrer_user_id = referral.ReferrerUserId
+
+        # ==================================================
+        # SAME REFERRER -> REFERRAL UPDATED
+        # ==================================================
+        if (
+            old_referrer_user_id is not None
+            and old_referrer_user_id == new_referrer_user_id
+        ):
+            self.create_referral_notification(
+                db=db,
+                user_id=new_referrer_user_id,
+                applicant=applicant,
+                application_id=referral.ApplicationId,
+                title="Referral Updated",
+                message=(
+                    "Referral details for {applicant_name} "
+                    "for Application #{application_id} have been updated."
+                ),
+                current_user=current_user,
+            )
+
+        # ==================================================
+        # OLD REFERRER -> NEW REFERRER
+        # ==================================================
+        elif (
+            old_referrer_user_id is not None
+            and new_referrer_user_id is not None
+            and old_referrer_user_id != new_referrer_user_id
+        ):
+            # Old user notification
+            self.create_referral_notification(
+                db=db,
+                user_id=old_referrer_user_id,
+                applicant=applicant,
+                application_id=referral.ApplicationId,
+                title="Referral Changed",
+                message=(
+                    "{applicant_name} is no longer assigned to you "
+                    "as the referrer for Application #{application_id}."
+                ),
+                current_user=current_user,
+            )
+
+            # New user notification
+            self.create_referral_notification(
+                db=db,
+                user_id=new_referrer_user_id,
+                applicant=applicant,
+                application_id=referral.ApplicationId,
+                title="New Referral",
+                message=(
+                    "{applicant_name} has been assigned to you "
+                    "as the referrer for Application #{application_id}."
+                ),
+                current_user=current_user,
+            )
+
+        # ==================================================
+        # NO REFERRER -> NEW REFERRER
+        # ==================================================
+        elif old_referrer_user_id is None and new_referrer_user_id is not None:
+            self.create_referral_notification(
+                db=db,
+                user_id=new_referrer_user_id,
+                applicant=applicant,
+                application_id=referral.ApplicationId,
+                title="New Referral",
+                message=(
+                    "{applicant_name} has been assigned to you "
+                    "as the referrer for Application #{application_id}."
+                ),
+                current_user=current_user,
+            )
+
+        # ==================================================
+        # OLD REFERRER -> NO REFERRER
+        # ==================================================
+        elif old_referrer_user_id is not None and new_referrer_user_id is None:
+            self.create_referral_notification(
+                db=db,
+                user_id=old_referrer_user_id,
+                applicant=applicant,
+                application_id=referral.ApplicationId,
+                title="Referral Removed",
+                message=(
+                    "Your referral for {applicant_name} "
+                    "for Application #{application_id} has been removed."
+                ),
+                current_user=current_user,
             )
 
         return updated_referral
@@ -366,6 +509,20 @@ class ReferralService:
                 detail="Referral not found",
             )
 
+        # Save values before delete
+        old_referrer_user_id = existing.ReferrerUserId
+        application_id = existing.ApplicationId
+        applicant_id = existing.ApplicantId
+
+        # ==================================================
+        # GET APPLICANT
+        # ==================================================
+        applicant = self.repository.get_applicant(
+            db=db,
+            applicant_id=applicant_id,
+            company_id=company_id,
+        )
+
         # ==================================================
         # DELETE REFERRAL
         # ==================================================
@@ -374,5 +531,22 @@ class ReferralService:
             referral_id=referral_id,
             company_id=company_id,
         )
+
+        # ==================================================
+        # CREATE REFERRAL REMOVED NOTIFICATION
+        # ==================================================
+        if old_referrer_user_id is not None and applicant:
+            self.create_referral_notification(
+                db=db,
+                user_id=old_referrer_user_id,
+                applicant=applicant,
+                application_id=application_id,
+                title="Referral Removed",
+                message=(
+                    "Your referral for {applicant_name} "
+                    "for Application #{application_id} has been removed."
+                ),
+                current_user=current_user,
+            )
 
         return {"message": "Referral deleted successfully"}
